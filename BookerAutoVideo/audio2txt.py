@@ -14,7 +14,7 @@ from paddlespeech.cli.text.infer import TextExecutor
 def check_ffmpeg():
     r = subp.Popen(
         ['ffmpeg', '-version'], 
-        shell=True，
+        shell=True,
         stdout=subp.PIPE,
         stderr=subp.PIPE,
     ).communicate()
