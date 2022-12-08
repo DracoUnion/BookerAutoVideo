@@ -11,6 +11,15 @@ import subprocess as subp
 from paddlespeech.cli.asr.infer import ASRExecutor
 from paddlespeech.cli.text.infer import TextExecutor 
 
+def check_ffmpeg():
+    r = subp.Popen(
+        ['ffmpeg', '-version'], 
+        shell=True，
+        stdout=subp.PIPE,
+        stderr=subp.PIPE,
+    ).communicate()
+    return not r[1]
+
 def split_audio(
     fname, target, 
     mmin_dur=1, 
@@ -74,6 +83,9 @@ def audio2txt(dir):
     return words
 
 def audio2txt_handle(args):
+    if not check_ffmpeg():
+        print('未找到 ffmpeg，请先下载并放到系统变量 PATH 路径下')
+        return
     fname = args.fname
     dir = path.join(tempfile.gettempdir(), uuid.uuid4().hex)
     os.mkdir(dir)
