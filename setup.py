@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import setuptools
-import BookerDownloadTool
+import BookerAutoVideo
 import os
 from os import path
 
@@ -12,16 +12,16 @@ with open("README.md", "r", encoding="utf-8") as fh:
 with open("requirements.txt", "r", encoding="utf-8") as fh:
     install_requires = fh.read().splitlines()
 
-for subdir, _, _ in os.walk('BookerDownloadTool'):
+for subdir, _, _ in os.walk('BookerAutoVideo'):
     fname = path.join(subdir, '__init__.py')
     open(fname, 'a').close()
     
 setuptools.setup(
-    name="BookerDownloadTool",
-    version=BookerDownloadTool.__version__,
-    url="https://github.com/apachecn/BookerDownloadTool",
-    author=BookerDownloadTool.__author__,
-    author_email=BookerDownloadTool.__email__,
+    name="BookerAutoVideo",
+    version=BookerAutoVideo.__version__,
+    url="https://github.com/apachecn/BookerAutoVideo",
+    author=BookerAutoVideo.__author__,
+    author_email=BookerAutoVideo.__email__,
     classifiers=[
         "Development Status :: 4 - Beta",
         "Environment :: Console",
@@ -41,7 +41,7 @@ setuptools.setup(
         "Topic :: Software Development :: Documentation",
         "Topic :: Documentation",
     ],
-    description="book download tool for ApacheCN",
+    description="audio & video tool for ApacheCN",
     long_description=long_description,
     long_description_content_type="text/markdown",
     keywords=[],
@@ -49,9 +49,9 @@ setuptools.setup(
     python_requires=">=3.6",
     entry_points={
         'console_scripts': [
-            "BookerDownloadTool=BookerDownloadTool.__main__:main",
-            "bdt=BookerDownloadTool.__main__:main",
-            "dl-tool=BookerDownloadTool.__main__:main",
+            "BookerAutoVideo=BookerAutoVideo.__main__:main",
+            "bav=BookerAutoVideo.__main__:main",
+            "auto-video=BookerAutoVideo.__main__:main",
         ],
     },
     packages=setuptools.find_packages(),
