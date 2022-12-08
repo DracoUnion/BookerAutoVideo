@@ -1,7 +1,6 @@
 import auditok
 import os
 import paddle
-import sys
 import re
 import os
 import shutil
@@ -74,8 +73,8 @@ def audio2txt(dir):
         words.append(text)
     return words
 
-def main():
-    fname = sys.argv[1]
+def audio2txt_handle(args):
+    fname = args.fname
     dir = path.join(tempfile.gettempdir(), uuid.uuid4().hex)
     os.mkdir(dir)
     if not fname.endswith('.wav'):
@@ -84,6 +83,5 @@ def main():
     words = audio2txt(dir)
     text = punc_fix(words)
     open(fname + '.txt', 'w', encoding='utf8').write(text)
+    print(fname + '.txt')
     shutil.rmtree(dir)
-
-if __name__ == '__main__': main()
