@@ -5,23 +5,41 @@ bgImg: file://asset/bg.png
 imgSize: [1280, 768]
 padding: 0
 frames:
-  - image: file://asset/1.jpg
-    voice: 人气直播主饶方晴，气质笑颜无害又迷人。
-  - image: file://asset/2.jpg
-    voice: 这笑容是要融化多少单身汉！小编今天要为大家送上这位白嫩系的正妹「亮亮Sunny」。
-  - image: file://asset/3.jpg
-    voice: 浑身白皙的肌肤吹弹可破一般稚嫩，留着柔顺长发的她衬着那张清新又甜美的脸蛋。
-  - image: file://asset/4.jpg
-    voice: 水汪大眼搭上迷人的微笑，让人对到一眼就深深着迷。
-  - image: file://asset/5.jpg
-    voice: 往下一望还有一双壮美的峰景，深厚的事业线简直不留余地给司机们啊！
-  - image: file://asset/6.jpg
-    voice: 亮亮本名又叫作「饶方晴」，身为美女主播的她凭着那亮丽的外表和姣好的体态。
-  - image: file://asset/7.jpg
-    voice: 总能无时无刻圈下不少忠实粉丝，开朗又活泼的个性更是深受大家喜爱。
-  - image: file://asset/8.jpg
-    voice: 大方的她平日也总在IG上放晒迷人又性感的自拍照。
-  - image: file://asset/9.jpg
-    voice: 不只是濠乳沟乍现，连笔直又纤长的美腿也让腿控们大饱眼福呢！
+  - type: image
+    content: file://asset/1.jpg
+  - type: audio
+    content: 人气直播主饶方晴，气质笑颜无害又迷人。
+  - type: image
+    content: file://asset/2.jpg
+  - type: audio
+    content: 这笑容是要融化多少单身汉！小编今天要为大家送上这位白嫩系的正妹「亮亮Sunny」。
+  - type: image
+    content: file://asset/3.jpg
+  - type: audio
+    content: 浑身白皙的肌肤吹弹可破一般稚嫩，留着柔顺长发的她衬着那张清新又甜美的脸蛋。
+  - type: image
+    content: file://asset/4.jpg
+  - type: audio
+    content: 水汪大眼搭上迷人的微笑，让人对到一眼就深深着迷。
+  - type: image
+    content: file://asset/5.jpg
+  - type: audio
+    content: 往下一望还有一双壮美的峰景，深厚的事业线简直不留余地给司机们啊！
+  - type: image
+    content: file://asset/6.jpg
+  - type: audio
+    content: 亮亮本名又叫作「饶方晴」，身为美女主播的她凭着那亮丽的外表和姣好的体态。
+  - type: image
+    content: file://asset/7.jpg
+  - type: audio
+    content: 总能无时无刻圈下不少忠实粉丝，开朗又活泼的个性更是深受大家喜爱。
+  - type: image
+    content: file://asset/8.jpg
+  - type: audio
+    content: 大方的她平日也总在IG上放晒迷人又性感的自拍照。
+  - type: image
+    content: file://asset/9.jpg
+  - type: audio
+    content: 不只是濠乳沟乍现，连笔直又纤长的美腿也让腿控们大饱眼福呢！
 header:
 footer:
