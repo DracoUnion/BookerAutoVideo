@@ -2,6 +2,7 @@ import yaml
 from os import path
 import sys
 import librosa
+import cv2
 from io import BytesIO
 from paddlespeech.cli.tts.infer import TTSExecutor
 from moviepy.editor import *
@@ -38,7 +39,7 @@ def preproc_asset(config):
         elif cont['type'].endswith(':url'):
             url = cont['value']
             print(f'下载：{url}')
-            cont['asset'] = request_retry('GET', url)
+            cont['asset'] = request_retry('GET', url).content
         elif cont['type'] == 'audio:tts':
             text = cont['value']
             print(f'TTS：{text}')
@@ -51,7 +52,10 @@ def preproc_asset(config):
         if 'asset' in c
     ]
     
-    # TODO 剪裁图片
+    # 剪裁图片
+    for c in config['contents']:
+        if c['type'].startswith('image:'):
+            c['asset'] = trim_img(c['asset'])
     
     # 如果第一张不是图片，则提升第一个图片
     idx = -1
@@ -66,6 +70,18 @@ def preproc_asset(config):
         c = config['contents'][idx]
         del config['contents'][idx]
         config['contents'].insert(0, c)
+
+# 剪裁图片
+def trim_img(img):
+    img = cv2.imdecode(np.frombuffer(img, np.uint8), cv2.IMREAD_COLOR)
+    h, w, *_ = img.shape
+    x_scale = config['size'][0] / w
+    y_scale = config['size'][1] / h
+    scale = min(x_scale, y_scale)
+    nh, nw = int(h * scale), int(w * scale)
+    img = cv2.resize(img, (nw, nh), interpolation=cv2.INTER_CUBIC)
+    img = bytes(cv2.imencode('.png', img)[1])
+    return img
 
 # 内容成帧
 def contents2frame(contents):
