@@ -34,9 +34,13 @@ def preproc_asset(config):
             fname = path.join(cfg_fname, cont['value'])
             cont['asset'] = open(fname, 'rb').read()
         elif cont['type'].endswith(':url'):
-            cont['asset'] = request_retry('GET', cont['value'])
+            url = cont['value']
+            print(f'下载：{url}')
+            cont['asset'] = request_retry('GET', url)
         elif cont['type'] == 'audio:tts':
-            cont['asset'] = exec_tts(cont['value'])
+            text = cont['value']
+            print(f'TTS：{text}')
+            cont['asset'] = exec_tts(text)
         elif cont['type'] == 'image:novelai':
             pass # TODO 待实现
             
