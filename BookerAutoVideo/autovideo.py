@@ -49,5 +49,5 @@ def autovideo(args):
     
     # TODO 剪裁图片
     
-    # 
+    # 组装视频
     
