@@ -1,5 +1,6 @@
 import yaml
 from os import path
+import sys
 import librosa
 from io import BytesIO
 from paddlespeech.cli.tts.infer import TTSExecutor
@@ -60,7 +61,7 @@ def preproc_asset(config):
             break
     if idx == -1:
         print('内容中无图片，无法生成视频')
-        return
+        sys.exit()
     if idx != 0:
         c = config['contents'][idx]
         del config['contents'][idx]
@@ -109,17 +110,33 @@ def make_video(frames):
             clips.append(clip)
             if f['subtitle']:
                 clip = (
-                    TextClip(f['subtitle'], font=font_path, fontsize=35, color='white', method='label')
+                    TextClip(
+                        f['subtitle'], 
+                        font=path.join(DIR, 'asset', config['font']), 
+                        fontsize=35, 
+                        color='white', 
+                        method='label'
+                    )
                         .set_position(("center", "bottom"))
                         .set_duration(a['len'])
                         .set_start(st)
                 )
                 clips.append(clip)
             st += a['len']
-    return CompositeVideoClip(clips, size=config['size'])
+    video = CompositeVideoClip(clips, size=config['size'])
+    # 合并片头片尾
+    if config['header']:
+        header_fname = path.join(cfg_fname, config['header'])
+        header = VideoFileClip(header_fname).resize(config['size'])
+        video = concatenate_videoclips([header, video])
+    if config['footer']:
+        footer_fname = path.join(cfg_fname, config['footer'])
+        footer = VideoFileClip(footer_fname).resize(config['size'])
+        video = concatenate_videoclips([video, footer])
+    return video
 
 def autovideo(args):
-    cfg_fname = args.fname
+    cfg_fname = args.config
     if not cfg_fname.endswith('.yml'):
         print('请提供 YAML 文件')
         return
@@ -136,15 +153,6 @@ def autovideo(args):
     frames = contents2frame(config['contents'])
     # 组装视频
     video = make_video(frames)
-    # 合并片头片尾
-    if config['header']:
-        header_fname = path.join(cfg_fname, config['header'])
-        header = VideoFileClip(header_fname).resize(config['size'])
-        video = concatenate_videoclips([header, video])
-    if config['footer']:
-        footer_fname = path.join(cfg_fname, config['footer'])
-        footer = VideoFileClip(footer_fname).resize(config['size'])
-        video = concatenate_videoclips([video, footer])
     # 写文件
     video_fname = fname_escape(config['name']) + '.' + config['format']
     video.write_videofile(video_fname, fps=60, remove_temp=False, verbose=True)
