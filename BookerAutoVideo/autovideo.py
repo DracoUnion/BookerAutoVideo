@@ -10,12 +10,69 @@ from .autovideo_config import config
 from EpubCrawler.util import request_retry
 
 DIR = path.abspath(path.dirname(__file__))
+RE_MD_IMG = r'!\[.*?\]\((.*?)\)'
+RE_MD_TITLE = r'^#+ (.+?)$'
+RE_MD_PRE = r'```[\s\S]+?```'
+RE_MD_TR = r'^\|.+?\|$'
+RE_MD_PREFIX = r'^\s*(\+|\-|\*|\d+\.|\>|\#+)'
+RE_SENT_DELIM = r'\n|。|\?|？|;|；|:|：|!|！'
 
 def md2playbook(args):
     fname = args.fname
     if not fname.endswith('.md'):
         print('请提供 Markdown 文件')
         return
+    cont = open(fname, encoding='utf8').read()
+    m = re.search(RE_MD_TITLE, cont, flags=re.M)
+    if not m:
+        print('未找到标题，无法转换')
+        return
+    title = m.group(1)
+    # 去掉代码块
+    cont = re.sub(RE_MD_PRE, '', cont)
+    # 去掉表格
+    cont = re.sub(RE_MD_TR, '', cont, flags=re.M)
+    # 去掉各种格式
+    cont = re.sub(RE_MD_PREFIX, '', cont, flags=re.M)
+    # 切分
+    lines = re.split(RE_SENT_DELIM, cont)
+    lines = [l.strip() for l in lines]
+    lines = [l for lines if l]
+    
+    contents = []
+    for l in lines:
+        # 提取图片
+        m = re.search(RE_MD_IMG, l)
+        if m: 
+            url = m.group(1)
+            type = (
+                'image:url'
+                if url.startswith('http://') or 
+                   url.startswith('https://')
+                else 'image:file'
+            )
+            value = (
+                url if type == 'image:url'
+                else path.join(fname, url)
+            )
+            contents.append({
+                'type': type,
+                'value': value,
+            })
+        l = re.sub(RE_MD_IMG, '', l).strip()
+        if l: contents.append({
+            'type': 'audio:tts',
+            'value': l,
+        })
+        
+    playbook = {
+        'name': title,
+        'contents': contents,
+    }
+    ofname = fname_escape(title) + '.yml'
+    open(ofname, 'w', encoding='utf8').write(yaml.safe_save(ofname))
+    print(ofname)
+        
 
 def audio_len(data):
     y, sr = librosa.load(BytesIO(data))
