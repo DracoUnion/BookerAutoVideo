@@ -1,9 +1,10 @@
 config = {
     'name': '',
     'format': 'mp4',
+    'font': 'kaiti.ttf'
     'bgm': '',
     'bgImg': '',
-    'imgSize': [1280, 768],
+    'size': [1280, 768],
     'padding': 0,
     'contents': [],
     'header': '', 

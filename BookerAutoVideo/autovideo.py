@@ -3,6 +3,7 @@ from os import path
 import librosa
 from io import BytesIO
 from paddlespeech.cli.tts.infer import TTSExecutor
+from moviepy.editor import *
 from .autovideo_config import config
 from EpubCrawler.util import request_retry
 
@@ -68,21 +69,54 @@ def preproc_asset(config):
 # 内容成帧
 def contents2frame(contents):
     frames = []
-    last_img = None
     for c in contents:
         if c['type'].startswith['image:']:
-            last_img = c
-        elif c['type'].startswith['audio:']:
             frames.append({
-                'image': last_img['asset'],
+                'image': c['asset'],
+                'audios': [],
+            })
+        elif c['type'].startswith['audio:']:
+            if len(frames) == 0: continue
+            frames[-1]['audios'].append({
                 'audio': c['asset'],
+                'len': audio_len(c['asset']),
                 'subtitle': c['value'] if c['type'] == 'audio:tts' else '',
             })
-    frames = [
-        f for f in frames
-        if 'image' in f
-    ]
+    for f in frames:
+        f['len'] = sum([a['len'] for a in f['audios']])
     return frames
+
+# 组装视频
+def make_video(frames):
+    clips = []
+    # 图像部分
+    st = 0
+    for f in frames:
+        clip = (
+            ImageClip(f['asset'])
+                .set_duration(f['len'])
+                .resize(height=int(config['size'][1] * 0.9))
+                .set_pos(("center", 0))
+                .set_start(st)
+        )
+        clips.append(clip)
+        st += f['len']
+    # 音频部分
+    st = 0
+    for f in frames:
+        for a in f['audios']:
+            clip = AudioFileClip(a['asset']).set_start(st)
+            clips.append(clip)
+            if f['subtitle']:
+                clip = (
+                    TextClip(f['subtitle'], font=font_path, fontsize=35, color='white', method='label')
+                        .set_position(("center", "bottom"))
+                        .set_duration(a['len'])
+                        .set_start(st)
+                )
+                clips.append(clip)
+            st += a['len']
+    return CompositeVideoClip(clips, size=config['size'])
 
 def autovideo(args):
     cfg_fname = args.fname
@@ -101,4 +135,18 @@ def autovideo(args):
     # 转换成帧的形式
     frames = contents2frame(config['contents'])
     # 组装视频
+    video = make_video(frames)
+    # 合并片头片尾
+    if config['header']:
+        header_fname = path.join(cfg_fname, config['header'])
+        header = VideoFileClip(header_fname).resize(config['size'])
+        video = concatenate_videoclips([header, video])
+    if config['footer']:
+        footer_fname = path.join(cfg_fname, config['footer'])
+        footer = VideoFileClip(footer_fname).resize(config['size'])
+        video = concatenate_videoclips([video, footer])
+    # 写文件
+    video_fname = fname_escape(config['name']) + '.' + config['format']
+    video.write_videofile(video_fname, fps=60, remove_temp=False, verbose=True)
+    print(video_fname)
     
