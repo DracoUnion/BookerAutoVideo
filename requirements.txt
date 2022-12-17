@@ -1,3 +1,5 @@
 paddlepaddle
 paddlespeech
 auditok
+moviepy
+librosa
