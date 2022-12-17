@@ -87,7 +87,7 @@ def exec_tts(text):
     return data
 
 # 素材预处理
-def preproc_asset(config):
+def preproc_asset(config, cfg_fname):
     # 加载或生成内容
     for cont in config['contents']:
         if cont['type'].endswith(':file'):
@@ -220,8 +220,13 @@ def autovideo(args):
         print('内容为空，无法生成')
         return
         
+    if config['header']:
+        config['header'] = path.join(cfg_fname, config['header'])
+    if config['footer']:
+        config['footer'] = path.join(cfg_fname, config['footer'])
+        
     # 素材预处理
-    preproc_asset(config)
+    preproc_asset(config, cfg_fname)
     # 转换成帧的形式
     frames = contents2frame(config['contents'])
     # 组装视频
