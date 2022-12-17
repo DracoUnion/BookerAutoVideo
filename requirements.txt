@@ -3,3 +3,5 @@ paddlespeech
 auditok
 moviepy
 librosa
+numpy
+opencv-python
