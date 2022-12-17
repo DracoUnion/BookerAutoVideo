@@ -39,9 +39,15 @@ def autovideo(args):
             cont['asset'] = request_retry('GET', cont['value'])
         elif cont['type'] == 'audio:tts':
             cont['asset'] = exec_tts(cont['value'])
+        elif cont['type'] == 'image:novelai':
+            pass # TODO 待实现
             
     config['contents'] = [
         c for c in config['contents']
         if 'asset' in c
     ]
+    
+    # TODO 剪裁图片
+    
+    # 
     
