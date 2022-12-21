@@ -1,7 +1,7 @@
 config = {
     'name': '',
     'format': 'mp4',
-    'font': 'kaiti.ttf'
+    'font': 'kaiti.ttf',
     'bgm': '',
     'bgImg': '',
     'size': [1280, 768],
