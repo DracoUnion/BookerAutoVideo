@@ -1,5 +1,7 @@
 import paddle
 import whisper
+import re
+from os import path
 from paddlespeech.cli.text.infer import TextExecutor 
 
 def audio2txt_handle(args):
