@@ -4,6 +4,19 @@ import re
 from os import path
 from paddlespeech.cli.text.infer import TextExecutor 
 
+def merge_words(words, maxl=500):
+    res = []
+    st = 0
+    l = 0
+    for i, w in enumerate(words):
+        if l >= maxl:
+            res.append(''.join(words[st:i]))
+            st = i
+            l = 0
+        l += len(w)
+    res.append(''.join(words[st:]))
+    return res
+
 def audio2txt_handle(args):
     fname = args.fname
     # 语音识别
@@ -11,6 +24,7 @@ def audio2txt_handle(args):
     r = model.transcribe(fname, fp16=False, language='Chinese')
     words = [s['text'] for s in r['segments']]
     # 标点修正
+    words = merge_words(words)
     text_executor = TextExecutor()
     text = ''.join([
         text_executor(
