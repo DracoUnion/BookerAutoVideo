@@ -1,7 +1,10 @@
 import argparse
 import sys
+import warnings
 from . import __version__
 from . import *
+
+warnings.filterwarnings("ignore")
 
 def main():
     parser = argparse.ArgumentParser(prog="BookerAutoVideo", formatter_class=argparse.RawDescriptionHelpFormatter)
