@@ -12,11 +12,11 @@ def main():
     parser.set_defaults(func=lambda x: parser.print_help())
     subparsers = parser.add_subparsers()
     
-    gh_book_parser = subparsers.add_parser("audio2txt", help="convert audio to text")
-    gh_book_parser.add_argument("fname", help="file name")
-    gh_book_parser.add_argument("-t", "--threads", type=int, default=8, help="num of threads")
-    gh_book_parser.add_argument("-m", "--model", default='base', choices=['tiny', 'base', 'small', 'medium', 'large'], help="model name")
-    gh_book_parser.set_defaults(func=audio2txt_handle)
+    audio2txt_parser = subparsers.add_parser("audio2txt", help="convert audio to text")
+    audio2txt_parser.add_argument("fname", help="file name")
+    audio2txt_parser.add_argument("-t", "--threads", type=int, default=8, help="num of threads")
+    audio2txt_parser.add_argument("-m", "--model", default='base', choices=['tiny', 'base', 'small', 'medium', 'large'], help="model name")
+    audio2txt_parser.set_defaults(func=audio2txt_handle)
         
     args = parser.parse_args()
     args.func(args)

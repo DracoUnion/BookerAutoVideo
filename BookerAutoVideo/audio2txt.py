@@ -69,10 +69,12 @@ def audio2txt_file(args):
     text = ''.join(words)
     text = (
         text.replace(',', '，')
+            .replace('.', '。')
             .replace('?', '？')
             .replace('!', '！')
     )
     text = re.sub(r'(.{50,100}(?:，|。|！|？))', r'\1\n\n', text)
+    text = re.sub(r'，$', '。', flags=re.M)
     title = path.basename(fname)
     title = re.sub(r'\.\w+$', '', title)
     text = f'# {title}\n\n{text}'
