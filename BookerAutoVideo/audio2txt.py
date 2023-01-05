@@ -25,6 +25,7 @@ def audio2txt_handle(args):
     words = [s['text'] for s in r['segments']]
     # 标点修正
     words = merge_words(words)
+    print(f'words: {words}')
     text_executor = TextExecutor()
     text = ''.join([
         text_executor(
