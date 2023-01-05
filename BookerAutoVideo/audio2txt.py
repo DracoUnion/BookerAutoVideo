@@ -3,6 +3,7 @@ import whisper
 import re
 import traceback
 import copy
+import os
 from os import path
 from multiprocessing import Pool
 # from paddlespeech.cli.text.infer import TextExecutor 
@@ -66,7 +67,7 @@ def audio2txt_file(args):
     ])
     '''
     # 排版
-    text = ''.join(words)
+    text = '，'.join(words)
     text = (
         text.replace(',', '，')
             .replace('.', '。')
@@ -74,7 +75,7 @@ def audio2txt_file(args):
             .replace('!', '！')
     )
     text = re.sub(r'(.{50,100}(?:，|。|！|？))', r'\1\n\n', text)
-    text = re.sub(r'，$', '。', flags=re.M)
+    text = re.sub(r'，$', '。', text, flags=re.M)
     title = path.basename(fname)
     title = re.sub(r'\.\w+$', '', title)
     text = f'# {title}\n\n{text}'
