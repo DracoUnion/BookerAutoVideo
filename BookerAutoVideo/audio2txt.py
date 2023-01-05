@@ -23,9 +23,10 @@ def audio2txt_handle(args):
     model = whisper.load_model(args.model)
     r = model.transcribe(fname, fp16=False, language='Chinese')
     words = [s['text'] for s in r['segments']]
-    # 标点修正
-    words = merge_words(words)
     print(f'words: {words}')
+    # 标点修正
+    '''
+    words = merge_words(words)
     text_executor = TextExecutor()
     text = ''.join([
         text_executor(
@@ -35,8 +36,15 @@ def audio2txt_handle(args):
             device=paddle.get_device(),
         ) for w in words
     ])
+    '''
     # 排版
-    text = re.sub(r'(.{50,100}(?:。|！|？))', r'\1\n\n', text)
+    text = ''.join(words)
+    text = (
+        text.replace(',', '，')
+            .replace('?', '？')
+            .replace('!', '！')
+    )
+    text = re.sub(r'(.{50,100}(?:，|。|！|？))', r'\1\n\n', text)
     title = path.basename(fname)
     title = re.sub(r'\.\w+$', '', title)
     text = f'# {title}\n\n{text}'
