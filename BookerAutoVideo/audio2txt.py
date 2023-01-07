@@ -79,5 +79,6 @@ def audio2txt_file(args):
     title = path.basename(fname)
     title = re.sub(r'\.\w+$', '', title)
     text = f'# {title}\n\n{text}'
-    open(fname + '.md', 'w', encoding='utf8').write(text)
-    print(fname + '.md')
+    nfname = re.sub(r'\.\w+$', '', fname) + '.md'
+    open(nfname , 'w', encoding='utf8').write(text)
+    print(nfname + '.md')
