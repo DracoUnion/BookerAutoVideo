@@ -4,9 +4,20 @@ import re
 import traceback
 import copy
 import os
+import re
 from os import path
 from multiprocessing import Pool
 # from paddlespeech.cli.text.infer import TextExecutor 
+
+def is_video(fname):
+    ext = [
+        'mp4', 'm4v', '3gp', 'mpg', 'flv', 'f4v', 
+        'swf', 'avi', 'gif', 'wmv', 'rmvb', 'mov', 
+        'mts', 'm2t', 'webm', 'ogg', 'mkv', 'mp3', 
+        'aac', 'ape', 'flac', 'wav', 'wma', 'amr', 'mid',
+    ]
+    m = re.search(r'\.(\w+)$', fname)
+    return bool(m and m.group(1) in ext)
 
 def merge_words(words, maxl=500):
     res = []
@@ -44,7 +55,7 @@ def audio2txt_file_safe(args):
 
 def audio2txt_file(args):
     fname = args.fname
-    if not path.isfile(fname):
+    if not (path.isfile(fname) and is_video(fname)):
         print('请提供音频或视频文件')
         return
     print(fname)
