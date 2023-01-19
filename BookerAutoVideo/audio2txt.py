@@ -1,62 +1,74 @@
-import auditok
-import os
-import paddle
+# import paddle
+import whisper
 import re
+import traceback
+import copy
 import os
-import shutil
-import tempfile
-import uuid
+import re
 from os import path
-import subprocess as subp
-from paddlespeech.cli.asr.infer import ASRExecutor
-from paddlespeech.cli.text.infer import TextExecutor 
+from multiprocessing import Pool
+# from paddlespeech.cli.text.infer import TextExecutor 
 
-def check_ffmpeg():
-    r = subp.Popen(
-        ['ffmpeg', '-version'], 
-        shell=True,
-        stdout=subp.PIPE,
-        stderr=subp.PIPE,
-    ).communicate()
-    return not r[1]
+def is_video(fname):
+    ext = [
+        'mp4', 'm4v', '3gp', 'mpg', 'flv', 'f4v', 
+        'swf', 'avi', 'gif', 'wmv', 'rmvb', 'mov', 
+        'mts', 'm2t', 'webm', 'ogg', 'mkv', 'mp3', 
+        'aac', 'ape', 'flac', 'wav', 'wma', 'amr', 'mid',
+    ]
+    m = re.search(r'\.(\w+)$', fname)
+    return bool(m and m.group(1) in ext)
 
-def split_audio(
-    fname, target, 
-    mmin_dur=1, 
-    mmax_dur=100000, 
-    mmax_silence=1, 
-    menergy_threshold=55
-):
-    bname = path.basename(fname)
-    bname_pre = re.sub(r'\.\w+', '', bname)
+def merge_words(words, maxl=500):
+    res = []
+    st = 0
+    l = 0
+    for i, w in enumerate(words):
+        if l >= maxl:
+            res.append(''.join(words[st:i]))
+            st = i
+            l = 0
+        l += len(w)
+    res.append(''.join(words[st:]))
+    return res
 
-    audio_regions = list(auditok.split(
-        fname,
-        min_dur=mmin_dur,  # minimum duration of a valid audio event in seconds
-        max_dur=mmax_dur,  # maximum duration of an event
-        # maximum duration of tolerated continuous silence within an event
-        max_silence=mmax_silence,
-        energy_threshold=menergy_threshold  # threshold of detection
-    ))
+def audio2txt_handle(args):
+    if path.isdir(args.fname):
+        audio2txt_dir(args)
+    else: 
+        audio2txt_file(args)
 
-    l = len(str(len(audio_regions)))
-    for i, r in enumerate(audio_regions):
-        ofname = f'{bname_pre}_{i:0{l}d}_{r.meta.start:.3f}-{r.meta.end:.3f}.wav'
-        ofname = path.join(target, ofname)
-        print(ofname)
-        r.save(ofname)
+def audio2txt_dir(args):
+    dir = args.fname
+    fnames = os.listdir(dir)
+    pool = Pool(args.threads)
+    for fname in fnames:
+        args = copy.deepcopy(args)
+        args.fname = path.join(dir, fname)
+        pool.apply_async(audio2txt_file_safe, [args])
+    pool.close()
+    pool.join()
+    
+def audio2txt_file_safe(args):
+    try: audio2txt_file(args)
+    except: traceback.print_exc()
 
-def convert_to_wav(fname):
-    ofname = fname + '.wav'
-    subp.Popen(
-        ['ffmpeg', '-y', '-i', fname, '-vn', ofname],
-        shell=True,
-    ).communicate()
-    return ofname
-
-def punc_fix(words):
+def audio2txt_file(args):
+    fname = args.fname
+    if not (path.isfile(fname) and is_video(fname)):
+        print('请提供音频或视频文件')
+        return
+    print(fname)
+    # 语音识别
+    model = whisper.load_model(args.model)
+    r = model.transcribe(fname, fp16=False, language='Chinese')
+    words = [s['text'] for s in r['segments']]
+    print(f'words: {words}')
+    # 标点修正
+    '''
+    words = merge_words(words)
     text_executor = TextExecutor()
-    r = ''.join([
+    text = ''.join([
         text_executor(
             text=w,
             task='punc',
@@ -64,36 +76,20 @@ def punc_fix(words):
             device=paddle.get_device(),
         ) for w in words
     ])
-    print(r)
-    return r
-
-def audio2txt(dir):
-    asr_executor = ASRExecutor()
-    fnames = os.listdir(dir)
-    fnames.sort()
-    words = []
-    for fname in fnames:
-        print(f'正在识别：{fname}')
-        text = asr_executor(
-            audio_file=path.join(dir, fname),
-            device=paddle.get_device(), force_yes=True
-        )
-        print(text)
-        words.append(text)
-    return words
-
-def audio2txt_handle(args):
-    if not check_ffmpeg():
-        print('未找到 ffmpeg，请先下载并放到系统变量 PATH 路径下')
-        return
-    fname = args.fname
-    dir = path.join(tempfile.gettempdir(), uuid.uuid4().hex)
-    os.mkdir(dir)
-    if not fname.endswith('.wav'):
-        fname = convert_to_wav(fname)
-    split_audio(fname, dir, 1, 50)
-    words = audio2txt(dir)
-    text = punc_fix(words)
-    open(fname + '.txt', 'w', encoding='utf8').write(text)
-    print(fname + '.txt')
-    shutil.rmtree(dir)
+    '''
+    # 排版
+    text = '，'.join(words)
+    text = (
+        text.replace(',', '，')
+            .replace('.', '。')
+            .replace('?', '？')
+            .replace('!', '！')
+    )
+    text = re.sub(r'(.{50,100}(?:，|。|！|？))', r'\1\n\n', text)
+    text = re.sub(r'，$', '。', text, flags=re.M)
+    title = path.basename(fname)
+    title = re.sub(r'\.\w+$', '', title)
+    text = f'# {title}\n\n{text}'
+    nfname = re.sub(r'\.\w+$', '', fname) + '.md'
+    open(nfname , 'w', encoding='utf8').write(text)
+    print(nfname + '.md')

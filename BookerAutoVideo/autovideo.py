@@ -37,7 +37,7 @@ def md2playbook(args):
     # 切分
     lines = re.split(RE_SENT_DELIM, cont)
     lines = [l.strip() for l in lines]
-    lines = [l for lines if l]
+    lines = [l for l in lines if l]
     
     contents = []
     for l in lines:
