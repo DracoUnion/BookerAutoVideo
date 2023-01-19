@@ -7,6 +7,7 @@ from io import BytesIO
 from paddlespeech.cli.tts.infer import TTSExecutor
 from moviepy.editor import *
 from .autovideo_config import config
+from .util import *
 from EpubCrawler.util import request_retry
 
 DIR = path.abspath(path.dirname(__file__))
@@ -16,6 +17,8 @@ RE_MD_PRE = r'```[\s\S]+?```'
 RE_MD_TR = r'^\|.+?\|$'
 RE_MD_PREFIX = r'^\s*(\+|\-|\*|\d+\.|\>|\#+)'
 RE_SENT_DELIM = r'\n|。|\?|？|;|；|:|：|!|！'
+
+exmod = None
 
 def md2playbook(args):
     fname = args.fname
@@ -101,8 +104,10 @@ def preproc_asset(config, cfg_fname):
             text = cont['value']
             print(f'TTS：{text}')
             cont['asset'] = exec_tts(text)
-        elif cont['type'] == 'image:novelai':
-            pass # TODO 待实现
+        elif cont['type'] == 'image:external':
+            text = cont['value']
+            print(f'Ex：{text}')
+            cont['asset'] = exmod.txt2img(text)
             
     config['contents'] = [
         c for c in config['contents']
@@ -208,22 +213,30 @@ def make_video(frames):
         video = concatenate_videoclips([video, footer])
     return video
 
+def update_config(cfg_fname, user_cfg):
+    global exmod
+    
+    config.update(user_cfg)
+    
+    if not config['contents']:
+        raise AttributeError('内容为空，无法生成')
+        
+    if config['header']:
+        config['header'] = path.join(cfg_fname, config['header'])
+    if config['footer']:
+        config['footer'] = path.join(cfg_fname, config['footer'])
+        
+    if config['external']:
+        mod_fname = path.join(path.dirname(cfg_fname), config['external'])
+        exmod = load_module(mod_fname)
+
 def autovideo(args):
     cfg_fname = args.config
     if not cfg_fname.endswith('.yml'):
         print('请提供 YAML 文件')
         return
     user_cfg = yaml.safe_load(cfg_fname)
-    config.update(user_cfg)
-    
-    if not config['contents']:
-        print('内容为空，无法生成')
-        return
-        
-    if config['header']:
-        config['header'] = path.join(cfg_fname, config['header'])
-    if config['footer']:
-        config['footer'] = path.join(cfg_fname, config['footer'])
+    update_config(cfg_fname, user_cfg)
         
     # 素材预处理
     preproc_asset(config, cfg_fname)
