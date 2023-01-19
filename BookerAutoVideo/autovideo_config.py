@@ -9,10 +9,9 @@ config = {
     'contents': [],
     'header': '', 
     'footer': '',
+    'external': '',
     # 爬虫模块配置
     'crawler': {},
-    # NovelAI 配置
-    'novelai': {},
     # PaddleSpeech 配置
     'tts': {},
 }
