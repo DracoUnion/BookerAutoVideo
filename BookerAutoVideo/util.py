@@ -5,6 +5,25 @@ import shutil
 import tempfile
 import uuid
 
+def is_video(fname):
+    ext = [
+        'mp4', 'm4v', '3gp', 'mpg', 'flv', 'f4v', 
+        'swf', 'avi', 'gif', 'wmv', 'rmvb', 'mov', 
+        'mts', 'm2t', 'webm', 'ogg', 'mkv', 
+    ]
+    m = re.search(r'\.(\w+)$', fname)
+    return bool(m and m.group(1) in ext)
+
+def is_audio(fname):
+    ext = [
+        'mp3', 'aac', 'ape', 'flac', 'wav', 'wma', 'amr', 'mid',
+    ]
+    m = re.search(r'\.(\w+)$', fname)
+    return bool(m and m.group(1) in ext)
+
+def is_video_or_audio(fname)
+    return is_video(fname) or is_audio(fname)
+
 def safe_mkdir(dir):
     try: os.mkdir(dir)
     except: pass
