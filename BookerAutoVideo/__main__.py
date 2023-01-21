@@ -2,7 +2,8 @@ import argparse
 import sys
 import warnings
 from . import __version__
-from . import *
+from .audio2txt import *
+from .keyframe import *
 
 warnings.filterwarnings("ignore")
 

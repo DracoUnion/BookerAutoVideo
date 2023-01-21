@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from .audio2txt import *
-
 """BookerAutoVideo
 https://github.com/apachecnBookerAutoVideo"""
 

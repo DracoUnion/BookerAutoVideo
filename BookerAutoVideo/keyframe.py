@@ -7,12 +7,8 @@ import sys
 
 def ext_keyframe(args):
     fname = args.file
-    videos_save_path = args.save_path
-    if not os.path.exists(videos_save_path):
-        os.makedirs(videos_save_path)
     print(fname)
-    
-    img_path = os.path.join(videos_save_path, os.path.basename(fname) + '_img')
+    img_path = fname + "_img"
     print(img_path)
     if os.path.isdir(img_path):
         shutil.rmtree(img_path)
@@ -23,8 +19,9 @@ def ext_keyframe(args):
     stream.codec_context.skip_frame = 'NONKEY'
 
     for frame in container.decode(stream):
+        fname = f'idx{frame.index}_pts{frame.pts}_dts{frame.dts}.png'
         frame.to_image().save(
-            os.path.join(img_path, f'{frame.pts:04d}.jpg'), 
-            quality=80,
+            os.path.join(img_path, fname), 
+            compress=True,
         )
 
