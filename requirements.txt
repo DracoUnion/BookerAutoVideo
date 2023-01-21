@@ -5,3 +5,4 @@ librosa
 numpy
 opencv-python
 openai-whisper
+pyav
