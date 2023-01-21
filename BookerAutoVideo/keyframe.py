@@ -4,6 +4,7 @@ import os
 import shutil
 import math
 import sys
+from io import BytesIO
 
 def get_keyframes(fname):
     container = av.open(fname)
@@ -14,7 +15,7 @@ def get_keyframes(fname):
     res = []
     for frame in container.decode(stream):
         bio = BytesIO()
-        frame.to_image().save(bio, format="PNG",compress=9)
+        frame.to_image().save(bio, format="PNG", compress=9)
         res.append({
             'idx': frame.index,
             'pts': frame.pts,
