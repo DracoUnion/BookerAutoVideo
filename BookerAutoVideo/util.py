@@ -21,7 +21,7 @@ def is_audio(fname):
     m = re.search(r'\.(\w+)$', fname)
     return bool(m and m.group(1) in ext)
 
-def is_video_or_audio(fname)
+def is_video_or_audio(fname):
     return is_video(fname) or is_audio(fname)
 
 def safe_mkdir(dir):

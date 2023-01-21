@@ -7,6 +7,7 @@ import os
 import re
 from os import path
 from multiprocessing import Pool
+from .util import *
 # from paddlespeech.cli.text.infer import TextExecutor 
 
 def merge_words(words, maxl=500):
