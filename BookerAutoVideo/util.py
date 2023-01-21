@@ -1,6 +1,7 @@
 import os
 import sys
 from os import path
+import re
 import shutil
 import tempfile
 import uuid
