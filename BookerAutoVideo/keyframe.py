@@ -5,6 +5,7 @@ import shutil
 import math
 import sys
 from io import BytesIO
+from os import path
 
 def get_keyframes(fname):
     container = av.open(fname)
