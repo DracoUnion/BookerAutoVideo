@@ -7,6 +7,17 @@ import tempfile
 import uuid
 import imgyaso
 
+def stylish_text(text):
+    text = (
+        text.replace(',', '，')
+            .replace('.', '。')
+            .replace('?', '？')
+            .replace('!', '！')
+    )
+    text = re.sub(r'(.{50,100}(?:，|。|！|？))', r'\1\n\n', text)
+    text = re.sub(r'，$', '。', text, flags=re.M)
+    return text
+
 def opti_img(img, mode, colors):
     if mode == 'quant':
         return imgyaso.pngquant_bts(img, colors)
