@@ -5,6 +5,19 @@ import re
 import shutil
 import tempfile
 import uuid
+import imgyaso
+
+def opti_img(img, mode, colors):
+    if mode == 'quant':
+        return imgyaso.pngquant_bts(img, colors)
+    elif mode == 'grid':
+        return imgyaso.grid_bts(img)
+    elif mode == 'trunc':
+        return imgyaso.trunc_bts(img, colors)
+    elif mode == 'thres':
+        return imgyaso.adathres_bts(img)
+    else:
+        return img
 
 def is_video(fname):
     ext = [

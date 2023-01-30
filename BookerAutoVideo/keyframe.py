@@ -161,5 +161,6 @@ def extract_keyframe(args):
             '.png', f['img'], 
             [cv2.IMWRITE_PNG_COMPRESSION, 9]
         )[1]
-        open(ofname, 'wb').write(bytes(data))
+        data = opti_img(bytes(data), opti_img, 8)
+        open(ofname, 'wb').write(data)
         
