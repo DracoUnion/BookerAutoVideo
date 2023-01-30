@@ -102,6 +102,7 @@ def video2txt_file(args):
     open(nfname , 'w', encoding='utf8').write(text)
     print(nfname + '.md')
     imgdir = path.join(path.dirname(fname), 'img')
+    safe_mkdir(imgdir)
     for imgname, img in imgs.items():
         img_fname = path.join(imgdir, imgname)
         print(img_fname)
