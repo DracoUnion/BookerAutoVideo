@@ -65,7 +65,7 @@ def video2txt_file(args):
         config_scene(args)
         frames = extract_keyframe(args)
         words += frames
-        words.sort(lambda x: x['time'])
+        words.sort(key=lambda x: x['time'])
     # 标点修正
     '''
     words = merge_words(words)
