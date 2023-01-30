@@ -5,6 +5,7 @@ import traceback
 import copy
 import os
 import re
+import hashlib
 from os import path
 from multiprocessing import Pool
 from .util import *
@@ -80,7 +81,7 @@ def video2txt_file(args):
     # 排版
     title = path.basename(fname)
     title = re.sub(r'\.\w+$', '', title)
-    title_hash = hashlib.md5(title).hexdigest()
+    title_hash = hashlib.md5(title.encode('utf8')).hexdigest()
     for i in range(len(words) - 1, 0, -1):
         if 'text' in words[i] and 'text' in words[i - 1]:
             words[i - 1]['text'] += '，' + words[i]['text']
