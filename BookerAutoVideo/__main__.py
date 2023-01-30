@@ -33,7 +33,7 @@ def main():
     kf_parser.add_argument("-t", "--thres", type=float, default=0.6, help="thres in thres mode")
     kf_parser.add_argument("--relmax-win-size", type=int, default=3, help="window size for relmax")
     kf_parser.add_argument("-s", "--scene", choices=['auto', 'ppt'], default='auto', help="scene")
-    kf_parser.set_defaults(func=extract_keyframe)
+    kf_parser.set_defaults(func=extract_keyframe_file)
 
     args = parser.parse_args()
     args.func(args)
