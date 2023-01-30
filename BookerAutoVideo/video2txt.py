@@ -52,13 +52,12 @@ def video2txt_file(args):
         return
     print(fname)
     # 语音识别
-    model = whisper.load_model(args.model)
-    r = model.transcribe(fname, fp16=False, language='Chinese')
+    model = whisper.load_model(args.asr_model)
+    r = model.transcribe(fname, fp16=False, language=args.language)
     words = [
         {'time': s['start'], 'text': s['text']}
         for s in r['segments']
     ]
-    # print(f'words: {words}')
     # 获取关键帧
     if args.image and is_video(fname):
         config_scene(args)
@@ -96,6 +95,7 @@ def video2txt_file(args):
             w['text'] = stylish_text(w['text'])
     text = '\n\n'.join([w['text'] for w in words])
     text = f'# {title}\n\n{text}'
+    print(text)
     nfname = re.sub(r'\.\w+$', '', fname) + '.md'
     open(nfname , 'w', encoding='utf8').write(text)
     print(nfname + '.md')
