@@ -169,7 +169,7 @@ def extract_keyframe_file(args):
             '.png', f['img'], 
             [cv2.IMWRITE_PNG_COMPRESSION, 9]
         )[1]
-        data = opti_img(bytes(data), opti_img, 8)
+        data = opti_img(bytes(data), args.opti_img, 8)
         open(ofname, 'wb').write(data)
         
 def config_scene(args):
