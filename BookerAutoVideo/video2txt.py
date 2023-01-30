@@ -94,7 +94,7 @@ def video2txt_file(args):
            imgs[imgname] = w['img']
            w['text'] = f'![](img/{imgname})'
         elif 'text' in w:
-            w['text'] = stylish_text(w['text'])
+            w['text'] = stylish_text(w['text']) + '。'
     text = '\n\n'.join([w['text'] for w in words])
     text = f'# {title}\n\n{text}'
     print(text)
@@ -106,9 +106,9 @@ def video2txt_file(args):
     for imgname, img in imgs.items():
         img_fname = path.join(imgdir, imgname)
         print(img_fname)
-        data = cv2.imencode(
+        img = cv2.imencode(
             '.png', img, 
             [cv2.IMWRITE_PNG_COMPRESSION, 9]
         )[1]
-        data = opti_img(bytes(data), args.opti_mode, 8)
+        img = opti_img(bytes(img), args.opti_mode, 8)
         open(img_fname, 'wb').write(img)
