@@ -7,7 +7,7 @@ from os import path
 from scipy import signal
 from imgyaso import adathres
 from .imgsim import img_sim
-from .util import is_video
+from .util import *
 
 DIR_F = 'forward'
 DIR_B = 'backward'
