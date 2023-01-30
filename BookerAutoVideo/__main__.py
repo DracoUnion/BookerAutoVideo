@@ -23,7 +23,7 @@ def main():
     kf_parser.add_argument("fname", help="file name")
     kf_parser.add_argument("-e", "--extract-mode", default="relmax", help="extract mode")
     kf_parser.add_argument("-d", "--diff-mode", choices=list(img_sim.keys()),default="pixel_l1", help="frame diff mode")
-    kf_parser.add_argument("-o", "--opti-mode", default="none", help="img opti mode")
+    kf_parser.add_argument("-o", "--opti-mode", default="none", help="img opti mode, default 'none'")
     kf_parser.add_argument("-r", "--rate", type=float, default=1, help="how many frames to extract in 1s")
     kf_parser.add_argument("-S", "--smooth", action='store_true', help="whether to smooth frames")
     kf_parser.add_argument("-D", "--direction", choices=[DIR_F, DIR_B, DIR_T], default=DIR_F, help="the direction used to calc frame diff")
