@@ -106,4 +106,9 @@ def video2txt_file(args):
     for imgname, img in imgs.items():
         img_fname = path.join(imgdir, imgname)
         print(img_fname)
+        data = cv2.imencode(
+            '.png', img, 
+            [cv2.IMWRITE_PNG_COMPRESSION, 9]
+        )[1]
+        data = opti_img(bytes(data), args.opti_mode, 8)
         open(img_fname, 'wb').write(img)
