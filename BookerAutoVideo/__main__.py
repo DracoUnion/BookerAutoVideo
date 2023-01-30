@@ -21,7 +21,7 @@ def main():
 
     kf_parser = subparsers.add_parser("ext-kf", help="extract keyframes")
     kf_parser.add_argument("fname", help="file name")
-    kf_parser.add_argument("-m", "--mode", default="relmax", help="mode")
+    kf_parser.add_argument("-e", "--extract-mode", default="relmax", help="extract mode")
     kf_parser.add_argument("-d", "--diff-mode", choices=list(img_sim.keys()),default="pixel_l1", help="frame diff mode")
     kf_parser.add_argument("-o", "--opti-mode", default="none", help="img opti mode")
     kf_parser.add_argument("-r", "--rate", type=float, default=1, help="how many frames to extract in 1s")

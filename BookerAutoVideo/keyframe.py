@@ -113,7 +113,7 @@ def calc_frame_diffs(frames, direction, diff_mode):
     
 def extract_keyframe(args):
     fname = args.fname
-    mode = args.mode
+    ext_mode = args.extract_mode
     opti_mode = args.opti_mode
     if not is_video(fname):
         print('请提供视频')
@@ -132,16 +132,16 @@ def extract_keyframe(args):
     for f in frames:
         print(f"time {nsec2hms(f['time'])} diff: {f['diff']}")
     # 计算关键帧
-    if mode == 'topn':
+    if ext_mode == 'topn':
         frames.sort(key=lambda f: f['diff'], reverse=True)
         frames = frames[:args.top_num]
-    elif mode == 'thres':
+    elif ext_mode == 'thres':
         max_diff = max([f['diff'] for f in frames])
         frames = [
             f for f in frames
             if f['diff'] / max_diff >= args.thres
         ]
-    elif mode == 'relmax':
+    elif ext_mode == 'relmax':
         if args.relmax_win_size % 2 == 0:
             args.relmax_win_size += 1
         odr = (args.relmax_win_size - 1) // 2
