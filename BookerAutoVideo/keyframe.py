@@ -64,7 +64,8 @@ def load_frames(fname, rate, bw):
         tm += 1 / rate
     cap.release()
     return frames
-    
+
+'''
 def dedup(frames, rate):
     fgbg = cv2.createBackgroundSubtractorMOG2(
         history=int(rate * 15), 
@@ -92,7 +93,8 @@ def dedup(frames, rate):
         elif captured and p_diff >= 3:
             captured = False
     return res
-    
+'''
+
 def calc_frame_diffs(frames, direction, diff_mode):
     frames[0]['diff'] = 0
     for i in range(1, len(frames)):
@@ -112,17 +114,11 @@ def calc_frame_diffs(frames, direction, diff_mode):
             frames[i]['diff'] /= 2
     
 def extract_keyframe(args):
-    config_scene(args)
     fname = args.fname
     ext_mode = args.extract_mode
     opti_mode = args.opti_mode
-    if not is_video(fname):
-        print('请提供视频')
-        return
-    print(fname)
     # 从视频中读取帧
     frames = load_frames(fname, args.rate, args.bw)
-    nframes = max([f['idx'] for f in frames]) + 1
     # 平滑
     if args.smooth:
         greies = [f['grey'] for f in frames]
@@ -149,8 +145,19 @@ def extract_keyframe(args):
         diffs = np.array([f['diff'] for f in frames])
         idcs = np.asarray(signal.argrelmax(diffs, order=odr))[0]
         frames = [frames[i] for i in idcs]
-    # 去重复
-    # frames = dedup(frames, args.rate)
+    return frames
+
+def extract_keyframe_file(args):
+    config_scene(args)
+    fname = args.fname
+    ext_mode = args.extract_mode
+    opti_mode = args.opti_mode
+    if not is_video(fname):
+        print('请提供视频')
+        return
+    print(fname)
+    frames = extract_keyframe(args)
+    nframes = max([f['idx'] for f in frames]) + 1
     # 保存所有关键帧
     l = len(str(nframes))
     opath = re.sub(r'\.\w+$', '', fname) + '_keyframe'
