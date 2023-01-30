@@ -145,6 +145,13 @@ def extract_keyframe(args):
         diffs = np.array([f['diff'] for f in frames])
         idcs = np.asarray(signal.argrelmax(diffs, order=odr))[0]
         frames = [frames[i] for i in idcs]
+    # 优化图像
+    for f in frames:
+        img = cv2.imencode(
+            '.png', f['img'], 
+            [cv2.IMWRITE_PNG_COMPRESSION, 9]
+        )[1]
+        f['img'] = opti_img(bytes(img), args.opti_mode, 8)
     return frames
 
 def extract_keyframe_file(args):
@@ -165,11 +172,6 @@ def extract_keyframe_file(args):
     for f in frames:
         ofname = path.join(opath, f'keyframe_{nsec2hms(f["time"])}.png')
         print(ofname)
-        data = cv2.imencode(
-            '.png', f['img'], 
-            [cv2.IMWRITE_PNG_COMPRESSION, 9]
-        )[1]
-        data = opti_img(bytes(data), opti_mode, 8)
         open(ofname, 'wb').write(data)
         
 def config_scene(args):
