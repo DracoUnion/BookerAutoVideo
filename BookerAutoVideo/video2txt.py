@@ -59,8 +59,9 @@ def video2txt_file(args):
         {'time': s['start'], 'text': s['text']}
         for s in r['segments']
     ]
+    print(words)
     # 获取关键帧
-    if args.image and is_video(fname):
+    if not args.no_image and is_video(fname):
         config_scene(args)
         frames = extract_keyframe(args)
         words += frames

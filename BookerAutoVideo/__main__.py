@@ -17,7 +17,7 @@ def main():
     video2txt_parser.add_argument("fname", help="file name")
     video2txt_parser.add_argument("-T", "--threads", type=int, default=8, help="num of threads")
     video2txt_parser.add_argument("-a", "--asr-model", default='base', choices=['tiny', 'base', 'small', 'medium', 'large'], help="model name")
-    video2txt_parser.add_argument("-i", "--image", action='store_true', help="whether to extract image")
+    video2txt_parser.add_argument("-I", "--no-image", action='store_true', help="whether to not extract image")
     video2txt_parser.add_argument("-l", "--language", default='Chinese',  help="language")
     video2txt_parser.add_argument("-e", "--extract-mode", default="relmax", help="extract mode")
     video2txt_parser.add_argument("-d", "--diff-mode", choices=list(img_sim.keys()),default="pixel_l1", help="frame diff mode")
