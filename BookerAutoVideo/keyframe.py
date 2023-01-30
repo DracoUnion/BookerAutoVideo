@@ -112,6 +112,7 @@ def calc_frame_diffs(frames, direction, diff_mode):
             frames[i]['diff'] /= 2
     
 def extract_keyframe(args):
+    config_scene(args)
     fname = args.fname
     ext_mode = args.extract_mode
     opti_mode = args.opti_mode
@@ -164,3 +165,15 @@ def extract_keyframe(args):
         data = opti_img(bytes(data), opti_img, 8)
         open(ofname, 'wb').write(data)
         
+def config_scene(args):
+    if args.scene == 'ppt':
+        args.extract_mode = 'thres'
+        args.diff_mode = 'pixel_l1'
+        args.opti_mode = 'quant'
+        args.rate = 1
+        args.smooth = False
+        args.direction = 'backward'
+        args.bw = False
+        args.thres = 0.1
+        
+    
