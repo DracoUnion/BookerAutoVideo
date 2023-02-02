@@ -172,7 +172,7 @@ def extract_keyframe_file(args):
     for f in frames:
         ofname = path.join(opath, f'keyframe_{nsec2hms(f["time"])}.png')
         print(ofname)
-        open(ofname, 'wb').write(data)
+        open(ofname, 'wb').write(f['img'])
         
 def config_scene(args):
     if args.scene == 'ppt':
