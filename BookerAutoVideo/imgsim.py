@@ -1,5 +1,7 @@
 import cv2
 import numpy as np
+import os
+from .util import *
 
 # 直方图余弦
 def hist_cos_sim(prev, next):
@@ -80,6 +82,12 @@ img_sim = {
     'hist_l1':   hist_l1_sim,
     'hist_cos':  hist_cos_sim,
 }
+
+def img_sim_dir_handle(args):
+    dir = args.dir
+    fnames = [is_pic(f) for f in os.listdir(dir)]
+    fnames.sort()
+    
 
 def img_sim_handle(args):
     img1_fname, img2_fname = args.img1, args.img2
