@@ -31,8 +31,6 @@ def opti_img(img, mode, colors):
         return img
 
 def is_pic(fname):
-    if not path.isfile(fname):
-        return False
     ext = [
         'jpg', 'jpeg', 'jfif', 'png', 
         'gif', 'tiff', 'webp'
@@ -41,8 +39,6 @@ def is_pic(fname):
     return bool(m and m.group(1) in ext)
 
 def is_video(fname):
-    if not path.isfile(fname):
-        return False
     ext = [
         'mp4', 'm4v', '3gp', 'mpg', 'flv', 'f4v', 
         'swf', 'avi', 'gif', 'wmv', 'rmvb', 'mov', 
@@ -52,8 +48,6 @@ def is_video(fname):
     return bool(m and m.group(1) in ext)
 
 def is_audio(fname):
-    if not path.isfile(fname):
-        return False
     ext = [
         'mp3', 'aac', 'ape', 'flac', 'wav', 'wma', 'amr', 'mid',
     ]
