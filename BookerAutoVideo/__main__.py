@@ -55,6 +55,10 @@ def main():
     sim_parser.add_argument("img1", help="img1 fname")
     sim_parser.add_argument("img2", help="img1 fname")
     sim_parser.set_defaults(func=img_sim_handle)
+    
+    sim_dir_parser = subparsers.add_parser("img-dir-sim", help="calc sim of imgs in dir")
+    sim_dir_parser.add_argument("dir", help="dir name")
+    sim_dir_parser.set_defaults(func=img_sim_dir_handle)
 
     args = parser.parse_args()
     args.func(args)
