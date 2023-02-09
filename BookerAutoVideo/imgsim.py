@@ -89,7 +89,7 @@ def img_sim_dir_handle(args):
     fnames.sort()
     imgs = [
         cv2.imdecode(
-            np.fromfile(f, np.uint8), 
+            np.fromfile(path.join(dir, f), np.uint8), 
             cv2.IMREAD_GRAYSCALE
         ) for f in fnames
     ]
