@@ -4,6 +4,7 @@ import warnings
 from . import __version__
 from .video2txt import *
 from .keyframe import *
+from .imgsim import *
 
 warnings.filterwarnings("ignore")
 
