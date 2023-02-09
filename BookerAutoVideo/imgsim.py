@@ -83,7 +83,6 @@ img_sim = {
 
 def img_sim_handle(args):
     img1_fname, img2_fname = args.img1, args.img2
-    mode = args.mode
     img1 = cv2.imdecode(
         np.fromfile(img1_fname, np.uint8), 
         cv2.IMREAD_GRAYSCALE
@@ -92,7 +91,7 @@ def img_sim_handle(args):
         np.fromfile(img2_fname, np.uint8), 
         cv2.IMREAD_GRAYSCALE
     )
-    sim = img_sim[mode](img1, img2)
-    print(f'mode: {mode}, sim: {sim}')
+    for mode, func in img_sim.items():
+        print(f'mode: {mode}, sim: {func(img1, img2)}')
     
     
