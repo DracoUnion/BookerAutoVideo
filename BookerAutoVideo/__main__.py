@@ -49,6 +49,12 @@ def main():
     kf_parser.add_argument("-s", "--scene", choices=['auto', 'ppt'], default='auto', help="scene")
     kf_parser.set_defaults(func=extract_keyframe_file)
 
+    sim_parser = subparsers.add_parser("img-sim", help="calc sim of 2 imgs")
+    sim_parser.add_argument("-m", "--mode", choices=list(img_sim.keys()),default="pixel_l1", help="img sim mode")
+    sim_parser.add_argument("img1", help="img1 fname")
+    sim_parser.add_argument("img2", help="img1 fname")
+    sim_parser.set_defaults(func=img_sim_handle)
+
     args = parser.parse_args()
     args.func(args)
     

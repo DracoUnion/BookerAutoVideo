@@ -80,3 +80,13 @@ img_sim = {
     'hist_l1':   hist_l1_sim,
     'hist_cos':  hist_cos_sim,
 }
+
+def img_sim_handle(args):
+    img1_fname, img2_fname = args.img1, args.img2
+    mode = args.mode
+    img1 = cv2.imdecode(np.fromfile(img1_fname, np.uint8), IMREAD_GRAYSCALE)
+    img2 = cv2.imdecode(np.fromfile(img2_fname, np.uint8), IMREAD_GRAYSCALE)
+    sim = img_sim[mode](img1, img2)
+    print(f'mode: {mode}, sim: {sim}')
+    
+    
