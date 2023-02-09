@@ -41,6 +41,7 @@ def main():
     kf_parser.add_argument("-o", "--opti-mode", default="none", help="img opti mode, default 'none'")
     kf_parser.add_argument("-r", "--rate", type=float, default=1, help="how many frames to extract in 1s")
     kf_parser.add_argument("-S", "--smooth", action='store_true', help="whether to smooth frames")
+    kf_parser.add_argument("-N", "--norm", action='store_true', help="whether to apply normalization to frame diff")
     kf_parser.add_argument("-D", "--direction", choices=[DIR_F, DIR_B, DIR_T], default=DIR_F, help="the direction used to calc frame diff")
     kf_parser.add_argument("--bw", action='store_true', help="convert img into bw instead of greyscale when calculating diff")
     kf_parser.add_argument("--smooth-win-size", type=int, default=20, help="window size for smooth")
