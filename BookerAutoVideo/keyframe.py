@@ -126,6 +126,10 @@ def extract_keyframe(args):
         for f, g in zip(frames, greies): f['grey'] = g
     # 计算差分
     calc_frame_diffs(frames, args.direction, args.diff_mode)
+    if args.norm:
+        max_diff = max([f['diff'] for f in frames])
+        for f in frames:
+            f['diff'] /= max_diff
     for f in frames:
         print(f"time {nsec2hms(f['time'])} diff: {f['diff']}")
     # 计算关键帧
@@ -133,10 +137,9 @@ def extract_keyframe(args):
         frames.sort(key=lambda f: f['diff'], reverse=True)
         frames = frames[:args.top_num]
     elif ext_mode == 'thres':
-        max_diff = max([f['diff'] for f in frames])
         frames = [
             f for f in frames
-            if f['diff'] / max_diff >= args.thres
+            if f['diff'] >= args.thres
         ]
     elif ext_mode == 'relmax':
         if args.relmax_win_size % 2 == 0:
@@ -184,5 +187,6 @@ def config_scene(args):
         args.direction = 'backward'
         args.bw = False
         args.thres = 0.1
+        args.norm = True
         
     
