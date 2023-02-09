@@ -87,7 +87,16 @@ def img_sim_dir_handle(args):
     dir = args.dir
     fnames = [is_pic(f) for f in os.listdir(dir)]
     fnames.sort()
-    
+    imgs = [
+        cv2.imdecode(
+            np.fromfile(f, np.uint8), 
+            cv2.IMREAD_GRAYSCALE
+        ) for f in fnames
+    ]
+    for i in range(1, len(fnames)):
+        print(f'{fnames[i-1]} / {fnames[i]}')
+        for mode, func in img_sim.items():
+            print(f'mode: {mode}, sim: {func(imgs[i-1], imgs[i])}')
 
 def img_sim_handle(args):
     img1_fname, img2_fname = args.img1, args.img2
