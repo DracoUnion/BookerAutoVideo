@@ -96,7 +96,7 @@ def img_sim_dir_handle(args):
     for i in range(1, len(fnames)):
         print(f'{fnames[i-1]} / {fnames[i]}')
         for mode, func in img_sim.items():
-            print(f'mode: {mode}, sim: {func(imgs[i-1], imgs[i])}')
+            print(f'    mode: {mode}, sim: {func(imgs[i-1], imgs[i])}')
 
 def img_sim_handle(args):
     img1_fname, img2_fname = args.img1, args.img2
