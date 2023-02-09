@@ -85,7 +85,7 @@ img_sim = {
 
 def img_sim_dir_handle(args):
     dir = args.dir
-    fnames = [is_pic(f) for f in os.listdir(dir)]
+    fnames = [f for f in os.listdir(dir) if is_pic(f)]
     fnames.sort()
     imgs = [
         cv2.imdecode(
