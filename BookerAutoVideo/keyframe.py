@@ -3,6 +3,7 @@ import numpy as np
 import argparse
 import os
 import re
+import math
 from os import path
 from scipy import signal
 from imgyaso import adathres
@@ -13,7 +14,7 @@ DIR_F = 'forward'
 DIR_B = 'backward'
 DIR_T = 'twoway'
 
-ext_modes = ['topn', 'normthres', 'relthres', 'relmax']
+ext_modes = ['topn', 'normthres', 'relthres', 'adathres', 'relmax']
 
 def frame_diff(prev, next, mode):
     if mode in img_sim:
@@ -117,18 +118,23 @@ def calc_frame_diffs(frames, direction, diff_mode):
             frames[i]['diff'] += frames[i + 1]['diff']
             frames[i]['diff'] /= 2
     
-def postproc_frame_diffs(frames, ext_mode):
-    if ext_mode == 'normthres':
+def postproc_frame_diffs(frames, args):
+    if args.ext_mode == 'normthres':
         max_diff = max([f['diff'] for f in frames])
         for f in frames: f['diff'] /= max_diff
-    elif ext_mode == 'relthres':
+    elif args.ext_mode == 'relthres':
         for f in frames: frames[i]['oriDiff'] = frames[i]['diff']
         frames[0]['diff'] = 1
         for prev, curr in zip(frames[:-1], frames[1:]):
-            curr['diff'] = (curr['oriDiff'] - prev['oriDiff']) / max(curr['oriDiff'], prev['oriDiff'])
-    elif ext_mode == 'adathres': 
-        pass
-
+            curr['diff'] = (curr['oriDiff'] - prev['oriDiff']) / curr['oriDiff']
+    elif args.ext_mode == 'adathres': 
+        diffs = [f['diff'] for f in frames]
+        kern = np.ones([args.win_size])
+        sum = np.convolve(diffs, kern, mode='same')
+        cnt = np.convolve(np.ones_like(diffs), kern, mode='same')
+        mean = sum / cnt
+        for f, m in zip(frames, mean):
+            f['diff'] = (f['diff'] - m) / f['diff']
     
 def extract_keyframe(args):
     fname = args.fname
@@ -208,5 +214,5 @@ def config_thres(args):
     elif args.mode == 'normthres':
         args.thres = 0.1
     elif args.mode == 'adathres':
-        args.thres = 0.9
+        args.thres = 0.1
     

@@ -1,5 +1,6 @@
 import argparse
 import sys
+import math
 import warnings
 from . import __version__
 from .video2txt import *
@@ -29,7 +30,7 @@ def main():
     video2txt_parser.add_argument("--bw", action='store_true', help="convert img into bw instead of greyscale when calculating diff")
     video2txt_parser.add_argument("--smooth-win-size", type=int, default=20, help="window size for smooth")
     video2txt_parser.add_argument("-n", "--top-num", type=int, default=20, help="num in top mode")
-    video2txt_parser.add_argument("-t", "--thres", type=float, default=0.6, help="thres in thres mode")
+    video2txt_parser.add_argument("-t", "--thres", type=float, default=math.nan, help="thres in thres mode (+inf: extract none, -inf: extract all, nan: use default)")
     video2txt_parser.add_argument("--relmax-win-size", type=int, default=3, help="window size for relmax")
     video2txt_parser.add_argument("-s", "--scene", choices=['auto', 'ppt'], default='auto', help="scene")
     video2txt_parser.set_defaults(func=video2txt_handle)
