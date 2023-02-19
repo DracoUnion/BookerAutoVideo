@@ -117,14 +117,7 @@ def calc_frame_diffs(frames, direction, diff_mode):
             frames[i]['diff'] += frames[i + 1]['diff']
             frames[i]['diff'] /= 2
     
-def extract_keyframe(args):
-    fname = args.fname
-    ext_mode = args.extract_mode
-    opti_mode = args.opti_mode
-    # 从视频中读取帧
-    frames = load_frames(fname, args.rate, args.bw)
-    # 计算差分
-    calc_frame_diffs(frames, args.direction, args.diff_mode)
+def postproc_frame_diffs(frames, ext_mode):
     if ext_mode == 'normthres':
         max_diff = max([f['diff'] for f in frames])
         for f in frames: f['diff'] /= max_diff
@@ -133,6 +126,17 @@ def extract_keyframe(args):
         frames[0]['diff'] = 1
         for prev, curr in zip(frames[:-1], frames[1:]):
             curr['diff'] = (curr['oriDiff'] - prev['oriDiff']) / max(curr['oriDiff'], prev['oriDiff'])
+
+    
+def extract_keyframe(args):
+    fname = args.fname
+    ext_mode = args.extract_mode
+    opti_mode = args.opti_mode
+    # 从视频中读取帧
+    frames = load_frames(fname, args.rate, args.bw)
+    # 计算差分
+    calc_frame_diffs(frames, args.direction, args.diff_mode)
+    postproc_frame_diffs(frames, ext_mode)
     for f in frames:
         print(f"time {nsec2hms(f['time'])} diff: {f['diff']}")
     # 计算关键帧
