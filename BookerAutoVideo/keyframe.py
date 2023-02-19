@@ -149,7 +149,7 @@ def extract_keyframe(args):
     if ext_mode == 'topn':
         frames.sort(key=lambda f: f['diff'], reverse=True)
         frames = frames[:args.top_num]
-    elif ext_mode in ['normthres', 'relthres']:
+    elif ext_mode in ['normthres', 'relthres', 'adathres']:
         frames = [
             f for f in frames
             if f['diff'] >= args.thres
