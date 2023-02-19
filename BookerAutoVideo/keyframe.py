@@ -119,15 +119,15 @@ def calc_frame_diffs(frames, direction, diff_mode):
             frames[i]['diff'] /= 2
     
 def postproc_frame_diffs(frames, args):
-    if args.ext_mode == 'normthres':
+    if args.extract_mode == 'normthres':
         max_diff = max([f['diff'] for f in frames])
         for f in frames: f['diff'] /= max_diff
-    elif args.ext_mode == 'relthres':
+    elif args.extract_mode == 'relthres':
         for f in frames: frames[i]['oriDiff'] = frames[i]['diff']
         frames[0]['diff'] = 1
         for prev, curr in zip(frames[:-1], frames[1:]):
             curr['diff'] = (curr['oriDiff'] - prev['oriDiff']) / curr['oriDiff']
-    elif args.ext_mode == 'adathres': 
+    elif args.extract_mode == 'adathres': 
         diffs = [f['diff'] for f in frames]
         kern = np.ones([args.win_size])
         sum = np.convolve(diffs, kern, mode='same')
