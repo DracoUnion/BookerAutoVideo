@@ -196,11 +196,10 @@ def config_scene(args):
         args.extract_mode = 'normthres'
         args.diff_mode = 'pixel_l1'
         args.opti_mode = 'quant'
-        args.rate = 1
+        args.rate = 0.2
         args.direction = 'backward'
         args.bw = False
         args.thres = 0.1
-        args.norm = True
         
 def config_thres(args):
     if not math.isnan(args.thres):
@@ -210,5 +209,5 @@ def config_thres(args):
     elif args.extract_mode == 'normthres':
         args.thres = 0.1
     elif args.extract_mode == 'adathres':
-        args.thres = 0.6
+        args.thres = 0.1
     
