@@ -13,7 +13,7 @@ DIR_F = 'forward'
 DIR_B = 'backward'
 DIR_T = 'twoway'
 
-mode = ['topn', 'normthres', 'relmax']
+ext_modes = ['topn', 'normthres', 'relmax']
 
 def frame_diff(prev, next, mode):
     if mode in img_sim:
