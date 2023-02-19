@@ -12,7 +12,8 @@ def hist_cos_sim(prev, next):
     next_hist = next_hist / next_hist.sum()
     prev_hist_mod = np.sum(prev_hist ** 2) ** 0.5
     next_hist_mod = np.sum(next_hist ** 2) ** 0.5
-    return np.sum(prev_hist * next_hist) / prev_hist_mod / next_hist_mod
+    cos = np.sum(prev_hist * next_hist) / prev_hist_mod / next_hist_mod
+    return (cos + 1) / 2
 
 # 直方图 L1
 def hist_l1_sim(prev, next):
@@ -66,7 +67,8 @@ def pixel_cos_sim(prev, next):
     next_norm = next / next.mean()
     prev_norm_mod = np.sum(prev_norm ** 2) ** 0.5
     next_norm_mod = np.sum(next_norm ** 2) ** 0.5
-    return np.sum(prev_norm * next_norm) / prev_norm_mod / next_norm_mod
+    cos = np.sum(prev_norm * next_norm) / prev_norm_mod / next_norm_mod
+    return (cos + 1) / 2
 
 def pixel_l1_sim(prev, next):
     max = np.fmax(next, prev)
