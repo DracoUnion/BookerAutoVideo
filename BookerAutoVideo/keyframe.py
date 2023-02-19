@@ -13,11 +13,13 @@ DIR_F = 'forward'
 DIR_B = 'backward'
 DIR_T = 'twoway'
 
+mode = ['topn', 'normthres', 'relmax']
+
 def frame_diff(prev, next, mode):
     if mode in img_sim:
         return 1 - img_sim[mode](prev, next)
     else:
-        raise ValueError('mode not found')
+        raise ValueError('差分模式未定义！')
 
 '''
 def smooth(frames, win_sz=20):
@@ -144,6 +146,8 @@ def extract_keyframe(args):
         diffs = np.array([f['diff'] for f in frames])
         idcs = np.asarray(signal.argrelmax(diffs, order=odr))[0]
         frames = [frames[i] for i in idcs]
+    else:
+        raise valueError('提取模式未定义！')
     # 优化图像
     for f in frames:
         img = cv2.imencode(
