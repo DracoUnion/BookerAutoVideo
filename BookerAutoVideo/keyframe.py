@@ -13,7 +13,7 @@ DIR_F = 'forward'
 DIR_B = 'backward'
 DIR_T = 'twoway'
 
-ext_modes = ['topn', 'normthres', 'relmax']
+ext_modes = ['topn', 'normthres', 'relthres', 'relmax']
 
 def frame_diff(prev, next, mode):
     if mode in img_sim:
@@ -128,13 +128,18 @@ def extract_keyframe(args):
     if ext_mode == 'normthres':
         max_diff = max([f['diff'] for f in frames])
         for f in frames: f['diff'] /= max_diff
+    elif ext_mode == 'relthres':
+        for f in frames: frames[i]['oriDiff'] = frames[i]['diff']
+        frames[0]['diff'] = 1
+        for prev, curr in zip(frames[:-1], frames[1:]):
+            curr['diff'] = (curr['oriDiff'] - prev['oriDiff']) / max(curr['oriDiff'], prev['oriDiff'])
     for f in frames:
         print(f"time {nsec2hms(f['time'])} diff: {f['diff']}")
     # 计算关键帧
     if ext_mode == 'topn':
         frames.sort(key=lambda f: f['diff'], reverse=True)
         frames = frames[:args.top_num]
-    elif ext_mode == 'normthres':
+    elif ext_mode in ['normthres', 'relthres']:
         frames = [
             f for f in frames
             if f['diff'] >= args.thres
