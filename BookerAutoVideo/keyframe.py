@@ -118,7 +118,7 @@ def calc_frame_diffs(frames, args):
     
 def postproc_frame_diffs(frames, args):
     if args.extract_mode == 'normthres':
-        max_diff = max([f['diff'] for f in frames])
+        max_diff = max([f['diff'] for f in frames if f['diff'] != 1])
         for f in frames: f['diff'] /= max_diff
     elif args.extract_mode == 'relthres':
         for f in frames: f['oriDiff'] = f['diff']
