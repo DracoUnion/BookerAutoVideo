@@ -123,17 +123,16 @@ def extract_keyframe(args):
     frames = load_frames(fname, args.rate, args.bw)
     # 计算差分
     calc_frame_diffs(frames, args.direction, args.diff_mode)
-    if args.norm:
+    if ext_mode == 'normthres':
         max_diff = max([f['diff'] for f in frames])
-        for f in frames:
-            f['diff'] /= max_diff
+        for f in frames: f['diff'] /= max_diff
     for f in frames:
         print(f"time {nsec2hms(f['time'])} diff: {f['diff']}")
     # 计算关键帧
     if ext_mode == 'topn':
         frames.sort(key=lambda f: f['diff'], reverse=True)
         frames = frames[:args.top_num]
-    elif ext_mode == 'thres':
+    elif ext_mode == 'normthres':
         frames = [
             f for f in frames
             if f['diff'] >= args.thres
@@ -176,7 +175,7 @@ def extract_keyframe_file(args):
         
 def config_scene(args):
     if args.scene == 'ppt':
-        args.extract_mode = 'thres'
+        args.extract_mode = 'normthres'
         args.diff_mode = 'pixel_l1'
         args.opti_mode = 'quant'
         args.rate = 1
