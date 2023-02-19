@@ -157,9 +157,9 @@ def extract_keyframe(args):
             if f['diff'] >= args.thres
         ]
     elif ext_mode == 'relmax':
-        if args.relmax_win_size % 2 == 0:
-            args.relmax_win_size += 1
-        odr = (args.relmax_win_size - 1) // 2
+        if args.win_size % 2 == 0:
+            args.win_size += 1
+        odr = (args.win_size - 1) // 2
         diffs = np.array([f['diff'] for f in frames])
         idcs = np.asarray(signal.argrelmax(diffs, order=odr))[0]
         frames = [frames[i] for i in idcs]
