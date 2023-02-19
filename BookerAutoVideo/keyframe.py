@@ -170,6 +170,7 @@ def extract_keyframe(args):
 
 def extract_keyframe_file(args):
     config_scene(args)
+    config_thres(args)
     fname = args.fname
     ext_mode = args.extract_mode
     opti_mode = args.opti_mode
@@ -194,10 +195,18 @@ def config_scene(args):
         args.diff_mode = 'pixel_l1'
         args.opti_mode = 'quant'
         args.rate = 1
-        args.smooth = False
         args.direction = 'backward'
         args.bw = False
         args.thres = 0.1
         args.norm = True
         
+def config_thres(args):
+    if not math.isnan(args.thres):
+        return
+    if args.mode == 'relthres':
+        args.thres = 0.6
+    elif args.mode == 'normthres':
+        args.thres = 0.1
+    elif args.mode == 'adathres':
+        args.thres = 0.9
     

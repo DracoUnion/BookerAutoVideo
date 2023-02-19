@@ -62,7 +62,6 @@ def video2txt_file(args):
     print(words)
     # 获取关键帧
     if not args.no_image and is_video(fname):
-        config_scene(args)
         frames = extract_keyframe(args)
         words += frames
         words.sort(key=lambda x: x['time'])
