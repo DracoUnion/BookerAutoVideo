@@ -186,9 +186,7 @@ def extract_keyframe_file(args):
         return
     print(fname)
     frames = extract_keyframe(args)
-    nframes = max([f['idx'] for f in frames]) + 1
     # 保存所有关键帧
-    l = len(str(nframes))
     opath = re.sub(r'\.\w+$', '', fname) + '_keyframe'
     if not path.isdir(opath): os.mkdir(opath)
     for f in frames:
