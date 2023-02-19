@@ -214,5 +214,5 @@ def config_thres(args):
     elif args.mode == 'normthres':
         args.thres = 0.1
     elif args.mode == 'adathres':
-        args.thres = 0.1
+        args.thres = 0.6
     
