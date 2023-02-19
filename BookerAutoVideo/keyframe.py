@@ -102,29 +102,26 @@ def dedup(frames, rate):
 
 def calc_frame_diffs(frames, args):
     direction, diff_mode = args.direction, args.diff_mode  
-    frames[0]['diff'] = 0
-    for i in range(1, len(frames)):
-        frames[i]['diff'] = frame_diff(
-            frames[i - 1]['grey'],
-            frames[i]['grey'],
-            diff_mode,
+    frames[0]['diff'] = 1
+    for prev, curr in zip(frames[:-1], frames[1:]):
+        curr['diff'] = frame_diff(
+            prev['grey'], curr['grey'], diff_mode,
         )
     if direction == DIR_B:
-        for i in range(0, len(frames) - 1):
-            frames[i]['diff'] = frames[i + 1]['diff']
-        frames[-1]['diff'] = 0
+        for curr, next in zip(frames[:-1], frames[1:]):
+            curr['diff'] = next['diff']
+        frames[-1]['diff'] = 1
     elif direction == DIR_T:
-        frames[0]['diff'] = frames[1]['diff']
-        for i in range(1, len(frames) - 1):
-            frames[i]['diff'] += frames[i + 1]['diff']
-            frames[i]['diff'] /= 2
+        for curr, next in zip(frames[:-1], frames[1:]):
+            curr['diff'] = (curr['diff'] + next['diff']) / 2
+        frames[-1]['diff'] = (frames[-1]['diff'] + 1) / 2
     
 def postproc_frame_diffs(frames, args):
     if args.extract_mode == 'normthres':
         max_diff = max([f['diff'] for f in frames])
         for f in frames: f['diff'] /= max_diff
     elif args.extract_mode == 'relthres':
-        for f in frames: frames[i]['oriDiff'] = frames[i]['diff']
+        for f in frames: f['oriDiff'] = f['diff']
         frames[0]['diff'] = 1
         for prev, curr in zip(frames[:-1], frames[1:]):
             curr['diff'] = (curr['oriDiff'] - prev['oriDiff']) / curr['oriDiff']
