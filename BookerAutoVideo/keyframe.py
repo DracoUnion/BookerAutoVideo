@@ -126,6 +126,8 @@ def postproc_frame_diffs(frames, ext_mode):
         frames[0]['diff'] = 1
         for prev, curr in zip(frames[:-1], frames[1:]):
             curr['diff'] = (curr['oriDiff'] - prev['oriDiff']) / max(curr['oriDiff'], prev['oriDiff'])
+    elif ext_mode == 'adathres': 
+        pass
 
     
 def extract_keyframe(args):
