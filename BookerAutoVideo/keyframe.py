@@ -209,10 +209,10 @@ def config_scene(args):
 def config_thres(args):
     if not math.isnan(args.thres):
         return
-    if args.mode == 'relthres':
+    if args.extract_mode == 'relthres':
         args.thres = 0.6
-    elif args.mode == 'normthres':
+    elif args.extract_mode == 'normthres':
         args.thres = 0.1
-    elif args.mode == 'adathres':
+    elif args.extract_mode == 'adathres':
         args.thres = 0.6
     
