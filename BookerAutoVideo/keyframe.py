@@ -147,7 +147,7 @@ def extract_keyframe(args):
     calc_frame_diffs(frames, args)
     postproc_frame_diffs(frames, args)
     for f in frames:
-        print(f"time {nsec2hms(f['time']):.3f} diff: {f['diff']}")
+        print(f"time {nsec2hms(f['time'])} diff: {f['diff']:.3f}")
     # 计算关键帧
     if ext_mode == 'topn':
         frames.sort(key=lambda f: f['diff'], reverse=True)
