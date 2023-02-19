@@ -19,6 +19,7 @@ def frame_diff(prev, next, mode):
     else:
         raise ValueError('mode not found')
 
+'''
 def smooth(frames, win_sz=20):
     frames = np.asarray(frames)
     assert frames.ndim == 3
@@ -33,6 +34,7 @@ def smooth(frames, win_sz=20):
             count = np.convolve(np.ones_like(pix), kern, mode='same')
             res[:, r, c] = sum // count
     return res
+'''
 
 def nsec2hms(nsec):
     nsec = int(nsec)
@@ -119,11 +121,6 @@ def extract_keyframe(args):
     opti_mode = args.opti_mode
     # 从视频中读取帧
     frames = load_frames(fname, args.rate, args.bw)
-    # 平滑
-    if args.smooth:
-        greies = [f['grey'] for f in frames]
-        greies = smooth(greies, args.smooth_win_size)
-        for f, g in zip(frames, greies): f['grey'] = g
     # 计算差分
     calc_frame_diffs(frames, args.direction, args.diff_mode)
     if args.norm:
