@@ -100,7 +100,8 @@ def dedup(frames, rate):
     return res
 '''
 
-def calc_frame_diffs(frames, direction, diff_mode):
+def calc_frame_diffs(frames, args):
+    direction, diff_mode = args.direction, args.diff_mode  
     frames[0]['diff'] = 0
     for i in range(1, len(frames)):
         frames[i]['diff'] = frame_diff(
@@ -143,8 +144,8 @@ def extract_keyframe(args):
     # 从视频中读取帧
     frames = load_frames(fname, args.rate, args.bw)
     # 计算差分
-    calc_frame_diffs(frames, args.direction, args.diff_mode)
-    postproc_frame_diffs(frames, ext_mode)
+    calc_frame_diffs(frames, args)
+    postproc_frame_diffs(frames, args)
     for f in frames:
         print(f"time {nsec2hms(f['time'])} diff: {f['diff']}")
     # 计算关键帧
