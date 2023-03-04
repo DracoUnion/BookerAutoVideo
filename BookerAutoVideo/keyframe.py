@@ -135,6 +135,8 @@ def postproc_frame_diffs(frames, args):
             f['diff'] = (f['diff'] - m) / f['diff']
     
 def extract_keyframe(args):
+    config_scene(args)
+    config_thres(args)
     fname = args.fname
     ext_mode = args.extract_mode
     opti_mode = args.opti_mode
@@ -173,8 +175,6 @@ def extract_keyframe(args):
     return frames
 
 def extract_keyframe_file(args):
-    config_scene(args)
-    config_thres(args)
     fname = args.fname
     ext_mode = args.extract_mode
     opti_mode = args.opti_mode
