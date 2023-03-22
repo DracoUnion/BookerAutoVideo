@@ -21,7 +21,7 @@ def main():
     video2txt_parser.add_argument("-a", "--asr-model", default='base', choices=['tiny', 'base', 'small', 'medium', 'large'], help="model name")
     video2txt_parser.add_argument("-I", "--no-image", action='store_true', help="whether to not extract image")
     video2txt_parser.add_argument("-l", "--language", default='Chinese',  help="language")
-    video2txt_parser.add_argument("-e", "--extract-mode", default="relmax", help="extract mode")
+    video2txt_parser.add_argument("-e", "--extract-mode", choices=ext_modes, default="relmax", help="extract mode")
     video2txt_parser.add_argument("-d", "--diff-mode", choices=list(img_sim.keys()),default="pixel_l1", help="frame diff mode")
     video2txt_parser.add_argument("-o", "--opti-mode", default="none", help="img opti mode, default 'none'")
     video2txt_parser.add_argument("-r", "--rate", type=float, default=1, help="how many frames to extract in 1s")
