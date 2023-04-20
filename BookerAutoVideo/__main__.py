@@ -31,7 +31,7 @@ def main():
     video2txt_parser.add_argument("-t", "--thres", type=float, default=math.nan, help="thres in thres mode (+inf: extract none, -inf: extract all, nan: use default)")
     video2txt_parser.add_argument("-w", "--win-size", type=int, default=9, help="window size for relmax and adathres")
     video2txt_parser.add_argument("-s", "--scene", choices=['auto', 'ppt'], default='auto', help="scene")
-    video2txt_parser.add_argument("-D", "--device", default='cpu', help="pytorch device")
+    video2txt_parser.add_argument("-q", "--device", default='cpu', help="pytorch device")
     video2txt_parser.set_defaults(func=video2txt_handle)
 
     kf_parser = subparsers.add_parser("ext-kf", help="extract keyframes")
