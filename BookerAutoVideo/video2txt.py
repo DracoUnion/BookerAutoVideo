@@ -53,7 +53,7 @@ def video2txt_file(args):
         return
     print(fname)
     # 语音识别
-    model = whisper.load_model(args.asr_model)
+    model = whisper.load_model(args.asr_model, device=args.device)
     r = model.transcribe(fname, fp16=False, language=args.language)
     words = [
         {'time': s['start'], 'text': s['text']}
