@@ -52,6 +52,8 @@ def video2txt_file(args):
         print('请提供音频或视频文件')
         return
     print(fname)
+    if args.device == 'privateuseone':
+        import torch_directml
     # 语音识别
     model = whisper.load_model(args.asr_model, device=args.device)
     r = model.transcribe(fname, fp16=False, language=args.language)
