@@ -42,7 +42,7 @@ def is_video(fname):
     ext = [
         'mp4', 'm4v', '3gp', 'mpg', 'flv', 'f4v', 
         'swf', 'avi', 'gif', 'wmv', 'rmvb', 'mov', 
-        'mts', 'm2t', 'webm', 'ogg', 'mkv', 
+        'mts', 'm2t', 'webm', 'ogg', 'mkv', 'm4a',
     ]
     m = re.search(r'\.(\w+)$', fname)
     return bool(m and m.group(1) in ext)
