@@ -35,23 +35,23 @@ def is_pic(fname):
         'jpg', 'jpeg', 'jfif', 'png', 
         'gif', 'tiff', 'webp'
     ]
-    m = re.search(r'\.(\w+)$', fname)
+    m = re.search(r'\.(\w+)$', fname.lower())
     return bool(m and m.group(1) in ext)
 
 def is_video(fname):
     ext = [
         'mp4', 'm4v', '3gp', 'mpg', 'flv', 'f4v', 
         'swf', 'avi', 'gif', 'wmv', 'rmvb', 'mov', 
-        'mts', 'm2t', 'webm', 'ogg', 'mkv', 'm4a',
+        'mts', 'm2t', 'webm', 'ogg', 'mkv', 
     ]
-    m = re.search(r'\.(\w+)$', fname)
+    m = re.search(r'\.(\w+)$', fname.lower())
     return bool(m and m.group(1) in ext)
 
 def is_audio(fname):
     ext = [
-        'mp3', 'aac', 'ape', 'flac', 'wav', 'wma', 'amr', 'mid',
+        'mp3', 'aac', 'ape', 'flac', 'wav', 'wma', 'amr', 'mid', 'm4a',
     ]
-    m = re.search(r'\.(\w+)$', fname)
+    m = re.search(r'\.(\w+)$', fname.lower())
     return bool(m and m.group(1) in ext)
 
 def is_video_or_audio(fname):
