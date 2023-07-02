@@ -46,6 +46,7 @@ def nsec2hms(nsec):
     s = nsec % 60
     return f'{h}h{m:02d}m{s:02d}s'
 
+
 def load_frames(fname, rate, bw):
     cap = cv2.VideoCapture(fname) 
     if not cap.isOpened():
@@ -133,6 +134,13 @@ def postproc_frame_diffs(frames, args):
         mean = sum / cnt
         for f, m in zip(frames, mean):
             f['diff'] = (f['diff'] - m) / f['diff']
+    
+'''
+def extract_ppt(args):
+    fname = args.fname
+    opti_mode = args.opti_mode
+    frames = load_frames(fname, args.rate, args.bw)
+'''
     
 def extract_keyframe(args):
     config_scene(args)

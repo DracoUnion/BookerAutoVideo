@@ -4,7 +4,6 @@ import re
 import traceback
 import copy
 import os
-import re
 import hashlib
 from os import path
 from multiprocessing import Pool
@@ -26,6 +25,12 @@ def merge_words(words, maxl=500):
     return res
 
 def video2txt_handle(args):
+    whisper_path = find_cmd_path('whisper')
+    if not whisper_path:
+        print('请下载 whisper.cpp 并将目录名称添加到 $PATH 中')
+        return
+    if re.search(r'^[\w\-]+$', args.model):
+        args.model = path.join(whisper_path, f'models/{args.model}.bin')
     if path.isdir(args.fname):
         video2txt_dir(args)
     else: 
@@ -46,40 +51,56 @@ def video2txt_file_safe(args):
     try: video2txt_file(args)
     except: traceback.print_exc()
 
+def whisper_cpp(args):
+    fname = args.fname
+    wav_fname = path.join(tempfile.gettempdir(), uuid.uuid4().hex + '.wav')
+    subp.Popen(
+        ['ffmpeg', '-i', fname, '-vn', '-acodec', 'pcm_s16le', '-ar', '16000', '-ac', 2, wav_fname],
+        shell=True,
+    ).communicate()
+    if not path.isfile(wav_fname):
+        raise FileNotFoundError(f'{fname} 转换失败')
+    subp.Popen(
+        ['whisper', '-f', wav_fname, '-m', args.model, '-t', str(args.threads), '-l', args.lang, '-oj'],
+        shell=True, 
+    )
+    json_fname = wav_fname + '.json'
+    if not path.isfile(wav_fname):
+        safe_remove(wav_fname)
+        raise FileNotFoundError(f'{fname} 识别失败')
+    res = json.dumps(open(json_fname, encoding='utf8').read())
+    safe_remove(wav_fname)
+    safe_remove(json_fname)
+    return [
+        {
+            'time': s['offsets']['from'] / 1000,
+            'text': s['text'],
+        } 
+        for s in res['transcription']
+    ]
+
 def video2txt_file(args):
     fname = args.fname
     if not (path.isfile(fname) and is_video_or_audio(fname)):
         print('请提供音频或视频文件')
         return
     print(fname)
-    if args.device == 'privateuseone':
-        import torch_directml
     # 语音识别
+    words = whisper_cpp(args)
+    '''
     model = whisper.load_model(args.asr_model, device=args.device)
     r = model.transcribe(fname, fp16=False, language=args.language)
     words = [
         {'time': s['start'], 'text': s['text']}
         for s in r['segments']
     ]
+    '''
     print(words)
     # 获取关键帧
     if not args.no_image and is_video(fname):
         frames = extract_keyframe(args)
         words += frames
         words.sort(key=lambda x: x['time'])
-    # 标点修正
-    '''
-    words = merge_words(words)
-    text_executor = TextExecutor()
-    text = ''.join([
-        text_executor(
-            text=w,
-            task='punc',
-            model='ernie_linear_p3_wudao',
-            device=paddle.get_device(),
-        ) for w in words
-    ])
-    '''
     # 排版
     title = path.basename(fname)
     title = re.sub(r'\.\w+$', '', title)
