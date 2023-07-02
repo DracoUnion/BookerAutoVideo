@@ -31,6 +31,8 @@ def video2txt_handle(args):
         return
     if re.search(r'^[\w\-]+$', args.model):
         args.model = path.join(whisper_path, f'models/{args.model}.bin')
+    if not path.isfile(args.model):
+        raise FileNotFoundError(f'模型文件 {args.model} 不存在')
     if path.isdir(args.fname):
         video2txt_dir(args)
     else: 
@@ -97,10 +99,12 @@ def video2txt_file(args):
     '''
     print(words)
     # 获取关键帧
+    '''
     if not args.no_image and is_video(fname):
         frames = extract_keyframe(args)
         words += frames
         words.sort(key=lambda x: x['time'])
+    '''
     # 排版
     title = path.basename(fname)
     title = re.sub(r'\.\w+$', '', title)
