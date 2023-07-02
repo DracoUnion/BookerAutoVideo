@@ -1,9 +1,5 @@
-paddlepaddle
-paddlespeech
 moviepy
-librosa
 numpy
 opencv-python
-openai-whisper
 scipy
 imgyaso

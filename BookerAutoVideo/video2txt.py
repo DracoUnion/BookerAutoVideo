@@ -1,5 +1,4 @@
 # import paddle
-import whisper
 import re
 import traceback
 import copy
