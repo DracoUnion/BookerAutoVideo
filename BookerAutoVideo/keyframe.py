@@ -14,7 +14,7 @@ DIR_F = 'forward'
 DIR_B = 'backward'
 DIR_T = 'twoway'
 
-ext_modes = ['topn', 'normthres', 'relthres', 'adathres', 'relmax']
+ext_modes = ['topn', 'normthres', 'relthres', 'adathres', 'relmax', 'thres']
 
 def frame_diff(prev, next, mode):
     if mode in img_sim:
@@ -159,7 +159,7 @@ def extract_keyframe(args):
     if ext_mode == 'topn':
         frames.sort(key=lambda f: f['diff'], reverse=True)
         frames = frames[:args.top_num]
-    elif ext_mode in ['normthres', 'relthres', 'adathres']:
+    elif ext_mode in ['normthres', 'relthres', 'adathres', 'thres']:
         frames = [
             f for f in frames
             if f['diff'] >= args.thres
@@ -201,18 +201,18 @@ def extract_keyframe_file(args):
         
 def config_scene(args):
     if args.scene == 'ppt':
-        args.extract_mode = 'adathres'
+        args.extract_mode = 'thres'
         args.diff_mode = 'hist_l1'
         args.opti_mode = 'quant'
         args.rate = 0.2
         args.direction = 'backward'
         args.bw = False
-        args.thres = 0.5
+        args.thres = 0.6
         
 def config_thres(args):
     if not math.isnan(args.thres):
         return
-    if args.extract_mode == 'relthres':
+    if args.extract_mode in ['relthres', 'thres']:
         args.thres = 0.6
     elif args.extract_mode == 'normthres':
         args.thres = 0.1
