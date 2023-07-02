@@ -32,7 +32,7 @@ def main():
     kf_parser.add_argument("--bw", action='store_true', help="convert img into bw instead of greyscale when calculating diff")
     kf_parser.add_argument("-t", "--thres", type=float, default=math.nan, help="thres in thres mode (+inf: extract none, -inf: extract all, nan: use default)")
     kf_parser.add_argument("-w", "--win-size", type=int, default=9, help="window size for adathres")
-    kf_parser.add_argument("-s", "--scene", choices=['auto', 'ppt'], default='auto', help="scene")
+    kf_parser.add_argument("-s", "--scene", choices=['auto', 'ppt', 'ppt2', 'movie'], default='auto', help="scene")
     kf_parser.set_defaults(func=extract_keyframe_file)
 
     sim_parser = subparsers.add_parser("img-sim", help="calc sim of 2 imgs")
