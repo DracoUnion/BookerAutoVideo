@@ -30,7 +30,7 @@ def video2txt_handle(args):
         print('请下载 whisper.cpp 并将目录名称添加到 $PATH 中')
         return
     if re.search(r'^[\w\-]+$', args.model):
-        args.model = path.join(whisper_path, f'models/{args.model}.bin')
+        args.model = path.join(whisper_path, 'models', args.model + '.bin')
     if not path.isfile(args.model):
         raise FileNotFoundError(f'模型文件 {args.model} 不存在')
     if path.isdir(args.fname):
@@ -57,7 +57,7 @@ def whisper_cpp(args):
     fname = args.fname
     wav_fname = path.join(tempfile.gettempdir(), uuid.uuid4().hex + '.wav')
     subp.Popen(
-        ['ffmpeg', '-i', fname, '-vn', '-acodec', 'pcm_s16le', '-ar', '16000', '-ac', 2, wav_fname],
+        ['ffmpeg', '-i', fname, '-vn', '-acodec', 'pcm_s16le', '-ar', '16000', '-ac', '2', wav_fname],
         shell=True,
     ).communicate()
     if not path.isfile(wav_fname):
