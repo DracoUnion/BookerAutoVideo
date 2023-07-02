@@ -19,7 +19,7 @@ def main():
     video2txt_parser.add_argument("fname", help="file name")
     video2txt_parser.add_argument("-t", "--threads", type=int, default=8, help="num of threads")
     video2txt_parser.add_argument("-m", "--model", default='medium', help="model name or path")
-    video2txt_parser.add_argument("-l", "--lang", default='Chinese',  help="language")
+    video2txt_parser.add_argument("-l", "--lang", default='zh',  help="language")
     video2txt_parser.set_defaults(func=video2txt_handle)
 
     kf_parser = subparsers.add_parser("ext-kf", help="extract keyframes")
@@ -30,9 +30,8 @@ def main():
     kf_parser.add_argument("-r", "--rate", type=float, default=1, help="how many frames to extract in 1s")
     kf_parser.add_argument("-D", "--direction", choices=[DIR_F, DIR_B, DIR_T], default=DIR_F, help="the direction used to calc frame diff")
     kf_parser.add_argument("--bw", action='store_true', help="convert img into bw instead of greyscale when calculating diff")
-    kf_parser.add_argument("-n", "--top-num", type=int, default=20, help="num in top mode")
     kf_parser.add_argument("-t", "--thres", type=float, default=math.nan, help="thres in thres mode (+inf: extract none, -inf: extract all, nan: use default)")
-    kf_parser.add_argument("-w", "--win-size", type=int, default=9, help="window size for relmax and adathres")
+    kf_parser.add_argument("-w", "--win-size", type=int, default=9, help="window size for adathres")
     kf_parser.add_argument("-s", "--scene", choices=['auto', 'ppt'], default='auto', help="scene")
     kf_parser.set_defaults(func=extract_keyframe_file)
 
