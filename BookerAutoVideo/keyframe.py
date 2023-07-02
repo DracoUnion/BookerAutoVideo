@@ -14,7 +14,7 @@ DIR_F = 'forward'
 DIR_B = 'backward'
 DIR_T = 'twoway'
 
-ext_modes = ['topn', 'normthres', 'relthres', 'adathres', 'relmax', 'thres']
+ext_modes = ['normthres', 'relthres', 'adathres', 'thres']
 
 def frame_diff(prev, next, mode):
     if mode in img_sim:
@@ -156,23 +156,10 @@ def extract_keyframe(args):
     for f in frames:
         print(f"time {nsec2hms(f['time'])} diff: {f['diff']:.16f}")
     # 计算关键帧
-    if ext_mode == 'topn':
-        frames.sort(key=lambda f: f['diff'], reverse=True)
-        frames = frames[:args.top_num]
-    elif ext_mode in ['normthres', 'relthres', 'adathres', 'thres']:
-        frames = [
-            f for f in frames
-            if f['diff'] >= args.thres
-        ]
-    elif ext_mode == 'relmax':
-        if args.win_size % 2 == 0:
-            args.win_size += 1
-        odr = (args.win_size - 1) // 2
-        diffs = np.array([f['diff'] for f in frames])
-        idcs = np.asarray(signal.argrelmax(diffs, order=odr))[0]
-        frames = [frames[i] for i in idcs]
-    else:
-        raise valueError('提取模式未定义！')
+    frames = [
+        f for f in frames
+        if f['diff'] >= args.thres
+    ]
     # 优化图像
     for f in frames:
         img = cv2.imencode(
