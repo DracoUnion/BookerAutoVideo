@@ -79,3 +79,15 @@ def load_module(fname):
     mod = __import__(mod_name)
     safe_remove(nfname)
     return mod
+    
+def find_cmd_path(name):
+    delim = ';' if sys.platform == 'win32' else ':'
+    suff = (
+        ['.exe', '.cmd', '.ps1']
+        if sys.platform == 'win32'
+        else ['', '.sh']
+    ) 
+    for p in os.environ.get('PATH', '').split(delim):
+        if any(path.isfile(path.join(p, name + s)) for s in suff):
+            return p
+    return ''
