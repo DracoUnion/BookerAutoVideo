@@ -65,7 +65,7 @@ def whisper_cpp(args):
     subp.Popen(
         ['whisper', '-f', wav_fname, '-m', args.model, '-t', str(args.threads), '-l', args.lang, '-oj'],
         shell=True, 
-    )
+    ).communicate()
     json_fname = wav_fname + '.json'
     if not path.isfile(wav_fname):
         safe_remove(wav_fname)
