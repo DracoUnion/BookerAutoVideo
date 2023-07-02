@@ -189,18 +189,37 @@ def extract_keyframe_file(args):
 def config_scene(args):
     if args.scene == 'ppt':
         args.extract_mode = 'thres'
+        args.diff_mode = 'pixel_l1'
+        args.opti_mode = 'quant'
+        args.rate = 0.2
+        args.direction = 'backward'
+        args.bw = False
+        args.thres = 0.1
+    elif args.scene == 'ppt2':
+        args.extract_mode = 'thres'
         args.diff_mode = 'hist_l1'
         args.opti_mode = 'quant'
         args.rate = 0.2
         args.direction = 'backward'
         args.bw = False
         args.thres = 0.6
+    elif args.scene == 'movie':
+        args.extract_mode = 'thres'
+        args.diff_mode = 'phash'
+        args.opti_mode = 'quant'
+        args.rate = 0.2
+        args.direction = 'forward'
+        args.bw = False
+        args.thres = 0.9
+
         
 def config_thres(args):
     if not math.isnan(args.thres):
         return
-    if args.extract_mode in ['relthres', 'thres']:
+    if args.extract_mode == 'relthres':
         args.thres = 0.6
+    elif args.extract_mode == 'thres':
+        args.thres = 0.1
     elif args.extract_mode == 'normthres':
         args.thres = 0.1
     elif args.extract_mode == 'adathres':
