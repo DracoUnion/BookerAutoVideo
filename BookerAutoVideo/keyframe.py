@@ -6,6 +6,7 @@ import re
 import math
 import uuid
 import tempfile
+import subprocess as subp
 from os import path
 from scipy import signal
 from imgyaso import adathres
