@@ -73,36 +73,6 @@ def load_frames(fname, rate, bw):
     cap.release()
     return frames
 
-'''
-def dedup(frames, rate):
-    fgbg = cv2.createBackgroundSubtractorMOG2(
-        history=int(rate * 15), 
-        varThreshold=16,
-        detectShadows=False,
-    )
-    captured = False
-    res = []
-    for  f in frames:
-        mask = fgbg.apply(f['img']) # apply the background subtractor
-        # apply a series of erosions and dilations to eliminate noise
-        # eroded_mask = cv2.erode(mask, None, iterations=2)
-        # mask = cv2.dilate(mask, None, iterations=2)
-        # if the width and height are empty, grab the spatial dimensions
-        h, w = mask.shape[:2]
-        # compute the percentage of the mask that is "foreground"
-        p_diff = cv2.countNonZero(mask) / float(w * h) * 100
-        # if p_diff less than N% then motion has stopped, thus capture the frame
-        if p_diff < 0.1 and not captured:
-            captured = True
-            res.append(f)
-        # otherwise, either the scene is changing or we're still in warmup
-        # mode so let's wait until the scene has settled or we're finished
-        # building the background model
-        elif captured and p_diff >= 3:
-            captured = False
-    return res
-'''
-
 def calc_frame_diffs(frames, args):
     direction, diff_mode = args.direction, args.diff_mode  
     frames[0]['diff'] = 1
@@ -137,13 +107,6 @@ def postproc_frame_diffs(frames, args):
         for f, m in zip(frames, mean):
             f['diff'] = (f['diff'] - m) / f['diff']
     
-'''
-def extract_ppt(args):
-    fname = args.fname
-    opti_mode = args.opti_mode
-    frames = load_frames(fname, args.rate, args.bw)
-'''
-    
 def extract_keyframe(args):
     if not find_cmd_path('Anime4KCPP_CLI'): 
         print('Anime4KCPP_CLI 未找到，请下载并将其目录添加到系统变量 PATH 中')
@@ -173,13 +136,14 @@ def extract_keyframe(args):
             [cv2.IMWRITE_PNG_COMPRESSION, 9]
         )[1]
         img = bytes(img)
+        # 保证最小 1080p，不够就放大
         h, w = f['img'].shape[:2]
         scale = 1080 / min(h, w)
         img = anime4k_scale(img, scale)
         f['img'] = opti_img(img, args.opti_mode, 8)
     return frames
     
-def anime4k_scale(img, scale):
+def anime4k_scale(img, scale, threads):
     img_fname = path.join(
         tempfile.gettempdir(),
         uuid.uuid4().hex + '.png'
@@ -187,7 +151,7 @@ def anime4k_scale(img, scale):
     open(img_fname, 'wb').write(img)
     cmd = [
         'Anime4KCPP_CLI', 
-        '-t', str(args.threads),
+        '-t', str(threads),
         '-z', str(scale),
         '-i', img_fname,
         '-o', img_fname,
