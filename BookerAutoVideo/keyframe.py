@@ -166,8 +166,38 @@ def extract_keyframe(args):
             '.png', f['img'], 
             [cv2.IMWRITE_PNG_COMPRESSION, 9]
         )[1]
-        f['img'] = opti_img(bytes(img), args.opti_mode, 8)
+        img = bytes(img)
+        h, w = f['img'].shape[:2]
+        scale = 1080 / min(h, w)
+        img = anime4k_scale(img, scale)
+        f['img'] = opti_img(img, args.opti_mode, 8)
     return frames
+    
+def anime4k_scale(img, scale):
+    img_fname = path.join(
+        tempfile.gettempdir(),
+        uuid.uuid4().hex + '.png'
+    )
+    open(img_fname, 'wb').write(img)
+    cmd = [
+        'Anime4KCPP_CLI', 
+        '-t', str(args.threads),
+        '-z', str(scale),
+        '-i', img_fname,
+        '-o', img_fname,
+        "-w", "-H",
+        "-L", "3",
+    ]
+    # if args.gpu: cmd.append('-q')
+    print(f'cmd: {cmd}')
+    r = subp.Popen(
+        cmd, 
+        shell=True,
+        cwd=find_cmd_path('Anime4KCPP_CLI'),
+    ).communicate()
+    img = open(img_fname, 'ab').read()
+    safe_remove(img_fname)
+    return img
 
 def extract_keyframe_file(args):
     fname = args.fname
