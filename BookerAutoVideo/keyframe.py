@@ -166,7 +166,7 @@ def anime4k_scale(img, scale, threads):
         shell=True,
         cwd=find_cmd_path('Anime4KCPP_CLI'),
     ).communicate()
-    img = open(img_fname, 'ab').read()
+    img = open(img_fname, 'rb').read()
     safe_remove(img_fname)
     return img
 
