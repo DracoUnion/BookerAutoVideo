@@ -4,6 +4,8 @@ import argparse
 import os
 import re
 import math
+import uuid
+import tempfile
 from os import path
 from scipy import signal
 from imgyaso import adathres
@@ -143,6 +145,10 @@ def extract_ppt(args):
 '''
     
 def extract_keyframe(args):
+    if not find_cmd_path('Anime4KCPP_CLI'): 
+        print('Anime4KCPP_CLI 未找到，请下载并将其目录添加到系统变量 PATH 中')
+        return
+        
     config_scene(args)
     config_thres(args)
     fname = args.fname
