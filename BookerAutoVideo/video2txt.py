@@ -7,6 +7,7 @@ import hashlib
 from os import path
 from multiprocessing import Pool
 import subprocess as subp
+import json
 from .util import *
 from .keyframe import *
 # from paddlespeech.cli.text.infer import TextExecutor 
