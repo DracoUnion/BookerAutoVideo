@@ -71,7 +71,7 @@ def whisper_cpp(args):
     if not path.isfile(wav_fname):
         safe_remove(wav_fname)
         raise FileNotFoundError(f'{fname} 识别失败')
-    res = json.dumps(open(json_fname, encoding='utf8').read())
+    res = json.loads(open(json_fname, encoding='utf8').read())
     safe_remove(wav_fname)
     safe_remove(json_fname)
     return [
