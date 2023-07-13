@@ -45,13 +45,14 @@ def video2txt_handle(args):
 def video2txt_dir(args):
     dir = args.fname
     fnames = os.listdir(dir)
-    pool = Pool(args.threads)
+    # pool = Pool(args.threads)
     for fname in fnames:
-        args = copy.deepcopy(args)
+        # args = copy.deepcopy(args)
         args.fname = path.join(dir, fname)
-        pool.apply_async(video2txt_file_safe, [args])
-    pool.close()
-    pool.join()
+        # pool.apply_async(video2txt_file_safe, [args])
+        video2txt_file_safe(args)
+    # pool.close()
+    # pool.join()
     
 def video2txt_file_safe(args):
     try: video2txt_file(args)
