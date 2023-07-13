@@ -193,7 +193,7 @@ def config_scene(args):
         args.diff_mode = 'pixel_l1'
         args.opti_mode = 'quant'
         args.rate = 0.2
-        args.direction = 'backward'
+        args.direction = DIR_B
         args.bw = False
         args.thres = 0.1
     elif args.scene == 'ppt2':
@@ -201,7 +201,7 @@ def config_scene(args):
         args.diff_mode = 'hist_l1'
         args.opti_mode = 'quant'
         args.rate = 0.2
-        args.direction = 'backward'
+        args.direction = DIR_B
         args.bw = False
         args.thres = 0.6
     elif args.scene == 'movie':
@@ -209,7 +209,7 @@ def config_scene(args):
         args.diff_mode = 'phash'
         args.opti_mode = 'quant'
         args.rate = 0.2
-        args.direction = 'forward'
+        args.direction = DIR_F
         args.bw = False
         args.thres = 0.9
 
