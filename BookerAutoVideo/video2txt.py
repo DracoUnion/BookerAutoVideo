@@ -3,6 +3,7 @@ import re
 import traceback
 import copy
 import os
+import json
 import hashlib
 from os import path
 from multiprocessing import Pool
@@ -30,6 +31,9 @@ def video2txt_handle(args):
     if not whisper_path:
         print('请下载 whisper.cpp 并将目录名称添加到 $PATH 中')
         return
+    if not find_cmd_path('Anime4KCPP_CLI'): 
+        print('Anime4KCPP_CLI 未找到，请下载并将其目录添加到系统变量 PATH 中')
+        return
     if re.search(r'^[\w\-]+$', args.model):
         args.model = path.join(whisper_path, 'models', args.model + '.bin')
     if not path.isfile(args.model):
@@ -42,13 +46,14 @@ def video2txt_handle(args):
 def video2txt_dir(args):
     dir = args.fname
     fnames = os.listdir(dir)
-    pool = Pool(args.threads)
+    # pool = Pool(args.threads)
     for fname in fnames:
-        args = copy.deepcopy(args)
+        # args = copy.deepcopy(args)
         args.fname = path.join(dir, fname)
-        pool.apply_async(video2txt_file_safe, [args])
-    pool.close()
-    pool.join()
+        # pool.apply_async(video2txt_file_safe, [args])
+        video2txt_file_safe(args)
+    # pool.close()
+    # pool.join()
     
 def video2txt_file_safe(args):
     try: video2txt_file(args)
@@ -88,6 +93,10 @@ def video2txt_file(args):
         print('请提供音频或视频文件')
         return
     print(fname)
+    nfname = re.sub(r'\.\w+$', '', fname) + '.md'
+    if path.isfile(nfname):
+        print(f'{nfname} 已存在')
+        return
     # 语音识别
     words = whisper_cpp(args)
     '''
@@ -125,7 +134,6 @@ def video2txt_file(args):
     text = '\n\n'.join([w['text'] for w in words])
     text = f'# {title}\n\n{text}'
     print(text)
-    nfname = re.sub(r'\.\w+$', '', fname) + '.md'
     open(nfname , 'w', encoding='utf8').write(text)
     print(nfname + '.md')
     imgdir = path.join(path.dirname(fname), 'img')
