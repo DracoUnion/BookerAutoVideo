@@ -21,6 +21,7 @@ def main():
     video2txt_parser.add_argument("-I", "--no-image", action='store_true', help="whether to not catch screenshots")
     video2txt_parser.add_argument("-m", "--model", default='medium', help="model name or path")
     video2txt_parser.add_argument("-l", "--lang", default='zh',  help="language")
+    video2txt_parser.add_argument("-s", "--scene", choices=['auto', 'ppt', 'ppt2', 'movie'], default='auto', help="scene")
     video2txt_parser.set_defaults(
         extract_mode='thres',
         diff_mode='pixel_l1',
