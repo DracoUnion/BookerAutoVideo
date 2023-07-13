@@ -92,6 +92,10 @@ def video2txt_file(args):
         print('请提供音频或视频文件')
         return
     print(fname)
+    nfname = re.sub(r'\.\w+$', '', fname) + '.md'
+    if path.isfile(nfname):
+        print(f'{nfname} 已存在')
+        return
     # 语音识别
     words = whisper_cpp(args)
     '''
@@ -129,7 +133,6 @@ def video2txt_file(args):
     text = '\n\n'.join([w['text'] for w in words])
     text = f'# {title}\n\n{text}'
     print(text)
-    nfname = re.sub(r'\.\w+$', '', fname) + '.md'
     open(nfname , 'w', encoding='utf8').write(text)
     print(nfname + '.md')
     imgdir = path.join(path.dirname(fname), 'img')
