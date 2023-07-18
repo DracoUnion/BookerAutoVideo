@@ -100,7 +100,10 @@ def image_fullness(img):
 
 def fullness_sim(prev, next):
     ifn = image_fullness(next)
-    return ifn * phash_sim(prev, next) / 2 + (1 - ifn) * pixel_l1_sim(prev, next) * 5
+    ph = phash_sim(prev, next)
+    l1 = pixel_l1_sim(prev, next)
+    print(f'ifn: {ifn}, phash: {ph}, l1: {l1}')
+    return ifn * ph / 2 + (1 - ifn) * l1 * 5
 
 img_sim = {
     'pixel_l1':  pixel_l1_sim,
