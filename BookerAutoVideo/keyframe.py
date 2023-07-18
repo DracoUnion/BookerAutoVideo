@@ -66,7 +66,6 @@ def load_frames(fname, rate, bw):
             'idx': idx, 
             'time': tm,
             'img': img,
-            'grey': cv2.cvtColor(img, cv2.COLOR_BGR2GRAY),
         })
         if bw: frames[-1]['grey'] = adathres(frames[-1]['grey'])
         idx += 1
@@ -79,7 +78,7 @@ def calc_frame_diffs(frames, args):
     frames[0]['diff'] = 1
     for prev, curr in zip(frames[:-1], frames[1:]):
         curr['diff'] = frame_diff(
-            prev['grey'], curr['grey'], diff_mode,
+            prev['img'], curr['img'], diff_mode,
         )
     if direction == DIR_B:
         for curr, next in zip(frames[:-1], frames[1:]):
