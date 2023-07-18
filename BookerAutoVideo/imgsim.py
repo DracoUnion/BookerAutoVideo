@@ -102,8 +102,9 @@ def fullness_sim(prev, next):
     ifn = image_fullness(next)
     ph = phash_sim(prev, next)
     l1 = pixel_l1_sim(prev, next)
-    print(f'ifn: {ifn}, phash: {ph}, l1: {l1}')
-    return ifn * ph / 2 + (1 - ifn) * l1 * 5
+    res =  ifn * ph + (1 - ifn) * l1
+    print(f'ifn: {ifn}, phash: {ph}, l1: {l1}, res: {res}')
+    return res
 
 img_sim = {
     'pixel_l1':  pixel_l1_sim,
