@@ -79,7 +79,8 @@ def pixel_l1_sim(prev, next):
     diff = np.mean(np.where(max != 0, cv2.absdiff(next, prev) / max, 0))
     return 1 - diff
 
-def gs_fullness(chan):
+def gs_fullness(img):
+    img = ensure_grayscale(img)
     freqs, _ = np.histogram(img.astype("int"), bins=range(256 + 1), density=True)
     freqs = np.where(freqs, freqs, 1e-12)
     return np.sum(-freqs * np.log2(freqs)) / 8
