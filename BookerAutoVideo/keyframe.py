@@ -139,7 +139,7 @@ def extract_keyframe(args):
         # 保证最小 1080p，不够就放大
         h, w = f['img'].shape[:2]
         scale = 1080 / min(h, w)
-        img = anime4k_scale(img, scale, args.threads)
+        # img = anime4k_scale(img, scale, args.threads)
         f['img'] = opti_img(img, args.opti_mode, 8)
     return frames
     
