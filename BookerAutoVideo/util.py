@@ -94,7 +94,7 @@ def find_cmd_path(name):
     return ''
 
 
-def edgetts_cli(text, voice):
+def edgetts_cli(text, voice='zh-CN-XiaoyiNeural'):
     fname = path.join(tempfile.gettempdir(), uuid.uuid4().hex + '.mp3')
     cmd = [
         'edge-tts', '-t', text, '-v', voice, '--write-media', fname,
