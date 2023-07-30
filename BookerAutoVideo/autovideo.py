@@ -4,7 +4,6 @@ import sys
 import librosa
 import cv2
 from io import BytesIO
-from paddlespeech.cli.tts.infer import TTSExecutor
 from moviepy.editor import *
 from .autovideo_config import config
 from .util import *
@@ -81,14 +80,6 @@ def audio_len(data):
     y, sr = librosa.load(BytesIO(data))
     return librosa.get_duration(y=y, sr=sr)
 
-def exec_tts(text):
-    tts = TTSExecutor()
-    fname = path.join(tempfile.gettempdir(), uuid.uuid4().hex + '.wav')
-    tts(text=text, output=fname)
-    data = open(fname, 'rb').read()
-    os.unlink(fname)
-    return data
-
 # 素材预处理
 def preproc_asset(config, cfg_fname):
     # 加载或生成内容
@@ -103,7 +94,7 @@ def preproc_asset(config, cfg_fname):
         elif cont['type'] == 'audio:tts':
             text = cont['value']
             print(f'TTS：{text}')
-            cont['asset'] = exec_tts(text)
+            cont['asset'] = edgetts_cli(text)
         elif cont['type'] == 'image:external':
             text = cont['value']
             print(f'Ex：{text}')
