@@ -50,12 +50,6 @@ def nsec2hms(nsec):
     s = nsec % 60
     return f'{h}h{m:02d}m{s:02d}s'
 
-def get_video_length(fname):
-    clip = VideoClip(fname).duration
-    res = clip
-    clip.close()
-    return res
-
 def load_frames(fname, rate, bw):
     cap = cv2.VideoCapture(fname) 
     if not cap.isOpened():
