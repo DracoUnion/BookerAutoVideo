@@ -6,6 +6,7 @@ import shutil
 import tempfile
 import uuid
 import imgyaso
+import subprocess  as subp
 
 def stylish_text(text):
     text = (
@@ -91,3 +92,16 @@ def find_cmd_path(name):
         if any(path.isfile(path.join(p, name + s)) for s in suff):
             return p
     return ''
+
+
+def edgetts_cli(text, voice='zh-CN-XiaoyiNeural'):
+    fname = path.join(tempfile.gettempdir(), uuid.uuid4().hex + '.mp3')
+    cmd = [
+        'edge-tts', '-t', text, '-v', voice, '--write-media', fname,
+    ]
+    print(f'cmd: {cmd}')
+    subp.Popen(cmd, shell=True).communicate()
+    res = open(fname, 'rb').read()
+    safe_remove(fname)
+    return res
+    

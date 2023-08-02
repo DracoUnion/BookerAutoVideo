@@ -3,3 +3,7 @@ numpy
 opencv-python
 scipy
 imgyaso
+edge-tts
+librosa
+pyyaml
+EpubCrawler
