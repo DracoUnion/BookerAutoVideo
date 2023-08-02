@@ -7,6 +7,7 @@ import math
 import uuid
 import tempfile
 import subprocess as subp
+from moviepy.video.io.VideoFileClip import VideoFileClip
 from os import path
 from scipy import signal
 from imgyaso import adathres
@@ -49,26 +50,30 @@ def nsec2hms(nsec):
     s = nsec % 60
     return f'{h}h{m:02d}m{s:02d}s'
 
+def get_video_length(fname):
+    clip = VideoClip(fname).duration
+    res = clip
+    clip.close()
+    return res
 
 def load_frames(fname, rate, bw):
     cap = cv2.VideoCapture(fname) 
     if not cap.isOpened():
         raise Exception(f'无法打开文件 {fname}')
     frames = []
-    idx = 0
     tm = 0
-    while(True):
+    total = VideoFileClip(fname).duration
+    while(tm < total):
         cap.set(cv2.CAP_PROP_POS_MSEC, tm * 1000)
         succ, img = cap.read()
         if not succ: break
         print(f'time {nsec2hms(tm)} loaded')
         frames.append({
-            'idx': idx, 
+            'idx': len(frames), 
             'time': tm,
             'img': img,
         })
         if bw: frames[-1]['grey'] = adathres(frames[-1]['grey'])
-        idx += 1
         tm += 1 / rate
     cap.release()
     return frames
