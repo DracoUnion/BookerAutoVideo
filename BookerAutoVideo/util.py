@@ -176,7 +176,7 @@ def ffmpeg_merge_video_audio(video, audio):
     cmds = [
         ['ffmpeg', '-i', vfname, '-vcodec', 'copy', '-an', vfname, '-y'],
         ['ffmpeg', '-i', afname, '-acodec', 'copy', '-vn', afname, '-y'],
-        ['ffmpeg', '-i', afname, '-i', vfname, '-vcodec', 'copy', '-acodec', 'copy', res_fname],
+        ['ffmpeg', '-i', afname, '-i', vfname, '-vcodec', 'copy', '-acodec', 'copy', res_fname, '-y'],
     ]
     for cmd in cmds:
         print(f'cmd: {cmd}')
