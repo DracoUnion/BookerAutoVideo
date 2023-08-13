@@ -158,13 +158,15 @@ def contents2frame(contents):
     return frames
 
 # 组装视频
-def make_video(frames, cfg_dir):
+def make_video(frames):
     clips = []
     # 图像部分
     st = 0
     for f in frames:
+        img_arr = cv2.imdecode(np.frombuffer(f['image'], np.uint8), cv2.IMREAD_COLOR)
+        img_arr = cv2.cvtColor(img_arr, cv2.COLOR_BGR2RGB)
         clip = (
-            ImageClip(f['asset'])
+            ImageClip(img_arr)
                 .set_duration(f['len'])
                 .resize(height=int(config['size'][1] * 0.9))
                 .set_pos(("center", 0))
@@ -176,7 +178,8 @@ def make_video(frames, cfg_dir):
     st = 0
     for f in frames:
         for a in f['audios']:
-            clip = AudioFileClip(a['asset']).set_start(st)
+            wav_arr, _ = librosa.load(BytesIO(a['audio']))
+            clip = AudioFileClip(wav_arr).set_start(st)
             clips.append(clip)
             if f['subtitle']:
                 clip = (
