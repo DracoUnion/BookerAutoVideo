@@ -132,9 +132,12 @@ def ffmpeg_cat_audio(audios):
     ]
     ofname = path.join(tempfile.gettempdir(), f'prefix.mp3')
     cmd = [
-        'ffmpeg', '-i', 
-        'concat:' + '|'.join(audio_fnames), 
-        '-c:a', 'copy', ofname, '-y',
+        'ffmpeg', '-f', 'concat',
+    ]
+    for a in audio_fnames:
+        cmd += ['-i', a]
+    cmd += [
+        '-acodec', 'copy', ofname, '-y',
     ]
     print(f'cmd: {cmd}')
     subp.Popen(cmd, shell=True).communicate()
@@ -154,9 +157,12 @@ def ffmpeg_cat_videos(videos):
     ]
     ofname = path.join(tempfile.gettempdir(), f'prefix.mp4')
     cmd = [
-        'ffmpeg', '-i', 
-        'concat:' + '|'.join(video_fnames), 
-        '-c:a', 'copy', '-v:a', 'copy', ofname, '-y',
+        'ffmpeg', '-f', 'concat',
+    ]
+    for v in video_fnames:
+        cmd += ['-i', v]
+    cmd += [
+        '-acodec', 'copy', '-vcodec', 'copy', ofname, '-y',
     ]
     print(f'cmd: {cmd}')
     subp.Popen(cmd, shell=True).communicate()
