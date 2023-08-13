@@ -223,7 +223,7 @@ def autovideo(args):
         print('请提供 YAML 文件')
         return
     user_cfg = yaml.safe_load(cfg_fname)
-    update_config(cfg_fname, user_cfg)
+    update_config(config, user_cfg)
         
     # 素材预处理
     preproc_asset(config, cfg_fname)
