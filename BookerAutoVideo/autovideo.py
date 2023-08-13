@@ -55,7 +55,7 @@ def md2playbook(args):
             )
             value = (
                 url if type == 'image:url'
-                else path.join(fname, url)
+                else path.join(path.dirname(fname), url)
             )
             contents.append({
                 'type': type,
@@ -77,12 +77,11 @@ def md2playbook(args):
         
 
 # 素材预处理
-def preproc_asset(config, cfg_fname):
+def preproc_asset(config):
     # 加载或生成内容
     for cont in config['contents']:
         if cont['type'].endswith(':file'):
-            fname = path.join(cfg_fname, cont['value'])
-            cont['asset'] = open(fname, 'rb').read()
+            cont['asset'] = open(cont['value'], 'rb').read()
         elif cont['type'].endswith(':url'):
             url = cont['value']
             print(f'下载：{url}')
@@ -153,7 +152,7 @@ def contents2frame(contents):
     return frames
 
 # 组装视频
-def make_video(frames):
+def make_video(frames, cfg_dir):
     clips = []
     # 图像部分
     st = 0
@@ -191,30 +190,30 @@ def make_video(frames):
     video = CompositeVideoClip(clips, size=config['size'])
     # 合并片头片尾
     if config['header']:
-        header_fname = path.join(cfg_fname, config['header'])
-        header = VideoFileClip(header_fname).resize(config['size'])
+        header = VideoFileClip(config['header']).resize(config['size'])
         video = concatenate_videoclips([header, video])
     if config['footer']:
-        footer_fname = path.join(cfg_fname, config['footer'])
-        footer = VideoFileClip(footer_fname).resize(config['size'])
+        footer = VideoFileClip(config['footer']).resize(config['size'])
         video = concatenate_videoclips([video, footer])
     return video
 
-def update_config(cfg_fname, user_cfg):
+def update_config(user_cfg, cfg_dir):
     global exmod
     
     config.update(user_cfg)
-    
     if not config['contents']:
         raise AttributeError('内容为空，无法生成')
         
+    for cont in config['contents']:
+        if cont['type'].endswith(':file'):
+            cont['value'] = path.join(cfg_dir, cont['value'])
     if config['header']:
-        config['header'] = path.join(cfg_fname, config['header'])
+        config['header'] = path.join(cfg_dir, config['header'])
     if config['footer']:
-        config['footer'] = path.join(cfg_fname, config['footer'])
+        config['footer'] = path.join(cfg_dir, config['footer'])
         
     if config['external']:
-        mod_fname = path.join(path.dirname(cfg_fname), config['external'])
+        mod_fname = path.join(cfg_dir, config['external'])
         exmod = load_module(mod_fname)
 
 def autovideo(args):
@@ -222,11 +221,12 @@ def autovideo(args):
     if not cfg_fname.endswith('.yml'):
         print('请提供 YAML 文件')
         return
+    cfg_dir = path.dirname(cfg_fname)
     user_cfg = yaml.safe_load(open(cfg_fname, encoding='utf8').read())
-    update_config(cfg_fname, user_cfg)
+    update_config(user_cfg, cfg_dir)
         
     # 素材预处理
-    preproc_asset(config, cfg_fname)
+    preproc_asset(config)
     # 转换成帧的形式
     frames = contents2frame(config['contents'])
     # 组装视频
