@@ -1,7 +1,6 @@
 import yaml
 from os import path
 import sys
-import librosa
 import cv2
 from io import BytesIO
 from moviepy.editor import *
