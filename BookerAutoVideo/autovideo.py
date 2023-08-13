@@ -181,10 +181,10 @@ def make_video(frames):
             wav_arr, _ = librosa.load(BytesIO(a['audio']))
             clip = AudioFileClip(wav_arr).set_start(st)
             clips.append(clip)
-            if f['subtitle']:
+            if 'subtitle' in a:
                 clip = (
                     TextClip(
-                        f['subtitle'], 
+                        a['subtitle'], 
                         font=path.join(DIR, 'asset', config['font']), 
                         fontsize=35, 
                         color='white', 
@@ -195,7 +195,7 @@ def make_video(frames):
                         .set_start(st)
                 )
                 clips.append(clip)
-            st += a['len']
+                st += a['len']
     video = CompositeVideoClip(clips, size=config['size'])
     # 合并片头片尾
     if config['header']:
