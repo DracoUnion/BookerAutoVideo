@@ -134,7 +134,7 @@ def ffmpeg_cat_audio(audios):
     cmd = [
         'ffmpeg', '-i', 
         'concat:' + '|'.join(audio_fnames), 
-        '-c:a', 'copy', ofname,
+        '-c:a', 'copy', ofname, '-y',
     ]
     print(f'cmd: {cmd}')
     subp.Popen(cmd, shell=True).communicate()
@@ -156,7 +156,7 @@ def ffmpeg_cat_videos(videos):
     cmd = [
         'ffmpeg', '-i', 
         'concat:' + '|'.join(video_fnames), 
-        '-c:a', 'copy', '-v:a', 'copy', ofname,
+        '-c:a', 'copy', '-v:a', 'copy', ofname, '-y',
     ]
     print(f'cmd: {cmd}')
     subp.Popen(cmd, shell=True).communicate()
