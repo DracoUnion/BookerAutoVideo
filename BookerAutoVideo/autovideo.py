@@ -129,11 +129,19 @@ def preproc_asset(config):
 def trim_img(img):
     img = cv2.imdecode(np.frombuffer(img, np.uint8), cv2.IMREAD_COLOR)
     h, w, *_ = img.shape
+    # 计算宽高的缩放比例，使用较小值等比例缩放
     x_scale = config['size'][0] / w
     y_scale = config['size'][1] / h
     scale = min(x_scale, y_scale)
     nh, nw = int(h * scale), int(w * scale)
     img = cv2.resize(img, (nw, nh), interpolation=cv2.INTER_CUBIC)
+    # 填充到预定大小
+    pad_w = config['size'][0] - nw
+    pad_h = config['size'][1] - nh
+    img = cv2.copyMakeBorder(
+        img, pad_h // 2, pad_h - pad_h // 2, pad_w // 2, pad_w - pad_w // 2, 
+        cv2.BORDER_CONSTANT, None, (0,0,0)
+    ) 
     img = bytes(cv2.imencode('.png', img)[1])
     return img
 
