@@ -3,6 +3,7 @@ from os import path
 import sys
 import cv2
 import numpy as np
+import librosa
 from io import BytesIO
 from moviepy.editor import *
 from .autovideo_config import config
@@ -19,6 +20,10 @@ RE_MD_PREFIX = r'^\s*(\+|\-|\*|\d+\.|\>|\#+)'
 RE_SENT_DELIM = r'\n|。|\?|？|;|；|:|：|!|！'
 
 exmod = None
+
+def audio_len(data):
+    y, sr = librosa.load(BytesIO(data))
+    return librosa.get_duration(y=y, sr=sr)
 
 def md2playbook(args):
     fname = args.fname
@@ -136,16 +141,16 @@ def trim_img(img):
 def contents2frame(contents):
     frames = []
     for c in contents:
-        if c['type'].startswith['image:']:
+        if c['type'].startswith('image:'):
             frames.append({
                 'image': c['asset'],
                 'audios': [],
             })
-        elif c['type'].startswith['audio:']:
+        elif c['type'].startswith('audio:'):
             if len(frames) == 0: continue
             frames[-1]['audios'].append({
                 'audio': c['asset'],
-                'len': AudioFileClip(c['asset']).duration,
+                'len': audio_len(c['asset']),
                 'subtitle': c['value'] if c['type'] == 'audio:tts' else '',
             })
     for f in frames:
