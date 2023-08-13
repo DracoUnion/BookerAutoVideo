@@ -8,6 +8,7 @@ from moviepy.editor import *
 from .autovideo_config import config
 from .util import *
 from EpubCrawler.util import request_retry
+from moviepy.video.io.VideoFileClip import VideoFileClip, AudioFileClip
 
 DIR = path.abspath(path.dirname(__file__))
 RE_MD_IMG = r'!\[.*?\]\((.*?)\)'
@@ -75,10 +76,6 @@ def md2playbook(args):
     open(ofname, 'w', encoding='utf8').write(yaml.safe_save(ofname))
     print(ofname)
         
-
-def audio_len(data):
-    y, sr = librosa.load(BytesIO(data))
-    return librosa.get_duration(y=y, sr=sr)
 
 # 素材预处理
 def preproc_asset(config, cfg_fname):
@@ -149,7 +146,7 @@ def contents2frame(contents):
             if len(frames) == 0: continue
             frames[-1]['audios'].append({
                 'audio': c['asset'],
-                'len': audio_len(c['asset']),
+                'len': AudioFileClip(c['asset']).duration,
                 'subtitle': c['value'] if c['type'] == 'audio:tts' else '',
             })
     for f in frames:
