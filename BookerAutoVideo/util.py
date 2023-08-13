@@ -112,7 +112,7 @@ def ffmpeg_pic2video(img, sec):
     open(img_fname, 'wb').write(img)
     vid_fname = path.join(tempfile.gettempdir(), prefix + '.mp4')
     cmd = [
-        'ffmpeg', '-r', str(1 / sec), '-f', 'image2', '-i', img_fname, vid_fname,
+        'ffmpeg', '-r', str(1 / sec), '-f', 'image2', '-i', img_fname, vid_fname, '-y',
     ]
     print(f'cmd: {cmd}')
     subp.Popen(cmd, shell=True).communicate()
