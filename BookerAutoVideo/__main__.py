@@ -3,6 +3,7 @@ import sys
 import math
 import warnings
 from . import __version__
+from .autovideo import *
 from .video2txt import *
 from .keyframe import *
 from .imgsim import *
@@ -14,7 +15,11 @@ def main():
     parser.add_argument("-v", "--version", action="version", version=f"PYBP version: {__version__}")
     parser.set_defaults(func=lambda x: parser.print_help())
     subparsers = parser.add_subparsers()
-    
+
+    autovid_parser = subparsers.add_parser("auto-video", help="generate video")
+    autovid_parser.add_argument("config", help="config file name")
+    autovid_parser.set_defaults(func=autovideo)
+
     video2txt_parser = subparsers.add_parser("video2txt", help="convert audio to text")
     video2txt_parser.add_argument("fname", help="file name")
     video2txt_parser.add_argument("-t", "--threads", type=int, default=8, help="num of threads")
