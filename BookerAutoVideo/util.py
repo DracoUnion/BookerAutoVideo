@@ -105,3 +105,19 @@ def edgetts_cli(text, voice='zh-CN-XiaoyiNeural'):
     safe_remove(fname)
     return res
     
+
+def ffmpeg_pic2video(img, sec):
+    prefix = uuid.uuid4().hex
+    img_fname = path.join(tempfile.gettempdir(), prefix + '.png')
+    open(img_fname, 'wb').write(img)
+    vid_fname = path.join(tempfile.gettempdir(), prefix + '.mp4')
+    cmd = [
+        'ffmpeg', '-r', str(1 / sec), '-f', 'image2', '-i', img_fname, vid_fname,
+    ]
+    print(f'cmd: {cmd}')
+    subp.Popen(cmd, shell=True).communicate()
+    res = open(vid_fname, 'rb').read()
+    safe_remove(img_fname)
+    safe_remove(vid_fname)
+    return res
+
