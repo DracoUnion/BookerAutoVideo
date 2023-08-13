@@ -170,48 +170,22 @@ def make_video(frames):
     clips = []
     # 图像部分
     st = 0
-    for f in frames:
-        img_arr = cv2.imdecode(np.frombuffer(f['image'], np.uint8), cv2.IMREAD_COLOR)
-        img_arr = cv2.cvtColor(img_arr, cv2.COLOR_BGR2RGB)
-        clip = (
-            ImageClip(img_arr)
-                .set_duration(f['len'])
-                .resize(height=int(config['size'][1] * 0.9))
-                .set_pos(("center", 0))
-                .set_start(st)
-        )
-        clips.append(clip)
-        st += f['len']
+    videos = [ffmpeg_pic2video(f['image'], f['len']) for f in frames]
+    video = ffmpeg_cat_videos(videos)
     # 音频部分
-    st = 0
-    for f in frames:
-        for a in f['audios']:
-            wav_arr, _ = librosa.load(BytesIO(a['audio']))
-            clip = AudioFileClip(wav_arr).set_start(st)
-            clips.append(clip)
-            if 'subtitle' in a:
-                clip = (
-                    TextClip(
-                        a['subtitle'], 
-                        font=path.join(DIR, 'asset', config['font']), 
-                        fontsize=35, 
-                        color='white', 
-                        method='label'
-                    )
-                        .set_position(("center", "bottom"))
-                        .set_duration(a['len'])
-                        .set_start(st)
-                )
-                clips.append(clip)
-                st += a['len']
-    video = CompositeVideoClip(clips, size=config['size'])
+    audios = [a['audio'] for f in frames for a in f['audios']]
+    audio = ffmpeg_cat_audios(videos)
+    # 合并音视频
+    video = ffmpeg_merge_video_audio(video, audio)
+    # 添加字幕 
+    # TODO
     # 合并片头片尾
     if config['header']:
-        header = VideoFileClip(config['header']).resize(config['size'])
-        video = concatenate_videoclips([header, video])
+        header = open(config['header'], 'rb').read()
+        video = ffmpeg_cat_videos([header, video])
     if config['footer']:
-        footer = VideoFileClip(config['footer']).resize(config['size'])
-        video = concatenate_videoclips([video, footer])
+        header = open(config['footer'], 'rb').read()
+        video = ffmpeg_cat_videos([video, footer])
     return video
 
 def update_config(user_cfg, cfg_dir):
@@ -250,6 +224,6 @@ def autovideo(args):
     video = make_video(frames)
     # 写文件
     video_fname = fname_escape(config['name']) + '.' + config['format']
-    video.write_videofile(video_fname, fps=60, remove_temp=False, verbose=True)
     print(video_fname)
+    open(video_fname, 'wb').write(video)
     

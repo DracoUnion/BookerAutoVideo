@@ -121,3 +121,69 @@ def ffmpeg_pic2video(img, sec):
     safe_remove(vid_fname)
     return res
 
+def ffmpeg_cat_audio(audios):
+    prefix = uuid.uuid4().hex
+    for i, audio in enumerate(audios):
+        fname = path.join(tempfile.gettempdir(), f'{prefix}-{i}.mp3')
+        open(fname, 'wb').write(audio)
+    audio_fnames = [
+        path.join(tempfile.gettempdir(), f'{prefix}-{i}.mp3') 
+        for i in range(len(audios))
+    ]
+    ofname = path.join(tempfile.gettempdir(), f'prefix.mp3')
+    cmd = [
+        'ffmpeg', '-i', 
+        'concat:' + '|'.join(audio_fnames), 
+        '-c:a', 'copy', ofname,
+    ]
+    print(f'cmd: {cmd}')
+    subp.Popen(cmd, shell=True).communicate()
+    res = open(ofname, 'rb').read()
+    safe_remove(ofname)
+    for f in audio_fnames: safe_remove(f)
+    return res
+
+def ffmpeg_cat_videos(videos):
+    prefix = uuid.uuid4().hex
+    for i, audio in enumerate(audios):
+        fname = path.join(tempfile.gettempdir(), f'{prefix}-{i}.mp4')
+        open(fname, 'wb').write(audio)
+    audio_fnames = [
+        path.join(tempfile.gettempdir(), f'{prefix}-{i}.mp4') 
+        for i in range(len(audios))
+    ]
+    ofname = path.join(tempfile.gettempdir(), f'prefix.mp4')
+    cmd = [
+        'ffmpeg', '-i', 
+        'concat:' + '|'.join(audio_fnames), 
+        '-c:a', 'copy', '-v:a', 'copy', ofname,
+    ]
+    print(f'cmd: {cmd}')
+    subp.Popen(cmd, shell=True).communicate()
+    res = open(ofname, 'rb').read()
+    safe_remove(ofname)
+    for f in audio_fnames: safe_remove(f)
+    return res
+
+def ffmpeg_merge_video_audio(video, audio):
+    tmpdir = path.join(tempfile.gettempdir(), uuid.uuid4().hex)
+    safe_mkdir(tmpdir)
+    vfname = path.join(tmpdir, 'video.mp4')
+    open(vfname, 'wb').write(video)
+    afname = path.join(tmpdir, 'audio.mp4')
+    open(afname, 'wb').write(audio)
+    res_fname = path.join(tmpdir, 'merged.mp4')
+    cmds = [
+        ['ffmpeg', '-i', vfname, '-vcodec', 'copy', '-an', vfname, '-y'],
+        ['ffmpeg', '-i', afname, '-acodec', 'copy', '-vn', afname, '-y'],
+        ['ffmpeg', '-i', afname, '-i', vfname, '-vcodec', 'copy', '-acodec', 'copy', res_fname],
+    ]
+    for cmd in cmds:
+        print(f'cmd: {cmd}')
+        subp.Popen(cmd, shell=True).communicate()
+    res = open(res_fname, 'rb').read()
+    safe_rmdir(tmpdir)
+    return res
+
+
+
