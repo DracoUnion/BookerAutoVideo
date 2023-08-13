@@ -174,7 +174,7 @@ def make_video(frames):
     video = ffmpeg_cat_videos(videos)
     # 音频部分
     audios = [a['audio'] for f in frames for a in f['audios']]
-    audio = ffmpeg_cat_audios(videos)
+    audio = ffmpeg_cat_audios(audios)
     # 合并音视频
     video = ffmpeg_merge_video_audio(video, audio)
     # 添加字幕 

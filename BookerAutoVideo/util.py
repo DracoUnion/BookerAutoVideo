@@ -145,24 +145,24 @@ def ffmpeg_cat_audio(audios):
 
 def ffmpeg_cat_videos(videos):
     prefix = uuid.uuid4().hex
-    for i, audio in enumerate(audios):
+    for i, video in enumerate(videos):
         fname = path.join(tempfile.gettempdir(), f'{prefix}-{i}.mp4')
-        open(fname, 'wb').write(audio)
-    audio_fnames = [
+        open(fname, 'wb').write(video)
+    video_fnames = [
         path.join(tempfile.gettempdir(), f'{prefix}-{i}.mp4') 
-        for i in range(len(audios))
+        for i in range(len(videos))
     ]
     ofname = path.join(tempfile.gettempdir(), f'prefix.mp4')
     cmd = [
         'ffmpeg', '-i', 
-        'concat:' + '|'.join(audio_fnames), 
+        'concat:' + '|'.join(video_fnames), 
         '-c:a', 'copy', '-v:a', 'copy', ofname,
     ]
     print(f'cmd: {cmd}')
     subp.Popen(cmd, shell=True).communicate()
     res = open(ofname, 'rb').read()
     safe_remove(ofname)
-    for f in audio_fnames: safe_remove(f)
+    for f in video_fnames: safe_remove(f)
     return res
 
 def ffmpeg_merge_video_audio(video, audio):
