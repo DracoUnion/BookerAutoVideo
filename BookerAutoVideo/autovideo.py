@@ -2,6 +2,7 @@ import yaml
 from os import path
 import sys
 import cv2
+import numpy as np
 from io import BytesIO
 from moviepy.editor import *
 from .autovideo_config import config
