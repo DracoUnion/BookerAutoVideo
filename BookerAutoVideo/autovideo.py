@@ -222,8 +222,8 @@ def autovideo(args):
     if not cfg_fname.endswith('.yml'):
         print('请提供 YAML 文件')
         return
-    user_cfg = yaml.safe_load(cfg_fname)
-    update_config(config, user_cfg)
+    user_cfg = yaml.safe_load(open(cfg_fname, encoding='utf8').read())
+    update_config(cfg_fname, user_cfg)
         
     # 素材预处理
     preproc_asset(config, cfg_fname)
