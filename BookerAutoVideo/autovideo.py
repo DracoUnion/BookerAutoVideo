@@ -172,8 +172,8 @@ def pics2video(frames):
     vid = cv2.VideoWriter(ofname, fmt, config['fps'], config['size'])
     for f in frames:
         img = cv2.imdecode(np.frombuffer(f['image'], np.uint8), cv2.IMREAD_COLOR)
-        for _ in math.ceil(config['fps'] * f['len']):
-            vid.write(img)
+        ntimes = math.ceil(config['fps'] * f['len'])
+        for _ in range(ntimes): vid.write(img)
     vid.release()
     res = open(ofname, 'rb').read()
     safe_remove(ofname)
