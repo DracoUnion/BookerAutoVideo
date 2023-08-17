@@ -137,7 +137,7 @@ def ffmpeg_cat(videos, fmt='mp4'):
     ofname = path.join(tmpdir, f'res.{fmt}')
     cmd = [
         'ffmpeg', '-i',
-        'concat:' + '|'.join(video_fnames),
+        'concat:"' + '|'.join(video_fnames) + '"',
         '-c', 'copy', ofname, '-y',
     ]
     print(f'cmd: {cmd}')
