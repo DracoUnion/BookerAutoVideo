@@ -131,16 +131,15 @@ def ffmpeg_cat(videos, fmt='mp4'):
         fname = path.join(tmpdir, f'{i}.{fmt}')
         open(fname, 'wb').write(video)
     video_fnames = [
-        path.join(tmpdir, f'{i}.{fmt}') 
+        'file "' + path.join(tmpdir, f'{i}.{fmt}') + '"'
         for i in range(len(videos))
     ]
     video_li_fname = path.join(tmpdir, f'list.txt') 
     open(video_li_fname, 'w', encoding='utf8').write('\n'.join(video_fnames))
     ofname = path.join(tmpdir, f'res.{fmt}')
     cmd = [
-        'ffmpeg', '-f', 'concat',
-        '-i', video_li_fname,
-        '-c', 'copy', ofname, '-y',
+        'ffmpeg', '-f', 'concat', '-safe', '0',
+        '-i', video_li_fname, '-c', 'copy', ofname, '-y',
     ]
     print(f'cmd: {cmd}')
     subp.Popen(cmd, shell=True).communicate()
