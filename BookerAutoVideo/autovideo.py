@@ -185,9 +185,11 @@ def make_video(frames):
     clips = []
     # 图像部分
     video = pics2video(frames)
+    open('video.mp4', 'wb').write(video)
     # 音频部分
     audios = [a['audio'] for f in frames for a in f['audios']]
     audio = ffmpeg_cat(audios, 'mp3')
+    open('audio.mp3', 'wb').write(audio)
     # 合并音视频
     video = ffmpeg_merge_video_audio(video, audio, audio_fmt='mp3')
     # 添加字幕 
