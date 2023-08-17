@@ -9,6 +9,7 @@ from io import BytesIO
 from moviepy.editor import *
 from .autovideo_config import config
 from .util import *
+from scipy.io import wavfile
 from EpubCrawler.util import request_retry
 from moviepy.video.io.VideoFileClip import VideoFileClip, AudioFileClip
 
@@ -183,7 +184,7 @@ def concat_audios(audios):
     audios = [librosa.load(BytesIO(a), sr=config['sr'])[0] for a in audios]
     audio = np.concatenate(audios, axis=-1)
     bio = BytesIO()
-    librosa.output.write_wav(bio, audio, config['sr'])
+    wavfile.write(bio, config['sr'], audio)
     return bio.getvalue()
 
 # 组装视频
