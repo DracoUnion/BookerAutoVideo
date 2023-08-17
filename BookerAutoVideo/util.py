@@ -125,15 +125,16 @@ def ffmpeg_conv_fmt(video, from_, to):
     return res
 
 def ffmpeg_cat(videos, fmt='mp4'):
-    prefix = uuid.uuid4().hex
+    tmpdir = path.join(tempfile.gettempdir(), uuid.uuid4().hex)
+    safe_mkdir(tmpdir)
     for i, video in enumerate(videos):
-        fname = path.join(tempfile.gettempdir(), f'{prefix}-{i}.{fmt}')
+        fname = path.join(tmpdir, f'{i}.{fmt}')
         open(fname, 'wb').write(video)
     video_fnames = [
-        path.join(tempfile.gettempdir(), f'{prefix}-{i}.{fmt}') 
+        path.join(tmpdir, f'{i}.{fmt}') 
         for i in range(len(videos))
     ]
-    ofname = path.join(tempfile.gettempdir(), f'{prefix}.{fmt}')
+    ofname = path.join(tmpdir, f'res.{fmt}')
     cmd = [
         'ffmpeg', '-f', 'concat',
     ]
@@ -145,8 +146,7 @@ def ffmpeg_cat(videos, fmt='mp4'):
     print(f'cmd: {cmd}')
     subp.Popen(cmd, shell=True).communicate()
     res = open(ofname, 'rb').read()
-    safe_remove(ofname)
-    for f in video_fnames: safe_remove(f)
+    safe_mkdir(tmpdir)
     return res
 
 def ffmpeg_merge_video_audio(video, audio, video_fmt='mp4', audio_fmt='mp4'):
@@ -160,8 +160,8 @@ def ffmpeg_merge_video_audio(video, audio, video_fmt='mp4', audio_fmt='mp4'):
     open(afname, 'wb').write(audio)
     res_fname = path.join(tmpdir, f'merged.{video_fmt}')
     cmds = [
-        ['ffmpeg', '-i', vfname, '-vcodec', 'copy', '-an', v0fname],
-        ['ffmpeg', '-i', afname, '-acodec', 'copy', '-vn', a0fname],
+        ['ffmpeg', '-i', vfname, '-vcodec', 'copy', '-an', v0fname, '-y'],
+        ['ffmpeg', '-i', afname, '-acodec', 'copy', '-vn', a0fname, '-y'],
         ['ffmpeg', '-i', a0fname, '-i', v0fname, '-vcodec', 'copy', '-acodec', 'copy', res_fname, '-y'],
     ]
     for cmd in cmds:
