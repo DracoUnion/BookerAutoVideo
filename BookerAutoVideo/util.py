@@ -169,5 +169,16 @@ def ffmpeg_merge_video_audio(video, audio):
     safe_rmdir(tmpdir)
     return res
 
+def fname_escape(name):
+    return name.replace('\\', '＼') \
+               .replace('/', '／') \
+               .replace(':', '：') \
+               .replace('*', '＊') \
+               .replace('?', '？') \
+               .replace('"', '＂') \
+               .replace('<', '＜') \
+               .replace('>', '＞') \
+               .replace('|', '｜')
+
 
 
