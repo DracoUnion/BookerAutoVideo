@@ -180,7 +180,7 @@ def pics2video(frames):
     return res
 
 def concat_audios(audios):
-    audios = [librosa.load(a, sr=config['sr'])[0] for a in audios]
+    audios = [librosa.load(BytesIO(a), sr=config['sr'])[0] for a in audios]
     audio = np.concatenate(audios, axis=-1)
     bio = BytesIO()
     librosa.output.write_wav(bio, audio, config['sr'])
