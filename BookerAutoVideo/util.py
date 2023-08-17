@@ -68,6 +68,10 @@ def safe_remove(name):
     try: os.remove(name)
     except: pass
 
+def safe_rmdir(name):
+    try: shutil.rmtree(name)
+    except: pass
+
 def load_module(fname):
     if not path.isfile(fname) or \
         not fname.endswith('.py'):
@@ -105,6 +109,19 @@ def edgetts_cli(text, voice='zh-CN-XiaoyiNeural'):
     subp.Popen(cmd, shell=True).communicate()
     res = open(fname, 'rb').read()
     safe_remove(fname)
+    return res
+
+def ffmpeg_conv_fmt(video, from_, to):
+    prefix = uuid.uuid4().hex
+    from_fname = path.join(tempfile.gettempdir(), f'{prefix}.{from_}')
+    to_fname = path.join(tempfile.gettempdir(), f'{prefix}.{to}')
+    open(from_fname, 'wb').write(video)
+    cmd = ['ffmpeg', '-i', from_fname, '-acodec', 'copy', '-vcodec', 'copy', to_fname, '-y']
+    print(f'cmd: {cmd}')
+    subp.Popen(cmd, shell=True).communicate()
+    res = open(to_fname, 'rb').read()
+    safe_remove(from_fname)
+    safe_remove(to_fname)
     return res
 
 def ffmpeg_cat_videos(videos):

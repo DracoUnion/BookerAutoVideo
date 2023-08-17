@@ -241,6 +241,8 @@ def autovideo(args):
     frames = contents2frame(config['contents'])
     # 组装视频
     video = make_video(frames)
+    if config['format'] != 'mp4':
+        video = ffmpeg_conv_fmt(video, 'mp4',  config['format'])
     # 写文件
     video_fname = fname_escape(config['name']) + '.' + config['format']
     print(video_fname)
