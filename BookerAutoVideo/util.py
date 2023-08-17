@@ -131,7 +131,7 @@ def ffmpeg_cat(videos, fmt='mp4'):
         fname = path.join(tmpdir, f'{i}.{fmt}')
         open(fname, 'wb').write(video)
     video_fnames = [
-        'file "' + path.join(tmpdir, f'{i}.{fmt}') + '"'
+        'file ' + path.join(tmpdir, f'{i}.{fmt}').replace('\\', '\\\\')
         for i in range(len(videos))
     ]
     video_li_fname = path.join(tmpdir, f'list.txt') 
@@ -182,3 +182,5 @@ def fname_escape(name):
 
 
 
+def load_tts(text, voice):
+    pass
