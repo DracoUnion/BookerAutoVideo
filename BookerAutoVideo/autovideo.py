@@ -2,6 +2,7 @@ import yaml
 from os import path
 import sys
 import cv2
+import math
 import numpy as np
 import librosa
 from io import BytesIO
@@ -165,16 +166,34 @@ def contents2frame(contents):
         f['len'] = sum([a['len'] for a in f['audios']])
     return frames
 
+def pics2video(frames):
+    ofname = path.join(tempfile.gettempdir(), uuid.uuid4().hex + '.mp4')
+    fmt = cv2.VideoWriter_fourcc('M', 'P', '4', 'V')
+    vid = cv2.VideoWriter(ofname, fmt, config['fps'], config['size'])
+    for f in frames:
+        img = cv2.imdecode(np.frombuffer(f['image'], np.uint8), cv2.IMREAD_COLOR)
+        for _ in math.ceil(config['fps'] * f['len']):
+            vid.write(img)
+    vid.release()
+    res = open(ofname, 'rb').read()
+    safe_remove(ofname)
+    return res
+
+def concat_audios(audios):
+    audios = [librosa.load(a, sr=config['sr'])[0] for a in audios]
+    audio = np.concatenate(audios, axis=-1)
+    bio = BytesIO()
+    librosa.output.write_wav(bio, audio, config['sr'])
+    return bio.getvalue()
+
 # 组装视频
 def make_video(frames):
     clips = []
     # 图像部分
-    st = 0
-    videos = [pic2video(f['image'], f['len']) for f in frames]
-    video = ffmpeg_cat_videos(videos)
+    video = pics2video(frames)
     # 音频部分
     audios = [a['audio'] for f in frames for a in f['audios']]
-    audio = ffmpeg_cat_audios(audios)
+    audio = concat_audios(audios)
     # 合并音视频
     video = ffmpeg_merge_video_audio(video, audio)
     # 添加字幕 

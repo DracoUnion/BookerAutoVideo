@@ -106,43 +106,6 @@ def edgetts_cli(text, voice='zh-CN-XiaoyiNeural'):
     res = open(fname, 'rb').read()
     safe_remove(fname)
     return res
-    
-
-def pic2video(img, sec):
-    img = cv2.imdecode(np.frombuffer(img, np.uint8), cv2.IMREAD_COLOR)
-    ofname = path.join(tempfile.gettempdir(), uuid.uuid4().hex + '.mp4')
-    fmt = cv2.VideoWriter_fourcc('M', 'P', '4', 'V')
-    vid = cv2.VideoWriter(ofname, fmt, 1/ sec, img.shape[:2][::-1])
-    vid.write(img)
-    vid.release()
-    vid = open(ofname, 'rb').read()
-    safe_remove(ofname)
-    return vid
-
-def ffmpeg_cat_audios(audios):
-    prefix = uuid.uuid4().hex
-    for i, audio in enumerate(audios):
-        fname = path.join(tempfile.gettempdir(), f'{prefix}-{i}.mp3')
-        open(fname, 'wb').write(audio)
-    audio_fnames = [
-        path.join(tempfile.gettempdir(), f'{prefix}-{i}.mp3') 
-        for i in range(len(audios))
-    ]
-    ofname = path.join(tempfile.gettempdir(), f'prefix.mp3')
-    cmd = [
-        'ffmpeg', '-f', 'concat',
-    ]
-    for a in audio_fnames:
-        cmd += ['-i', a]
-    cmd += [
-        '-acodec', 'copy', ofname, '-y',
-    ]
-    print(f'cmd: {cmd}')
-    subp.Popen(cmd, shell=True).communicate()
-    res = open(ofname, 'rb').read()
-    safe_remove(ofname)
-    for f in audio_fnames: safe_remove(f)
-    return res
 
 def ffmpeg_cat_videos(videos):
     prefix = uuid.uuid4().hex

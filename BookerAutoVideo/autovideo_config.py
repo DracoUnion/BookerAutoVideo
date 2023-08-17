@@ -5,6 +5,8 @@ config = {
     'bgm': '',
     'bgImg': '',
     'size': [1280, 768],
+    'fps': 30,
+    'sr': 22050,
     'padding': 0,
     'contents': [],
     'header': '', 
