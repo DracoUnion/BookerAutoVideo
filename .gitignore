@@ -113,3 +113,8 @@ Thumbs.db
 # word
 ~$*.docx
 ~$*.doc
+
+*.mp4
+*.mp3
+*.avi
+*.wav
