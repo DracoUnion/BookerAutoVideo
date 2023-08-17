@@ -170,7 +170,7 @@ def make_video(frames):
     clips = []
     # 图像部分
     st = 0
-    videos = [ffmpeg_pic2video(f['image'], f['len']) for f in frames]
+    videos = [pic2video(f['image'], f['len']) for f in frames]
     video = ffmpeg_cat_videos(videos)
     # 音频部分
     audios = [a['audio'] for f in frames for a in f['audios']]
@@ -184,7 +184,7 @@ def make_video(frames):
         header = open(config['header'], 'rb').read()
         video = ffmpeg_cat_videos([header, video])
     if config['footer']:
-        header = open(config['footer'], 'rb').read()
+        footer = open(config['footer'], 'rb').read()
         video = ffmpeg_cat_videos([video, footer])
     return video
 

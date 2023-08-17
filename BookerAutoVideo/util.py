@@ -6,6 +6,8 @@ import shutil
 import tempfile
 import uuid
 import imgyaso
+import cv2
+import numpy  as np
 import subprocess  as subp
 
 def stylish_text(text):
@@ -106,22 +108,18 @@ def edgetts_cli(text, voice='zh-CN-XiaoyiNeural'):
     return res
     
 
-def ffmpeg_pic2video(img, sec):
-    prefix = uuid.uuid4().hex
-    img_fname = path.join(tempfile.gettempdir(), prefix + '.png')
-    open(img_fname, 'wb').write(img)
-    vid_fname = path.join(tempfile.gettempdir(), prefix + '.mp4')
-    cmd = [
-        'ffmpeg', '-r', str(1 / sec), '-f', 'image2', '-i', img_fname, vid_fname, '-y',
-    ]
-    print(f'cmd: {cmd}')
-    subp.Popen(cmd, shell=True).communicate()
-    res = open(vid_fname, 'rb').read()
-    safe_remove(img_fname)
-    safe_remove(vid_fname)
-    return res
+def pic2video(img, sec):
+    img = cv2.imdecode(np.frombuffer(img, np.uint8), cv2.IMREAD_COLOR)
+    ofname = path.join(tempfile.gettempdir(), uuid.uuid4().hex + '.mp4')
+    fmt = cv2.VideoWriter_fourcc('M', 'P', '4', 'V')
+    vid = cv2.VideoWriter(ofname, fmt, 1/ sec, img.shape[:2][::-1])
+    vid.write(img)
+    vid.release()
+    vid = open(ofname, 'rb').read()
+    safe_remove(ofname)
+    return vid
 
-def ffmpeg_cat_audio(audios):
+def ffmpeg_cat_audios(audios):
     prefix = uuid.uuid4().hex
     for i, audio in enumerate(audios):
         fname = path.join(tempfile.gettempdir(), f'{prefix}-{i}.mp3')
