@@ -100,8 +100,8 @@ def find_cmd_path(name):
     return ''
 
 
-def edgetts_cli(text, voice='zh-CN-XiaoyiNeural'):
-    fname = path.join(tempfile.gettempdir(), uuid.uuid4().hex + '.mp3')
+def edgetts_cli(text, voice='zh-CN-XiaoyiNeural', fmt='mp3'):
+    fname = path.join(tempfile.gettempdir(), uuid.uuid4().hex + '.' + fmt)
     cmd = [
         'edge-tts', '-t', text, '-v', voice, '--write-media', fname,
     ]
@@ -124,16 +124,16 @@ def ffmpeg_conv_fmt(video, from_, to):
     safe_remove(to_fname)
     return res
 
-def ffmpeg_cat_videos(videos):
+def ffmpeg_cat(videos, fmt='mp4'):
     prefix = uuid.uuid4().hex
     for i, video in enumerate(videos):
-        fname = path.join(tempfile.gettempdir(), f'{prefix}-{i}.mp4')
+        fname = path.join(tempfile.gettempdir(), f'{prefix}-{i}.{fmt}')
         open(fname, 'wb').write(video)
     video_fnames = [
-        path.join(tempfile.gettempdir(), f'{prefix}-{i}.mp4') 
+        path.join(tempfile.gettempdir(), f'{prefix}-{i}.{fmt}') 
         for i in range(len(videos))
     ]
-    ofname = path.join(tempfile.gettempdir(), f'prefix.mp4')
+    ofname = path.join(tempfile.gettempdir(), f'{prefix}.{fmt}')
     cmd = [
         'ffmpeg', '-f', 'concat',
     ]
@@ -149,18 +149,20 @@ def ffmpeg_cat_videos(videos):
     for f in video_fnames: safe_remove(f)
     return res
 
-def ffmpeg_merge_video_audio(video, audio):
+def ffmpeg_merge_video_audio(video, audio, video_fmt='mp4', audio_fmt='mp4'):
     tmpdir = path.join(tempfile.gettempdir(), uuid.uuid4().hex)
     safe_mkdir(tmpdir)
-    vfname = path.join(tmpdir, 'video.mp4')
+    vfname = path.join(tmpdir, f'video.{video_fmt}')
+    v0fname = path.join(tmpdir, f'video0.{video_fmt}')
     open(vfname, 'wb').write(video)
-    afname = path.join(tmpdir, 'audio.mp4')
+    afname = path.join(tmpdir, f'audio.{audio_fmt}')
+    a0fname = path.join(tmpdir, f'audio0.{audio_fmt}')
     open(afname, 'wb').write(audio)
-    res_fname = path.join(tmpdir, 'merged.mp4')
+    res_fname = path.join(tmpdir, f'merged.{video_fmt}')
     cmds = [
-        ['ffmpeg', '-i', vfname, '-vcodec', 'copy', '-an', vfname, '-y'],
-        ['ffmpeg', '-i', afname, '-acodec', 'copy', '-vn', afname, '-y'],
-        ['ffmpeg', '-i', afname, '-i', vfname, '-vcodec', 'copy', '-acodec', 'copy', res_fname, '-y'],
+        ['ffmpeg', '-i', vfname, '-vcodec', 'copy', '-an', v0fname],
+        ['ffmpeg', '-i', afname, '-acodec', 'copy', '-vn', a0fname],
+        ['ffmpeg', '-i', a0fname, '-i', v0fname, '-vcodec', 'copy', '-acodec', 'copy', res_fname, '-y'],
     ]
     for cmd in cmds:
         print(f'cmd: {cmd}')

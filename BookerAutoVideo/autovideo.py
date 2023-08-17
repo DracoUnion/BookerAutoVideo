@@ -180,13 +180,6 @@ def pics2video(frames):
     safe_remove(ofname)
     return res
 
-def concat_audios(audios):
-    audios = [librosa.load(BytesIO(a), sr=config['sr'])[0] for a in audios]
-    audio = np.concatenate(audios, axis=-1)
-    bio = BytesIO()
-    wavfile.write(bio, config['sr'], audio)
-    return bio.getvalue()
-
 # 组装视频
 def make_video(frames):
     clips = []
@@ -194,18 +187,18 @@ def make_video(frames):
     video = pics2video(frames)
     # 音频部分
     audios = [a['audio'] for f in frames for a in f['audios']]
-    audio = concat_audios(audios)
+    audio = ffmpeg_cat(audios, 'mp3')
     # 合并音视频
-    video = ffmpeg_merge_video_audio(video, audio)
+    video = ffmpeg_merge_video_audio(video, audio, audio_fmt='mp3')
     # 添加字幕 
     # TODO
     # 合并片头片尾
     if config['header']:
         header = open(config['header'], 'rb').read()
-        video = ffmpeg_cat_videos([header, video])
+        video = ffmpeg_cat([header, video])
     if config['footer']:
         footer = open(config['footer'], 'rb').read()
-        video = ffmpeg_cat_videos([video, footer])
+        video = ffmpeg_cat([video, footer])
     return video
 
 def update_config(user_cfg, cfg_dir):
