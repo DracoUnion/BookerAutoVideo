@@ -10,6 +10,8 @@ import cv2
 import numpy  as np
 import subprocess  as subp
 
+DATA_DIR = path.join(tempfile.gettempdir(), 'autovideo')
+
 def stylish_text(text):
     text = (
         text.replace(',', '，')
@@ -182,5 +184,14 @@ def fname_escape(name):
 
 
 
-def load_tts(text, voice):
-    pass
+def load_tts(hash_, voice):
+    fname = path.join(DATA_DIR, f'{hash_}-{voice}')
+    if path.isfile(fname):
+        return open(fname, 'rb').read()
+    else:
+        return None
+        
+def save_tts(hash_, voice, data):
+    safe_mkdir(DATA_DIR)
+    fname = path.join(DATA_DIR, f'{hash_}-{voice}')
+    open(fname, 'wb').write(data)

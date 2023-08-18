@@ -97,7 +97,7 @@ def preproc_asset(config):
         elif cont['type'] == 'audio:tts':
             text = cont['value']
             print(f'TTS：{text}')
-            cont['asset'] = edgetts_cli(text)
+            cont['asset'] = tts(text)
         elif cont['type'] == 'image:external':
             text = cont['value']
             print(f'Ex：{text}')
@@ -126,6 +126,14 @@ def preproc_asset(config):
         c = config['contents'][idx]
         del config['contents'][idx]
         config['contents'].insert(0, c)
+
+def tts(text):
+    hash_ = hashlib.md5(text.encode('utf8')).hexdigest()
+    cache = load_tts(hash_, 'none')
+    if cache return cache
+    data = edgetts_cli(text)
+    save_tts(hash_, 'none', data)
+    return data
 
 # 剪裁图片
 def trim_img(img):
