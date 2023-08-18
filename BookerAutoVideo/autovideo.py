@@ -147,8 +147,8 @@ def resize_img_cut(img):
     cut_w = nw - config['size'][0]
     cut_h = nh - config['size'][1]
     img = img[
-        cut_h // 2 : -(cut_h - cut_h // 2),
-        cut_w // 2 : -(cut_w - cut_w // 2),
+        cut_h // 2 : cut_h // 2 + config['size'][1],
+        cut_w // 2 : cut_w // 2 + config['size'][0],
     ]
     img = bytes(cv2.imencode('.png', img)[1])
     return img
