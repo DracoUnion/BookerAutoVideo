@@ -6,12 +6,11 @@ import math
 import numpy as np
 import librosa
 from io import BytesIO
-from moviepy.editor import *
+import hashlib
 from .autovideo_config import config
 from .util import *
 from scipy.io import wavfile
 from EpubCrawler.util import request_retry
-from moviepy.video.io.VideoFileClip import VideoFileClip, AudioFileClip
 
 DIR = path.abspath(path.dirname(__file__))
 RE_MD_IMG = r'!\[.*?\]\((.*?)\)'
