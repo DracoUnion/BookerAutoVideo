@@ -129,6 +129,33 @@ def preproc_asset(config):
 
 # 剪裁图片
 def trim_img(img):
+    if config['resizeMode'] == 'wrap':
+        return resize_img_wrap(img)
+    else:
+        return resize_img_cut(img)
+
+def resize_img_cut(img):
+    img = cv2.imdecode(np.frombuffer(img, np.uint8), cv2.IMREAD_COLOR)
+    h, w, *_ = img.shape
+    # 计算宽高的缩放比例，使用较大值等比例缩放
+    x_scale = config['size'][0] / w
+    y_scale = config['size'][1] / h
+    scale = max(x_scale, y_scale)
+    nh, nw = int(h * scale), int(w * scale)
+    img = cv2.resize(img, (nw, nh), interpolation=cv2.INTER_CUBIC)
+    # 剪裁成预定大小
+    cut_w = nw - config['size'][0]
+    cut_h = nh - config['size'][1]
+    img = img[
+        cut_h // 2 : -(cut_h - cut_h // 2),
+        cut_w // 2 : -(cut_w - cut_w // 2),
+    ]
+    img = bytes(cv2.imencode('.png', img)[1])
+    return img
+
+
+# 剪裁图片
+def resize_img_wrap(img):
     img = cv2.imdecode(np.frombuffer(img, np.uint8), cv2.IMREAD_COLOR)
     h, w, *_ = img.shape
     # 计算宽高的缩放比例，使用较小值等比例缩放

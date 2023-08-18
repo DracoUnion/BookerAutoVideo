@@ -16,4 +16,5 @@ config = {
     'crawler': {},
     # PaddleSpeech 配置
     'tts': {},
+    'resizeMode': 'wrap',
 }
