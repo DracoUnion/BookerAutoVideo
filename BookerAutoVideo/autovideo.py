@@ -129,7 +129,7 @@ def preproc_asset(config):
 def tts(text):
     hash_ = hashlib.md5(text.encode('utf8')).hexdigest()
     cache = load_tts(hash_, 'none')
-    if cache return cache
+    if cache: return cache
     data = edgetts_cli(text)
     save_tts(hash_, 'none', data)
     return data
