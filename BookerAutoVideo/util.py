@@ -21,7 +21,7 @@ def stylish_text(text):
             .replace('!', '！')
     ) + '。'
     # 连续多个标点只取一个
-    text = re.sub(r'([。，！？]){2,}', r'\1', text)
+    text = re.sub(r'[。，！？]{2,}', lambda m: m.group()[0], text)
     # 50~100 个字为一段
     text = re.sub(r'(.{50,100}[。，！？])', r'\1\n\n', text)
     # 段尾逗号变句号
