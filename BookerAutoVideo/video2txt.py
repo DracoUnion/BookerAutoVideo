@@ -128,7 +128,7 @@ def video2txt_file(args):
            imgs[imgname] = w['img']
            w['text'] = f'![](img/{imgname})'
         elif 'text' in w:
-            w['text'] = stylish_text(w['text']) + '。'
+            w['text'] = stylish_text(w['text'])
     text = '\n\n'.join([w['text'] for w in words])
     text = f'# {title}\n\n{text}'
     print(text)

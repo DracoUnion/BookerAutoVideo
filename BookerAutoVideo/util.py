@@ -13,13 +13,18 @@ import subprocess  as subp
 DATA_DIR = path.join(tempfile.gettempdir(), 'autovideo')
 
 def stylish_text(text):
+    # 英文标点转成中文，并补齐末尾句号
     text = (
         text.replace(',', '，')
             .replace('.', '。')
             .replace('?', '？')
             .replace('!', '！')
-    )
-    text = re.sub(r'(.{50,100}(?:，|。|！|？))', r'\1\n\n', text)
+    ) + '。'
+    # 连续多个标点只取一个
+    text = re.sub(r'([。，！？]){2,}', r'\1', text)
+    # 50~100 个字为一段
+    text = re.sub(r'(.{50,100}[。，！？])', r'\1\n\n', text)
+    # 段尾逗号变句号
     text = re.sub(r'，$', '。', text, flags=re.M)
     return text
 
