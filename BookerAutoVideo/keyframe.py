@@ -168,7 +168,7 @@ def config_scene(args):
         args.extract_mode = 'thres'
         args.diff_mode = 'fullness'
         args.opti_mode = 'thres'
-        args.rate = 0.2
+        args.rate = 0.1
         args.direction = DIR_B
         args.bw = False
         args.thres = 0.2
