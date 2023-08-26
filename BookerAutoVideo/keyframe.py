@@ -163,7 +163,7 @@ def config_scene(args):
         args.rate = 0.2
         args.direction = DIR_B
         args.bw = False
-        args.thres = 0.1
+        args.thres = 0.2
     elif args.scene == 'ppt2':
         args.extract_mode = 'thres'
         args.diff_mode = 'fullness'
@@ -171,7 +171,7 @@ def config_scene(args):
         args.rate = 0.2
         args.direction = DIR_B
         args.bw = False
-        args.thres = 0.1
+        args.thres = 0.2
     elif args.scene == 'movie':
         args.extract_mode = 'thres'
         args.diff_mode = 'phash'
