@@ -158,6 +158,21 @@ def ffmpeg_cat(videos, fmt='mp4'):
     safe_rmdir(tmpdir)
     return res
 
+def ffmpeg_add_srt(video, srt, video_fmt='mp4'):
+    tmpdir = path.join(tempfile.gettempdir(), uuid.uuid4().hex)
+    safe_mkdir(tmpdir)
+    vfname = path.join(tmpdir, f'video.{video_fmt}')
+    open(vfname, 'wb').write(video)
+    sfname = path.join(tmpdir, f'subtitle.srt')
+    open(sfname, 'w', encoding='utf8').write(srt)
+    res_fname = path.join(tmpdir, f'merged.{video_fmt}')
+    cmd = ['ffmpeg', '-i', vfname, '-vf', f'subtitles={sfname}', res_fname, '-y'],
+    print(f'cmd: {cmd}')
+    subp.Popen(cmd, shell=True).communicate()
+    res = open(res_fname, 'rb').read()
+    safe_rmdir(tmpdir)
+    return res
+
 def ffmpeg_merge_video_audio(video, audio, video_fmt='mp4', audio_fmt='mp4'):
     tmpdir = path.join(tempfile.gettempdir(), uuid.uuid4().hex)
     safe_mkdir(tmpdir)

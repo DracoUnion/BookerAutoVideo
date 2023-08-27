@@ -181,6 +181,66 @@ def resize_img_wrap(img):
     img = bytes(cv2.imencode('.png', img)[1])
     return img
 
+
+def split_text_even(text, maxlen):
+    textlen = len(text)
+    num = math.ceil(textlen / maxlen)
+    reallen = textlen // num
+    res = [text[i:i+reallen] for i in range(0, textlen, reallen)]
+    if textlen % num != 0:
+        res[-1] += text[:-textlen%num]
+    return res
+        
+
+def srt_time_fmt(num):
+    sec = int(num) % 60
+    min_ = int(num) // 60 % 60
+    hr = int(num) // 3600
+    msec = int(num * 1000) % 1000
+    return f'{hr:02d}:{min_:02d}:{sec:02d},{msec:03d}'
+
+# 生成字幕
+def gen_srt(audios):
+    # 提取 audios 数组中的字幕
+    subs = [
+        {
+            'text': a['subtitle'],
+            'len': a['len'],
+        }
+        for a in audios
+    ]
+    # 将每个字幕按指定长度分割
+    for s in subs:
+        text = s['text']
+        if not text: continue
+        parts = split_text_even(text, 30)
+        s['parts'] = [
+            {
+                'text': p,
+                'len': len(p) / s['len'],
+            }
+            for p in parts
+        ]
+    # 将分割后的字幕替换原字幕
+    subs = sum([
+        s.get('parts', s) for s in subs
+    ], [])
+    # 计算起始时间
+    offset = 0
+    for s in subs:
+        s['start'] = offset
+        offset += s['len']
+    # 组装 SRT 文件
+    srts = []
+    for i, s in enumerate(subs):
+        if not s['text']: continue
+        st, ed = srt_time_fmt(s['start']), srt_time_fmt(s['start'] + s['len'])
+        text = s['text']
+        srts += f'{i+1}\n{st} -–> {ed}\n{text}\n'
+    srt = '\n'.join(srts)
+    return set
+    
+
 # 内容成帧
 def contents2frame(contents):
     frames = []
@@ -206,6 +266,8 @@ def contents2frame(contents):
             else ffmpeg_cat([a['audio'] for a in f['audios']], 'mp3')
         )
         f['video'] = ffmpeg_merge_video_audio(f['video_noaud'], f['audio'], audio_fmt='mp3')
+        f['srt'] = gen_srt(f['audios'])
+        f['video'] = ffmpeg_add_srt(f['video'], f['srt'])
     return frames
 
 def pic2video(img, len_):
