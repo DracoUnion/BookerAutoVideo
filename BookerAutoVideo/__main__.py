@@ -28,28 +28,19 @@ def main():
     video2txt_parser.add_argument("-l", "--lang", default='zh',  help="language")
     video2txt_parser.add_argument("-s", "--scene", choices=['auto', 'ppt', 'ppt2', 'movie'], default='auto', help="scene")
     video2txt_parser.set_defaults(
-        extract_mode='thres',
-        diff_mode='pixel_l1',
         opti_mode='none',
         rate=0.2,
-        direction=DIR_F,
-        bw=False,
-        thres=math.nan,
-        win_size=9,
+        direction=DIR_T,
+        thres=0.6,
         func=video2txt_handle,
     )
 
     kf_parser = subparsers.add_parser("ext-kf", help="extract keyframes")
     kf_parser.add_argument("fname", help="file name")
-    kf_parser.add_argument("-e", "--extract-mode", choices=ext_modes, default="thres", help="extract mode")
-    kf_parser.add_argument("-d", "--diff-mode", choices=list(img_sim.keys()),default="pixel_l1", help="frame diff mode")
     kf_parser.add_argument("-o", "--opti-mode", default="none", help="img opti mode, default 'none'")
     kf_parser.add_argument("-r", "--rate", type=float, default=0.2, help="how many frames to extract in 1s")
-    kf_parser.add_argument("-D", "--direction", choices=[DIR_F, DIR_B, DIR_T], default=DIR_F, help="the direction used to calc frame diff")
-    kf_parser.add_argument("--bw", action='store_true', help="convert img into bw instead of greyscale when calculating diff")
-    kf_parser.add_argument("-t", "--thres", type=float, default=math.nan, help="thres in thres mode (+inf: extract none, -inf: extract all, nan: use default)")
-    kf_parser.add_argument("-w", "--win-size", type=int, default=9, help="window size for adathres")
-    kf_parser.add_argument("-s", "--scene", choices=['auto', 'ppt', 'ppt2', 'movie'], default='auto', help="scene")
+    kf_parser.add_argument("-d", "--direction", choices=[DIR_F, DIR_B, DIR_T], default=DIR_T, help="the direction used to calc frame diff")
+    kf_parser.add_argument("-t", "--thres", type=float, default=0.6, help="thres in thres mode")
     kf_parser.add_argument("-T", "--threads", type=int, default=8, help="thread count")
     kf_parser.set_defaults(func=extract_keyframe_file)
 
