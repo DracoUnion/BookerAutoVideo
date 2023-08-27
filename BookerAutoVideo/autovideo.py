@@ -236,8 +236,7 @@ def gen_srt(audios):
         if not s['text']: continue
         st, ed = srt_time_fmt(s['start']), srt_time_fmt(s['start'] + s['len'])
         text = s['text']
-        srts += f'{i+1}\n{st} -–> {ed}\n{text}\n'
-    print(srts)
+        srts.append(f'{i+1}\n{st} -–> {ed}\n{text}\n')
     srt = '\n'.join(srts)
     return srt
     
