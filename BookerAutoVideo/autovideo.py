@@ -199,8 +199,24 @@ def contents2frame(contents):
             })
     for f in frames:
         f['len'] = sum([a['len'] for a in f['audios']])
+        f['video_noaud'] = pic2video(f['image'], f['len'])
+        f['audio'] = ffmpeg_cat([a['audio'] for a in f['audios']], 'mp3')
+        f['video'] = ffmpeg_merge_video_audio(f['video_noaud'], f['audio'], audio_fmt='mp3')
     return frames
 
+def pic2video(img, len_):
+    ofname = path.join(tempfile.gettempdir(), uuid.uuid4().hex + '.mp4')
+    fmt = cv2.VideoWriter_fourcc('M', 'P', '4', 'V')
+    vid = cv2.VideoWriter(ofname, fmt, config['fps'], config['size'])
+    img = cv2.imdecode(np.frombuffer(img, np.uint8), cv2.IMREAD_COLOR)
+    ntimes = math.ceil(config['fps'] * len_)
+    for _ in range(ntimes): vid.write(img)
+    vid.release()
+    res = open(ofname, 'rb').read()
+    safe_remove(ofname)
+    return res
+
+'''
 def pics2video(frames):
     ofname = path.join(tempfile.gettempdir(), uuid.uuid4().hex + '.mp4')
     fmt = cv2.VideoWriter_fourcc('M', 'P', '4', 'V')
@@ -213,17 +229,12 @@ def pics2video(frames):
     res = open(ofname, 'rb').read()
     safe_remove(ofname)
     return res
+'''
 
 # 组装视频
 def make_video(frames):
-    clips = []
-    # 图像部分
-    video = pics2video(frames)
-    # 音频部分
-    audios = [a['audio'] for f in frames for a in f['audios']]
-    audio = ffmpeg_cat(audios, 'mp3')
-    # 合并音视频
-    video = ffmpeg_merge_video_audio(video, audio, audio_fmt='mp3')
+    # 合并视频
+    video = ffmpeg_cat([f['video'] for f in frames])
     # 添加字幕 
     # TODO
     # 合并片头片尾
