@@ -35,7 +35,7 @@ def bw2text(img):
         '.png', img, 
         [cv2.IMWRITE_PNG_BILEVEL , 1]
     )[1]
-    res = easyocr.readtext(img)
+    res = ocr_reader.readtext(img)
     text = '\n'.join([line[1] for line in res])
 
 def nsec2hms(nsec):
