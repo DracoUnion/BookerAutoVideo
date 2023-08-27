@@ -45,7 +45,7 @@ def nsec2hms(nsec):
     s = nsec % 60
     return f'{h}h{m:02d}m{s:02d}s'
 
-def load_frames(fname, rate, bw):
+def load_frames(fname, rate):
     cap = cv2.VideoCapture(fname) 
     if not cap.isOpened():
         raise Exception(f'无法打开文件 {fname}')
