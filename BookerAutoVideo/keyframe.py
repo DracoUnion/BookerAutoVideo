@@ -82,8 +82,6 @@ def calc_frame_diffs(frames, args):
         frames[-1]['diff'] = (frames[-1]['diff'] + 1) / 2
     
 def extract_keyframe(args):
-    config_scene(args)
-    config_thres(args)
     fname = args.fname
     opti_mode = args.opti_mode
     # 从视频中读取帧
