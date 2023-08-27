@@ -266,8 +266,8 @@ def contents2frame(contents):
             else ffmpeg_cat([a['audio'] for a in f['audios']], 'mp3')
         )
         f['video'] = ffmpeg_merge_video_audio(f['video_noaud'], f['audio'], audio_fmt='mp3')
-        f['srt'] = gen_srt(f['audios'])
-        f['video'] = ffmpeg_add_srt(f['video'], f['srt'])
+        # f['srt'] = gen_srt(f['audios'])
+        # f['video'] = ffmpeg_add_srt(f['video'], f['srt'])
     return frames
 
 def pic2video(img, len_):
