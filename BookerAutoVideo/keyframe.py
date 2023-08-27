@@ -68,7 +68,7 @@ def load_frames(fname, rate, bw):
     return frames
 
 def calc_frame_diffs(frames, args):
-    direction, diff_mode = args.direction, args.diff_mode  
+    direction = args.direction
     frames[0]['diff'] = 1
     for prev, curr in zip(frames[:-1], frames[1:]):
         curr['diff'] = text_ngram_diff(prev['text'], curr['text'])
@@ -85,7 +85,7 @@ def extract_keyframe(args):
     fname = args.fname
     opti_mode = args.opti_mode
     # 从视频中读取帧
-    frames = load_frames(fname, args.rate, args.bw)
+    frames = load_frames(fname, args.rate)
     # 计算差分
     calc_frame_diffs(frames, args)
     for f in frames:
@@ -105,7 +105,6 @@ def extract_keyframe(args):
         # 保证最小 1080p，不够就放大
         h, w = f['img'].shape[:2]
         scale = 1080 / min(h, w)
-        # img = anime4k_scale(img, scale, args.threads)
         f['img'] = opti_img(img, args.opti_mode, 8)
     return frames
 
