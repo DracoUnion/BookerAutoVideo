@@ -18,8 +18,12 @@ DIR_F = 'forward'
 DIR_B = 'backward'
 DIR_T = 'twoway'
 
-ocr_reader = easyocr.Reader(['ch_sim', 'en'])
+ocr_reader = None
 PIL.Image.ANTIALIAS = PIL.Image.LANCZOS
+
+def load_ocr():
+    global ocr_reader
+    ocr_reader = easyocr.Reader(['ch_sim', 'en'])
 
 def text_ngram_diff(text1, text2, n=3):
     set1 = {text1[i:i+n] for i in range(0, len(text1) - n + 1)}
@@ -114,6 +118,7 @@ def extract_keyframe_file(args):
         print('请提供视频')
         return
     print(fname)
+    load_ocr()
     frames = extract_keyframe(args)
     # 保存所有关键帧
     opath = re.sub(r'\.\w+$', '', fname) + '_keyframe'
