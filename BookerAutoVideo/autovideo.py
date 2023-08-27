@@ -200,7 +200,11 @@ def contents2frame(contents):
     for f in frames:
         f['len'] = sum([a['len'] for a in f['audios']])
         f['video_noaud'] = pic2video(f['image'], f['len'])
-        f['audio'] = ffmpeg_cat([a['audio'] for a in f['audios']], 'mp3')
+        f['audio'] = (
+            f['audios'][0]['audio'] 
+            if len(f['audios']) == 1 
+            else ffmpeg_cat([a['audio'] for a in f['audios']], 'mp3')
+        )
         f['video'] = ffmpeg_merge_video_audio(f['video_noaud'], f['audio'], audio_fmt='mp3')
     return frames
 
