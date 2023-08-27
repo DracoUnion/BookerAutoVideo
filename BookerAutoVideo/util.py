@@ -164,9 +164,10 @@ def ffmpeg_add_srt(video, srt, video_fmt='mp4'):
     vfname = path.join(tmpdir, f'video.{video_fmt}')
     open(vfname, 'wb').write(video)
     sfname = path.join(tmpdir, f'subtitle.srt')
+    sfname_esc = sfname.replace('\\', '\\\\')
     open(sfname, 'w', encoding='utf8').write(srt)
     res_fname = path.join(tmpdir, f'merged.{video_fmt}')
-    cmd = ['ffmpeg', '-i', vfname, '-vf', f'subtitles={sfname}', res_fname, '-y']
+    cmd = ['ffmpeg', '-i', vfname, '-vf', f'subtitles={sfname_esc}', res_fname, '-y']
     print(f'cmd: {cmd}')
     subp.Popen(cmd, shell=True).communicate()
     res = open(res_fname, 'rb').read()
