@@ -9,7 +9,7 @@ import tempfile
 import subprocess as subp
 from moviepy.video.io.VideoFileClip import VideoFileClip
 from os import path
-from imgyaso import adathres
+from imgyaso import adathres, adathres_bts
 from .util import *
 import easyocr
 import PIL
@@ -30,11 +30,12 @@ def text_ngram_diff(text1, text2, n=3):
     set2 = {text2[i:i+n] for i in range(0, len(text2) - n + 1)}
     return len(set1 & set2) / len(set1 | set2)
     
-def bw2text(img):
+def img2text(img):
     img = cv2.imencode(
         '.png', img, 
-        [cv2.IMWRITE_PNG_BILEVEL , 1]
+        [cv2.IMWRITE_PNG_COMPRESSION , 9]
     )[1]
+    img = adathres_bts(img)
     res = ocr_reader.readtext(img)
     text = '\n'.join([line[1] for line in res])
 
@@ -61,7 +62,7 @@ def load_frames(fname, rate):
             'idx': len(frames), 
             'time': tm,
             'img': img,
-            'text': bw2text(adathres(ensure_grayscale(img))),
+            'text': img2text(img),
         })
         tm += 1 / rate
     cap.release()
