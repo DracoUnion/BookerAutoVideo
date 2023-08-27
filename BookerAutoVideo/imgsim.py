@@ -3,10 +3,6 @@ import numpy as np
 import os
 from .util import *
 
-def ensure_grayscale(img):
-    return cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) \
-           if img.ndim == 3 else img
-
 # 直方图余弦
 def hist_cos_sim(prev, next):
     prev, next = ensure_grayscale(prev), ensure_grayscale(next)

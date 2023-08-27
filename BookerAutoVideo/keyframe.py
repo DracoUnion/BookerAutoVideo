@@ -31,8 +31,6 @@ def text_ngram_diff(text1, text2, n=3):
     return len(set1 & set2) / len(set1 | set2)
     
 def bw2text(img):
-    if img.ndim == 3:
-        img = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     img = cv2.imencode(
         '.png', img, 
         [cv2.IMWRITE_PNG_BILEVEL , 1]
@@ -63,7 +61,7 @@ def load_frames(fname, rate):
             'idx': len(frames), 
             'time': tm,
             'img': img,
-            'text': bw2text(adathres(img)),
+            'text': bw2text(adathres(ensure_grayscale(img))),
         })
         tm += 1 / rate
     cap.release()

@@ -12,6 +12,10 @@ import subprocess  as subp
 
 DATA_DIR = path.join(tempfile.gettempdir(), 'autovideo')
 
+def ensure_grayscale(img):
+    return cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) \
+           if img.ndim == 3 else img
+
 def stylish_text(text):
     # 英文标点转成中文，并补齐末尾句号
     text = (
