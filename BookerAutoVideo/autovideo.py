@@ -238,7 +238,7 @@ def gen_srt(audios):
         text = s['text']
         srts += f'{i+1}\n{st} -–> {ed}\n{text}\n'
     srt = '\n'.join(srts)
-    return set
+    return srt
     
 
 # 内容成帧
