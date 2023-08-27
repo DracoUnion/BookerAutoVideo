@@ -169,8 +169,7 @@ def ffmpeg_add_srt(video, srt, video_fmt='mp4'):
     # cmd = ['ffmpeg', '-i', vfname, '-vf', f'subtitles={sfname_esc}', res_fname, '-y']
     cmd = [
         'ffmpeg', '-i', vfname, '-i', sfname, 
-        '-c:a', 'copy', '-c:v', 'copy', '-c:s', 'copy', 
-        res_fname, '-y',
+        '-c', 'copy', res_fname, '-y',
     ]
     print(f'cmd: {cmd}')
     subp.Popen(cmd, shell=True).communicate()
