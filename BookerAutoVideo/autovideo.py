@@ -217,7 +217,7 @@ def gen_srt(audios):
         s['parts'] = [
             {
                 'text': p,
-                'len': len(p) / s['len'],
+                'len': len(p) / len(text) * s['len'],
             }
             for p in parts
         ]
