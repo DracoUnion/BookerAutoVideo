@@ -45,16 +45,6 @@ def nsec2hms(nsec):
     s = nsec % 60
     return f'{h}h{m:02d}m{s:02d}s'
 
-def load_frames(fname, fps):
-    imgs, _ = get_video_imgs(fname, fps)
-    frames = [{
-        'idx': i,
-        'time': i / fps,
-        'img': img,
-        'text': img2text(img),
-    } for i, img in enumerate(imgs)]
-    return frames
-
 def calc_frame_diffs(frames, args):
     direction = args.direction
     frames[0]['diff'] = 1
@@ -73,7 +63,13 @@ def extract_keyframe(args):
     fname = args.fname
     opti_mode = args.opti_mode
     # 从视频中读取帧
-    frames = load_frames(fname, args.rate)
+    imgs, _ = get_video_imgs(fname, args.rate)
+    frames = [{
+        'idx': i,
+        'time': i / fps,
+        'img': img,
+        'text': img2text(img),
+    } for i, img in enumerate(imgs)]
     # 计算差分
     calc_frame_diffs(frames, args)
     for f in frames:
