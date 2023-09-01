@@ -133,7 +133,7 @@ def preproc_asset(config):
                 assert re.search(r'^#[0-9a-fA-F]{6}$', bgr)
                 r, g, b = int(bgr[1:3], 16), int(bgr[3:5], 16), int(bgr[5:7], 16)
                 bgr = [b, g, r]
-            cont['asset'] = gen_mono_color(onfig['size'][0], onfig['size'][1], bgr)
+            cont['asset'] = gen_mono_color(config['size'][0], config['size'][1], bgr)
         elif cont['type'] == 'image:tti':
             text = cont['value']
             print(f'TTI：{text}')
