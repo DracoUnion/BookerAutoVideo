@@ -386,3 +386,8 @@ def speedup_video_noaud(video, multi, fps=0):
     imgs = [imgs[int(i)] for i in np.arange(0, len(imgs), nulti)]
     video = imgs2video(imgs, fps)
     
+def slice_video_noaud(video, nsec, fps=0):
+    imgs, fps = get_video_imgs(video, fps)
+    count = nsec * fps
+    video = imgs2video(imgs[:count], fps)
+   

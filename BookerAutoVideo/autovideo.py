@@ -259,7 +259,10 @@ def contents2frame(contents):
             })
     for f in frames:
         f['len'] = sum([a['len'] for a in f['audios']])
-        f['video_noaud'] = img_nsec_2video(f['image'], f['len'], config['fps'])
+        if 'video_noaud' in f:
+            f['video_noaud'] = repeat_video_nsec(f['video_noaud'], f['len'])
+        else:
+            f['video_noaud'] = img_nsec_2video(f['image'], f['len'], config['fps'])
         f['audio'] = (
             f['audios'][0]['audio'] 
             if len(f['audios']) == 1 
@@ -269,6 +272,18 @@ def contents2frame(contents):
         f['srt'] = gen_srt(f['audios'])
         f['video'] = ffmpeg_add_srt(f['video'], f['srt'])
     return frames
+
+def repeat_video_nsec(video, total):
+    nsec = ffmpeg_get_info(video)['duration']
+    if total == nsec:
+        return video
+    elif total < nsec:
+        return slice_video_noaud(video, total)
+    nrepeat = total // nsec
+    new_len = total / nrepeat
+    multi = len / new_len
+    one_video = speedup_video_noaud(video, multi)
+    return ffmpeg_cat([one_video] * nrepeat)
 
 # 组装视频
 def make_video(frames):
