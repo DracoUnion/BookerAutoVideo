@@ -147,9 +147,13 @@ def preproc_asset(config):
     ]
     
     # 剪裁图片
+    w, h = config['size']
+    mode = config['resizeMode']
     for c in config['contents']:
         if c['type'].startswith('image:'):
-            c['asset'] = trim_img(c['asset'])
+            c['asset'] = resize_img(c['asset'], w, h, mode)
+        if c['type'].startswith('video:'):
+            c['asset'] = resize_video(c['asset'], w, h, mode)
     
     # 如果第一张不是图片，则提升第一个图片
     idx = -1
@@ -172,14 +176,6 @@ def tts(text):
     data = edgetts_cli(text)
     save_tts(hash_, 'none', data)
     return data
-
-def trim_img(img):
-    nw, nh = config['size']
-    if config['resizeMode'] == 'wrap':
-        return resize_img_wrap(img, nw, nh)
-    else:
-        return resize_img_fill(img, nw, nh)
-
 
 def split_text_even(text, maxlen):
     textlen = len(text)
@@ -247,6 +243,11 @@ def contents2frame(contents):
         if c['type'].startswith('image:'):
             frames.append({
                 'image': c['asset'],
+                'audios': [],
+            })
+        elif c['type'].startswith('video:'):
+            frames.append({
+                'video_noaud': c['asset'],
                 'audios': [],
             })
         elif c['type'].startswith('audio:'):

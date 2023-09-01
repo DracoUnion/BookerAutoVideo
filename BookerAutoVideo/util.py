@@ -306,6 +306,11 @@ def resize_img_wrap(img, nw, nh):
         img = bytes(cv2.imencode('.png', img, IMWRITE_PNG_FLAG)[1])
     return img
     
+def resize_img(img, nw, nh, mode='wrap'):
+    assert mode in ['wrap', 'fill']
+    func_resize_img = resize_img_wrap if mode == 'wrap' else resize_img_fill
+    return func_resize_img(img, nw, nh)
+    
 def get_video_imgs(video, fps=0):
     if isinstance(video, bytes):
         fname = path.join(tempfile.gettempdir(), uuid.uuid4().hex + '.mp4')
@@ -334,7 +339,7 @@ def get_video_imgs(video, fps=0):
         safe_remove(fname)
     return imgs, fps
     
-def resize_video_imgs(video, nw, nh, fps = 0, mode='wrap'):
+def resize_video(video, nw, nh, fps=0, mode='wrap'):
     assert mode in ['wrap', 'fill']
     func_resize_img = resize_img_wrap if mode == 'wrap' else resize_img_fill
     imgs, fps = get_video_imgs(video, fps)
@@ -356,8 +361,15 @@ def imgs2video(imgs, w, h, fps=30):
     safe_remove(ofname)
     return res
     
-def img_nsec_2video(img, nsec, w, h, fps=30):
+def imgs_nsecs_2video(imgs, nsecs, w, h, fps=30):
+    if isinstance(nsecs, int):
+        nsecs = [nsecs] * len(imgs)
+    assert len(imgs) = len(nsecs)
+    counts = [math.ceil(fps * nsec) for nsec in nsecs]
+    imgs = sum([[img] * count for img, count in zip(imgs, counts)])
+    return imgs2video(imgs, w, h, fps)
+ 
+ def img_nsec_2video(img, nsec, w, h, fps=30):
     count = math.ceil(fps * nsec)
     imgs = [img] * count
     return imgs2video(imgs, w, h, fps)
- 
