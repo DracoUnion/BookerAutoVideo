@@ -24,7 +24,8 @@ RE_SENT_DELIM = r'\n|。|\?|？|;|；|:|：|!|！'
 def gen_blank_audio(nsec, sr=22050, fmt='wav'):
     audio = np.zeros(int(nsec * sr), dtype=np.uint8)
     bio = BytesIO()
-    audio = wavfile(bio, sr, audio)
+    wavfile.write(bio, sr, audio)
+    audio = bio.getvalue()
     if fmt != 'wav':
         audio = ffmpeg_conv_fmt(audio, 'wav', fmt)
     return audio
@@ -290,8 +291,6 @@ def repeat_video_nsec(video, total):
 def make_video(frames):
     # 合并视频
     video = ffmpeg_cat([f['video'] for f in frames])
-    # 添加字幕 
-    # TODO
     # 合并片头片尾
     if config['header']:
         header = open(config['header'], 'rb').read()
