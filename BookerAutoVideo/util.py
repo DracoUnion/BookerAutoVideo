@@ -364,7 +364,7 @@ def imgs2video(imgs, w, h, fps=30):
 def imgs_nsecs_2video(imgs, nsecs, w, h, fps=30):
     if isinstance(nsecs, int):
         nsecs = [nsecs] * len(imgs)
-    assert len(imgs) = len(nsecs)
+    assert len(imgs) == len(nsecs)
     counts = [math.ceil(fps * nsec) for nsec in nsecs]
     imgs = sum([[img] * count for img, count in zip(imgs, counts)])
     return imgs2video(imgs, w, h, fps)
