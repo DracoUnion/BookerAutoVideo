@@ -256,3 +256,43 @@ def ffmpeg_get_info(video, fmt='mp4'):
     if isinstance(video, bytes):
         safe_remove(fname)
     return res
+    
+# 缩放到最小填充尺寸并剪裁
+def resize_img_fill(img, nw, nh):
+    img = cv2.imdecode(np.frombuffer(img, np.uint8), cv2.IMREAD_COLOR)
+    h, w, *_ = img.shape
+    # 计算宽高的缩放比例，使用较大值等比例缩放
+    x_scale = nw / w
+    y_scale = nh / h
+    scale = max(x_scale, y_scale)
+    rh, rw = int(h * scale), int(w * scale)
+    img = cv2.resize(img, (rw, rh), interpolation=cv2.INTER_CUBIC)
+    # 剪裁成预定大小
+    cut_w = rw - nw
+    cut_h = rh - nh
+    img = img[
+        cut_h // 2 : cut_h // 2 + nh,
+        cut_w // 2 : cut_w // 2 + nw,
+    ]
+    img = bytes(cv2.imencode('.png', img)[1])
+    return img
+
+# 缩放到最大包围并填充
+def resize_img_wrap(img, nw, nh):
+    img = cv2.imdecode(np.frombuffer(img, np.uint8), cv2.IMREAD_COLOR)
+    h, w, *_ = img.shape
+    # 计算宽高的缩放比例，使用较小值等比例缩放
+    x_scale = nw / w
+    y_scale = nh / h
+    scale = min(x_scale, y_scale)
+    rh, rw = int(h * scale), int(w * scale)
+    img = cv2.resize(img, (rw, rh), interpolation=cv2.INTER_CUBIC)
+    # 填充到预定大小
+    pad_w = nw - rw
+    pad_h = nh - rh
+    img = cv2.copyMakeBorder(
+        img, pad_h // 2, pad_h - pad_h // 2, pad_w // 2, pad_w - pad_w // 2, 
+        cv2.BORDER_CONSTANT, None, (0,0,0)
+    ) 
+    img = bytes(cv2.imencode('.png', img)[1])
+    return img

@@ -41,7 +41,7 @@ def gen_mono_color(w, h, bgr):
     return bytes(img)
 
 def audio_len(data):
-    ffmpeg_get_info(data)['duration']
+    return ffmpeg_get_info(data)['duration']
 
 def md2playbook(args):
     fname = args.fname
@@ -173,52 +173,12 @@ def tts(text):
     save_tts(hash_, 'none', data)
     return data
 
-# 剪裁图片
 def trim_img(img):
+    nw, nh = config['size']
     if config['resizeMode'] == 'wrap':
-        return resize_img_wrap(img)
+        return resize_img_wrap(img, nw, nh)
     else:
-        return resize_img_cut(img)
-
-def resize_img_cut(img):
-    img = cv2.imdecode(np.frombuffer(img, np.uint8), cv2.IMREAD_COLOR)
-    h, w, *_ = img.shape
-    # 计算宽高的缩放比例，使用较大值等比例缩放
-    x_scale = config['size'][0] / w
-    y_scale = config['size'][1] / h
-    scale = max(x_scale, y_scale)
-    nh, nw = int(h * scale), int(w * scale)
-    img = cv2.resize(img, (nw, nh), interpolation=cv2.INTER_CUBIC)
-    # 剪裁成预定大小
-    cut_w = nw - config['size'][0]
-    cut_h = nh - config['size'][1]
-    img = img[
-        cut_h // 2 : cut_h // 2 + config['size'][1],
-        cut_w // 2 : cut_w // 2 + config['size'][0],
-    ]
-    img = bytes(cv2.imencode('.png', img)[1])
-    return img
-
-
-# 剪裁图片
-def resize_img_wrap(img):
-    img = cv2.imdecode(np.frombuffer(img, np.uint8), cv2.IMREAD_COLOR)
-    h, w, *_ = img.shape
-    # 计算宽高的缩放比例，使用较小值等比例缩放
-    x_scale = config['size'][0] / w
-    y_scale = config['size'][1] / h
-    scale = min(x_scale, y_scale)
-    nh, nw = int(h * scale), int(w * scale)
-    img = cv2.resize(img, (nw, nh), interpolation=cv2.INTER_CUBIC)
-    # 填充到预定大小
-    pad_w = config['size'][0] - nw
-    pad_h = config['size'][1] - nh
-    img = cv2.copyMakeBorder(
-        img, pad_h // 2, pad_h - pad_h // 2, pad_w // 2, pad_w - pad_w // 2, 
-        cv2.BORDER_CONSTANT, None, (0,0,0)
-    ) 
-    img = bytes(cv2.imencode('.png', img)[1])
-    return img
+        return resize_img_fill(img, nw, nh)
 
 
 def split_text_even(text, maxlen):
