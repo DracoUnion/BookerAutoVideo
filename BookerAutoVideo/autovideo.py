@@ -21,6 +21,15 @@ RE_MD_TR = r'^\|.+?\|$'
 RE_MD_PREFIX = r'^\s*(\+|\-|\*|\d+\.|\>|\#+)'
 RE_SENT_DELIM = r'\n|。|\?|？|;|；|:|：|!|！'
 
+def gen_blank_audio(nsec, sr=22050, fmt='wav'):
+    audio = np.zeros(int(nsec * sr), dtype=np.uint8)
+    bio = BytesIO()
+    audio = wavfile(bio, sr, audio)
+    if fmt != 'wav':
+        audio = ffmpeg_conv_fmt(audio, 'wav', fmt)
+    return audio
+    
+
 def tti(text):
     raise NotImplementedError()
 
@@ -130,6 +139,8 @@ def preproc_asset(config):
             text = cont['value']
             print(f'TTI：{text}')
             cont['asset'] = tti(text)
+        elif cont['type'] == 'audio:blank':
+            cont['asset'] = gen_blank_audio(cont['value'])
             
     config['contents'] = [
         c for c in config['contents']
