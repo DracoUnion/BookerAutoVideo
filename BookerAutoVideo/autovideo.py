@@ -153,7 +153,7 @@ def preproc_asset(config):
         if c['type'].startswith('image:'):
             c['asset'] = resize_img(c['asset'], w, h, mode)
         if c['type'].startswith('video:'):
-            c['asset'] = resize_video(c['asset'], w, h, mode)
+            c['asset'] = resize_video_noaud(c['asset'], w, h, mode)
     
     # 如果第一张不是图片，则提升第一个图片
     idx = -1

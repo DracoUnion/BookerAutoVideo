@@ -339,7 +339,7 @@ def get_video_imgs(video, fps=0):
         safe_remove(fname)
     return imgs, fps
     
-def resize_video(video, nw, nh, fps=0, mode='wrap'):
+def resize_video_noaud(video, nw, nh, fps=0, mode='wrap'):
     assert mode in ['wrap', 'fill']
     func_resize_img = resize_img_wrap if mode == 'wrap' else resize_img_fill
     imgs, fps = get_video_imgs(video, fps)
@@ -369,7 +369,7 @@ def imgs_nsecs_2video(imgs, nsecs, w, h, fps=30):
     imgs = sum([[img] * count for img, count in zip(imgs, counts)])
     return imgs2video(imgs, w, h, fps)
  
- def img_nsec_2video(img, nsec, w, h, fps=30):
+def img_nsec_2video(img, nsec, w, h, fps=30):
     count = math.ceil(fps * nsec)
     imgs = [img] * count
     return imgs2video(imgs, w, h, fps)
