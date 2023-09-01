@@ -364,7 +364,7 @@ def imgs2video(imgs, fps=30):
     
 def get_img_size(img):
     if isinstance(img, bytes):
-        img = cv2.imdecode(np.frombuffer(, np.uint8), cv2.IMREAD_COLOR)
+        img = cv2.imdecode(np.frombuffer(img, np.uint8), cv2.IMREAD_COLOR)
     assert isinstance(img, np.ndarray) and img.ndim in [2, 3]
     return img.shape[1], img.shape[0]
     
