@@ -344,13 +344,14 @@ def resize_video_noaud(video, nw, nh, fps=0, mode='wrap'):
     func_resize_img = resize_img_wrap if mode == 'wrap' else resize_img_fill
     imgs, fps = get_video_imgs(video, fps)
     imgs = [func_resize_img(img, nw, nh) for img in imgs]
-    video = imgs2video(imgs, nw, nh, fps)
+    video = imgs2video(imgs, fps)
     return video
     
     
-def imgs2video(imgs, w, h, fps=30):
+def imgs2video(imgs, fps=30):
     ofname = path.join(tempfile.gettempdir(), uuid.uuid4().hex + '.mp4')
     fmt = cv2.VideoWriter_fourcc('M', 'P', '4', 'V')
+    w, h = get_img_size(imgs[0])
     vid = cv2.VideoWriter(ofname, fmt, fps, [w, h])
     for img in imgs:
         if isinstance(img, bytes):
@@ -361,15 +362,21 @@ def imgs2video(imgs, w, h, fps=30):
     safe_remove(ofname)
     return res
     
-def imgs_nsecs_2video(imgs, nsecs, w, h, fps=30):
+def get_img_size(img):
+    if isinstance(img, bytes):
+        img = cv2.imdecode(np.frombuffer(, np.uint8), cv2.IMREAD_COLOR)
+    assert isinstance(img, np.ndarray) and img.ndim in [2, 3]
+    return img.shape[1], img.shape[0]
+    
+def imgs_nsecs_2video(imgs, nsecs, fps=30):
     if isinstance(nsecs, int):
         nsecs = [nsecs] * len(imgs)
     assert len(imgs) == len(nsecs)
     counts = [math.ceil(fps * nsec) for nsec in nsecs]
     imgs = sum([[img] * count for img, count in zip(imgs, counts)])
-    return imgs2video(imgs, w, h, fps)
+    return imgs2video(imgs, fps)
  
-def img_nsec_2video(img, nsec, w, h, fps=30):
+def img_nsec_2video(img, nsec, fps=30):
     count = math.ceil(fps * nsec)
     imgs = [img] * count
-    return imgs2video(imgs, w, h, fps)
+    return imgs2video(imgs, fps)
