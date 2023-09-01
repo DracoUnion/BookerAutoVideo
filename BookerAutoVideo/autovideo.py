@@ -153,12 +153,13 @@ def preproc_asset(config):
         if c['type'].startswith('image:'):
             c['asset'] = resize_img(c['asset'], w, h, mode)
         if c['type'].startswith('video:'):
-            c['asset'] = resize_video_noaud(c['asset'], w, h, mode)
+            c['asset'] = resize_video_noaud(c['asset'], w, h, mode=mode)
     
     # 如果第一张不是图片，则提升第一个图片
     idx = -1
     for i, c in enumerate(config['contents']):
-        if c['type'].startswith('image:'):
+        if c['type'].startswith('image:') or \
+           c['type'].startswith('video:'):
             idx = i
             break
     if idx == -1:
@@ -281,7 +282,7 @@ def repeat_video_nsec(video, total):
         return slice_video_noaud(video, total)
     nrepeat = total // nsec
     new_len = total / nrepeat
-    multi = len / new_len
+    multi = nsec / new_len
     one_video = speedup_video_noaud(video, multi)
     return ffmpeg_cat([one_video] * nrepeat)
 

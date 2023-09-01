@@ -383,7 +383,7 @@ def img_nsec_2video(img, nsec, fps=30):
     
 def speedup_video_noaud(video, multi, fps=0):
     imgs, fps = get_video_imgs(video, fps)
-    imgs = [imgs[int(i)] for i in np.arange(0, len(imgs), nulti)]
+    imgs = [imgs[int(i)] for i in np.arange(0, len(imgs), multi)]
     video = imgs2video(imgs, fps)
     
 def slice_video_noaud(video, nsec, fps=0):
