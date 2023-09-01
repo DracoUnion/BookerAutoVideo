@@ -280,7 +280,7 @@ def repeat_video_nsec(video, total):
         return video
     elif total < nsec:
         return slice_video_noaud(video, total)
-    nrepeat = total // nsec
+    nrepeat = int(total // nsec)
     new_len = total / nrepeat
     multi = nsec / new_len
     one_video = speedup_video_noaud(video, multi)
