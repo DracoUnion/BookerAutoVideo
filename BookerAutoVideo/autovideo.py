@@ -102,7 +102,7 @@ def md2playbook(args):
         
 def get_rand_asset_kw(dir, kw, func_filter=is_pic):
     tree = list(os.walk(dir))
-    fnames = [path.join(d, n) for d, _, n in tree]
+    fnames = [path.join(d, n) for d, _, fnames in tree for n in fnames]
     pics = [n for n in fnames if func_filter(n)]
     cand = [n for n in pics if kw in n]
     return random.choice(cand) if len(cand) else  random.choice(pics)
