@@ -22,6 +22,13 @@ RE_SENT_DELIM = r'\n|。|\?|？|;|；|:|：|!|！'
 
 exmod = None
 
+def gen_mono_color(w, h, bgr):
+    assert len(bgr) == 3
+    img = np.zeros([h, w, 3])
+    img[:, :] = bgr
+    img = cv2.imencode('.png', img, [IMWRITE_PNG_COMPRESSION, 9])[1]
+    return bytes(img)
+
 def audio_len(data):
     y, sr = librosa.load(BytesIO(data))
     return librosa.get_duration(y=y, sr=sr)
@@ -97,6 +104,13 @@ def preproc_asset(config):
             text = cont['value']
             print(f'TTS：{text}')
             cont['asset'] = tts(text)
+        elif cont['type'] = 'image:color':
+            bgr = cont['value']
+            if isinstance(bgr, str):
+                assert re.search(r'^#[0-9a-fA-F]{6}$', bgr)
+                r, g, b = int(bgr[1:3], 16), int(bgr[3:5], 16), int(bgr[5:7], 16)
+                bgr = [b, g, r]
+            cont['asset'] = gen_mono_color(onfig['size'][0], onfig['size'][1], bgr)
         elif cont['type'] == 'image:external':
             text = cont['value']
             print(f'Ex：{text}')
