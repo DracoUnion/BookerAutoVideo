@@ -6,27 +6,27 @@ imgSize: [1280, 768]
 padding: 0
 contents:
   - type: image:color
-    value: #ff0000
+    value: '#ff0000'
   - type: audio:tts
     value: 测试颜色1：红色
   - type: image:color
-    value: #00ff00
+    value: '#00ff00'
   - type: audio:tts
     value: 测试颜色2：绿色
   - type: image:color
-    value: #0000ff
+    value: '#0000ff'
   - type: audio:tts
     value: 测试颜色3：蓝色
   - type: image:color
-    value: #ffff00
+    value: '#ffff00'
   - type: audio:tts
     value: 测试颜色4：黄色
   - type: image:color
-    value: #ff00ff
+    value: '#ff00ff'
   - type: audio:tts
     value: 测试颜色5：紫红色
   - type: image:color
-    value: #00ffff
+    value: '#00ffff'
   - type: audio:tts
     value: 测试颜色6：青色
 header:
