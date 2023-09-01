@@ -5,6 +5,7 @@ import cv2
 import math
 import numpy as np
 import librosa
+import random
 from io import BytesIO
 import hashlib
 from .autovideo_config import config
@@ -91,10 +92,10 @@ def md2playbook(args):
     print(ofname)
         
         
-def get_rand_img_kw(dir, kw):
+def get_rand_asset_kw(dir, kw, func_filter=is_pic):
     tree = list(os.walk(dir))
     fnames = [path.join(d, n) for d, _, n in tree]
-    pics = [n for n in fnames if is_pic(n)]
+    pics = [n for n in fnames if func_filter(n)]
     cand = [n for n in pics if kw in n]
     return random.choice(cand) if len(cand) else  random.choice(pics)
 
@@ -104,9 +105,12 @@ def preproc_asset(config):
     for cont in config['contents']:
         if cont['type'].endswith(':file'):
             cont['asset'] = open(cont['value'], 'rb').read()
-        if cont['type'] == 'image:dir':
+        elif cont['type'] == 'image:dir':
             assert config['assetDir']
-            cont['asset'] = get_rand_img_kw(config['assetDir'], cont['value'])
+            cont['asset'] = get_rand_asset_kw(config['assetDir'], cont['value'], is_pic)
+        elif cont['type'] == 'video:dir':
+            assert config['assetDir']
+            cont['asset'] = get_rand_asset_kw(config['assetDir'], cont['value'], is_video)
         elif cont['type'].endswith(':url'):
             url = cont['value']
             print(f'下载：{url}')
