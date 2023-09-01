@@ -7,7 +7,6 @@ import math
 import uuid
 import tempfile
 import subprocess as subp
-from moviepy.video.io.VideoFileClip import VideoFileClip
 from os import path
 from imgyaso import adathres, adathres_bts
 from .util import *
@@ -52,7 +51,7 @@ def load_frames(fname, rate):
         raise Exception(f'无法打开文件 {fname}')
     frames = []
     tm = 0
-    total = VideoFileClip(fname).duration
+    total = ffmpeg_get_info(fname)['duration']
     while(tm < total):
         cap.set(cv2.CAP_PROP_POS_MSEC, tm * 1000)
         succ, img = cap.read()

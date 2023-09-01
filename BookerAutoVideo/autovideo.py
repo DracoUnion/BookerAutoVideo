@@ -37,12 +37,11 @@ def gen_mono_color(w, h, bgr):
     assert len(bgr) == 3
     img = np.zeros([h, w, 3])
     img[:, :] = bgr
-    img = cv2.imencode('.png', img, [IMWRITE_PNG_COMPRESSION, 9])[1]
+    img = cv2.imencode('.png', img, [cv2.IMWRITE_PNG_COMPRESSION, 9])[1]
     return bytes(img)
 
 def audio_len(data):
-    y, sr = librosa.load(BytesIO(data))
-    return librosa.get_duration(y=y, sr=sr)
+    ffmpeg_get_info(data)['duration']
 
 def md2playbook(args):
     fname = args.fname
@@ -128,7 +127,7 @@ def preproc_asset(config):
             text = cont['value']
             print(f'TTS：{text}')
             cont['asset'] = tts(text)
-        elif cont['type'] = 'image:color':
+        elif cont['type'] == 'image:color':
             bgr = cont['value']
             if isinstance(bgr, str):
                 assert re.search(r'^#[0-9a-fA-F]{6}$', bgr)

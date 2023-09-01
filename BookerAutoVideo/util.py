@@ -226,3 +226,33 @@ def save_tts(hash_, voice, data):
     safe_mkdir(DATA_DIR)
     fname = path.join(DATA_DIR, f'{hash_}-{voice}')
     open(fname, 'wb').write(data)
+
+def ffmpeg_get_info(video, fmt='mp4'):
+    if isinstance(video, bytes):
+        fname = path.join(tempfile.gettempdir(), uuid.uuid4().hex + '.' + fmt)
+        open(fname, 'rb').write(video)
+    else:
+        fname = video
+    cmd = ['ffmpeg', '-i', fname]
+    print(f'cmd: {cmd}')
+    r = subp.Popen(
+            cmd, stdout=subp.PIPE, stderr=subp.PIPE, shell=True
+    ).communicate()
+    text = r[1].decode('utf8')
+    res = {}
+    m = re.search(r'Duration:\x20(\d+):(\d+):(\d+)(.\d+)', text)
+    if m:
+        hr = int(m.group(1))
+        min_ = int(m.group(2))
+        sec = int(m.group(3))
+        ms = float(m.group(4))
+        res['duration'] = hr * 3600 + min_ * 60 + sec + ms
+    m = re.search(r'(\d+)\x20fps', text)
+    if m:
+        res['fps'] = int(m.group(1))
+    m = re.search(r'(\d+)\x20Hz', text)
+    if m:
+        res['sr'] = int(m.group(1))
+    if isinstance(video, bytes):
+        safe_remove(fname)
+    return res
