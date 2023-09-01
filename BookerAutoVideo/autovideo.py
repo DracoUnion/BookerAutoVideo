@@ -20,7 +20,8 @@ RE_MD_TR = r'^\|.+?\|$'
 RE_MD_PREFIX = r'^\s*(\+|\-|\*|\d+\.|\>|\#+)'
 RE_SENT_DELIM = r'\n|。|\?|？|;|；|:|：|!|！'
 
-exmod = None
+def tti(text):
+    raise NotImplementedError()
 
 def gen_mono_color(w, h, bgr):
     assert len(bgr) == 3
@@ -89,6 +90,13 @@ def md2playbook(args):
     open(ofname, 'w', encoding='utf8').write(yaml.safe_save(ofname))
     print(ofname)
         
+        
+def get_rand_img_kw(dir, kw):
+    tree = list(os.walk(dir))
+    fnames = [path.join(d, n) for d, _, n in tree]
+    pics = [n for n in fnames if is_pic(n)]
+    cand = [n for n in pics if kw in n]
+    return random.choice(cand) if len(cand) else  random.choice(pics)
 
 # 素材预处理
 def preproc_asset(config):
@@ -96,6 +104,9 @@ def preproc_asset(config):
     for cont in config['contents']:
         if cont['type'].endswith(':file'):
             cont['asset'] = open(cont['value'], 'rb').read()
+        if cont['type'] == 'image:dir':
+            assert config['assetDir']
+            cont['asset'] = get_rand_img_kw(config['assetDir'], cont['value'])
         elif cont['type'].endswith(':url'):
             url = cont['value']
             print(f'下载：{url}')
@@ -111,10 +122,10 @@ def preproc_asset(config):
                 r, g, b = int(bgr[1:3], 16), int(bgr[3:5], 16), int(bgr[5:7], 16)
                 bgr = [b, g, r]
             cont['asset'] = gen_mono_color(onfig['size'][0], onfig['size'][1], bgr)
-        elif cont['type'] == 'image:external':
+        elif cont['type'] == 'image:tti':
             text = cont['value']
-            print(f'Ex：{text}')
-            cont['asset'] = exmod.txt2img(text)
+            print(f'TTI：{text}')
+            cont['asset'] = tti(text)
             
     config['contents'] = [
         c for c in config['contents']
@@ -327,7 +338,8 @@ def make_video(frames):
     return video
 
 def update_config(user_cfg, cfg_dir):
-    global exmod
+    global tts
+    global tti
     
     config.update(user_cfg)
     if not config['contents']:
@@ -344,6 +356,8 @@ def update_config(user_cfg, cfg_dir):
     if config['external']:
         mod_fname = path.join(cfg_dir, config['external'])
         exmod = load_module(mod_fname)
+        if hasattr(exmod, 'tts'): tts = exmod.tts
+        if hasattr(exmod, 'tti'): tti = exmod.tti
 
 def autovideo(args):
     cfg_fname = args.config

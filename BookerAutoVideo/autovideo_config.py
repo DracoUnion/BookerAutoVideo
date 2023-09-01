@@ -18,4 +18,5 @@ config = {
     'tts': {},
     'resizeMode': 'wrap',
     'subtitleMaxLen': 50,
+    'assetDir': None,
 }
