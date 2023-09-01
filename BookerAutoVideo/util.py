@@ -7,10 +7,13 @@ import tempfile
 import uuid
 import imgyaso
 import cv2
+import math
 import numpy  as np
 import subprocess  as subp
 
 DATA_DIR = path.join(tempfile.gettempdir(), 'autovideo')
+
+IMWRITE_PNG_FLAG = [cv2.IMWRITE_PNG_COMPRESSION, 9]
 
 def ensure_grayscale(img):
     return cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) \
@@ -259,7 +262,9 @@ def ffmpeg_get_info(video, fmt='mp4'):
     
 # 缩放到最小填充尺寸并剪裁
 def resize_img_fill(img, nw, nh):
-    img = cv2.imdecode(np.frombuffer(img, np.uint8), cv2.IMREAD_COLOR)
+    fmt_bytes = isinstance(img, bytes)
+    if fmt_bytes:
+        img = cv2.imdecode(np.frombuffer(img, np.uint8), cv2.IMREAD_COLOR)
     h, w, *_ = img.shape
     # 计算宽高的缩放比例，使用较大值等比例缩放
     x_scale = nw / w
@@ -274,12 +279,15 @@ def resize_img_fill(img, nw, nh):
         cut_h // 2 : cut_h // 2 + nh,
         cut_w // 2 : cut_w // 2 + nw,
     ]
-    img = bytes(cv2.imencode('.png', img)[1])
+    if fmt_bytes:
+        img = bytes(cv2.imencode('.png', img, IMWRITE_PNG_FLAG)[1])
     return img
 
 # 缩放到最大包围并填充
 def resize_img_wrap(img, nw, nh):
-    img = cv2.imdecode(np.frombuffer(img, np.uint8), cv2.IMREAD_COLOR)
+    fmt_bytes = isinstance(img, bytes)
+    if fmt_bytes:
+        img = cv2.imdecode(np.frombuffer(img, np.uint8), cv2.IMREAD_COLOR)
     h, w, *_ = img.shape
     # 计算宽高的缩放比例，使用较小值等比例缩放
     x_scale = nw / w
@@ -294,5 +302,62 @@ def resize_img_wrap(img, nw, nh):
         img, pad_h // 2, pad_h - pad_h // 2, pad_w // 2, pad_w - pad_w // 2, 
         cv2.BORDER_CONSTANT, None, (0,0,0)
     ) 
-    img = bytes(cv2.imencode('.png', img)[1])
+    if fmt_bytes:
+        img = bytes(cv2.imencode('.png', img, IMWRITE_PNG_FLAG)[1])
     return img
+    
+def get_video_imgs(video, fps=0):
+    if isinstance(video, bytes):
+        fname = path.join(tempfile.gettempdir(), uuid.uuid4().hex + '.mp4')
+        open(fname, 'wb').write(video)
+    else:
+        fname = video
+    
+    info = ffmpeg_get_info(fname)
+    fps = fps or info['fps']
+    
+    cap = cv2.VideoCapture(fname) 
+    if not cap.isOpened():
+        raise Exception(f'无法打开文件 {fname}')
+    tm = 0
+    total = info['duration']
+    imgs = []
+    while tm < total:
+        cap.set(cv2.CAP_PROP_POS_MSEC, tm * 1000)
+        succ, img = cap.read()
+        if not succ: break
+        imgs.append(img)
+        tm += 1 / fps
+    
+    cap.release()
+    if isinstance(video, bytes):
+        safe_remove(fname)
+    return imgs, fps
+    
+def resize_video_imgs(video, nw, nh, fps = 0, mode='wrap'):
+    assert mode in ['wrap', 'fill']
+    func_resize_img = resize_img_wrap if mode == 'wrap' else resize_img_fill
+    imgs, fps = get_video_imgs(video, fps)
+    imgs = [func_resize_img(img, nw, nh) for img in imgs]
+    video = imgs2video(imgs, nw, nh, fps)
+    return video
+    
+    
+def imgs2video(imgs, w, h, fps=30):
+    ofname = path.join(tempfile.gettempdir(), uuid.uuid4().hex + '.mp4')
+    fmt = cv2.VideoWriter_fourcc('M', 'P', '4', 'V')
+    vid = cv2.VideoWriter(ofname, fmt, fps, [w, h])
+    for img in imgs:
+        if isinstance(img, bytes):
+            img = cv2.imdecode(np.frombuffer(img, np.uint8), cv2.IMREAD_COLOR)
+        vid.write(img)
+    vid.release()
+    res = open(ofname, 'rb').read()
+    safe_remove(ofname)
+    return res
+    
+def img_nsec_2video(img, nsec, w, h, fps=30):
+    count = math.ceil(fps * nsec)
+    imgs = [img] * count
+    return imgs2video(imgs, w, h, fps)
+ 

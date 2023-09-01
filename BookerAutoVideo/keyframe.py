@@ -45,26 +45,14 @@ def nsec2hms(nsec):
     s = nsec % 60
     return f'{h}h{m:02d}m{s:02d}s'
 
-def load_frames(fname, rate):
-    cap = cv2.VideoCapture(fname) 
-    if not cap.isOpened():
-        raise Exception(f'无法打开文件 {fname}')
-    frames = []
-    tm = 0
-    total = ffmpeg_get_info(fname)['duration']
-    while(tm < total):
-        cap.set(cv2.CAP_PROP_POS_MSEC, tm * 1000)
-        succ, img = cap.read()
-        if not succ: break
-        print(f'time {nsec2hms(tm)} loaded')
-        frames.append({
-            'idx': len(frames), 
-            'time': tm,
-            'img': img,
-            'text': img2text(img),
-        })
-        tm += 1 / rate
-    cap.release()
+def load_frames(fname, fps):
+    imgs, _ = get_video_imgs(fname, fps)
+    frames = [{
+        'idx': i,
+        'time': i / fps,
+        'img': img,
+        'text': img2text(img),
+    } for i, img in enumerate(imgs)]
     return frames
 
 def calc_frame_diffs(frames, args):

@@ -258,7 +258,8 @@ def contents2frame(contents):
             })
     for f in frames:
         f['len'] = sum([a['len'] for a in f['audios']])
-        f['video_noaud'] = pic2video(f['image'], f['len'])
+        w, h = config['size']
+        f['video_noaud'] = img_nsec_2video(f['image'], f['len'], w, h, config['fps'])
         f['audio'] = (
             f['audios'][0]['audio'] 
             if len(f['audios']) == 1 
@@ -268,33 +269,6 @@ def contents2frame(contents):
         f['srt'] = gen_srt(f['audios'])
         f['video'] = ffmpeg_add_srt(f['video'], f['srt'])
     return frames
-
-def pic2video(img, len_):
-    ofname = path.join(tempfile.gettempdir(), uuid.uuid4().hex + '.mp4')
-    fmt = cv2.VideoWriter_fourcc('M', 'P', '4', 'V')
-    vid = cv2.VideoWriter(ofname, fmt, config['fps'], config['size'])
-    img = cv2.imdecode(np.frombuffer(img, np.uint8), cv2.IMREAD_COLOR)
-    ntimes = math.ceil(config['fps'] * len_)
-    for _ in range(ntimes): vid.write(img)
-    vid.release()
-    res = open(ofname, 'rb').read()
-    safe_remove(ofname)
-    return res
-
-'''
-def pics2video(frames):
-    ofname = path.join(tempfile.gettempdir(), uuid.uuid4().hex + '.mp4')
-    fmt = cv2.VideoWriter_fourcc('M', 'P', '4', 'V')
-    vid = cv2.VideoWriter(ofname, fmt, config['fps'], config['size'])
-    for f in frames:
-        img = cv2.imdecode(np.frombuffer(f['image'], np.uint8), cv2.IMREAD_COLOR)
-        ntimes = math.ceil(config['fps'] * f['len'])
-        for _ in range(ntimes): vid.write(img)
-    vid.release()
-    res = open(ofname, 'rb').read()
-    safe_remove(ofname)
-    return res
-'''
 
 # 组装视频
 def make_video(frames):
