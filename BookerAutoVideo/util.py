@@ -230,7 +230,7 @@ def save_tts(hash_, voice, data):
 def ffmpeg_get_info(video, fmt='mp4'):
     if isinstance(video, bytes):
         fname = path.join(tempfile.gettempdir(), uuid.uuid4().hex + '.' + fmt)
-        open(fname, 'rb').write(video)
+        open(fname, 'wb').write(video)
     else:
         fname = video
     cmd = ['ffmpeg', '-i', fname]
