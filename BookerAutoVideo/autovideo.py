@@ -259,8 +259,7 @@ def contents2frame(contents):
             })
     for f in frames:
         f['len'] = sum([a['len'] for a in f['audios']])
-        w, h = config['size']
-        f['video_noaud'] = img_nsec_2video(f['image'], f['len'], w, h, config['fps'])
+        f['video_noaud'] = img_nsec_2video(f['image'], f['len'], config['fps'])
         f['audio'] = (
             f['audios'][0]['audio'] 
             if len(f['audios']) == 1 
