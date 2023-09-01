@@ -16,11 +16,11 @@ def main():
     parser.set_defaults(func=lambda x: parser.print_help())
     subparsers = parser.add_subparsers()
 
-    autovid_parser = subparsers.add_parser("auto-video", help="generate video")
+    autovid_parser = subparsers.add_parser("gen", help="generate video")
     autovid_parser.add_argument("config", help="config file name")
     autovid_parser.set_defaults(func=autovideo)
 
-    video2txt_parser = subparsers.add_parser("video2txt", help="convert audio to text")
+    video2txt_parser = subparsers.add_parser("totxt", help="convert audio to text")
     video2txt_parser.add_argument("fname", help="file name")
     video2txt_parser.add_argument("-t", "--threads", type=int, default=8, help="num of threads")
     video2txt_parser.add_argument("-I", "--no-image", action='store_true', help="whether to not catch screenshots")

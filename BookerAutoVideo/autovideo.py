@@ -227,11 +227,11 @@ def gen_srt(audios):
     for s in subs:
         text = s['text']
         if not text: continue
-        parts = split_text_even(text, 30)
+        parts = split_text_even(text, config['subtitleMaxLen'])
         s['parts'] = [
             {
                 'text': p,
-                'len': len(p) / s['len'],
+                'len': len(p) / len(text) * s['len'],
             }
             for p in parts
         ]

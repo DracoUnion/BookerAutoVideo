@@ -17,4 +17,5 @@ config = {
     # PaddleSpeech 配置
     'tts': {},
     'resizeMode': 'wrap',
+    'subtitleMaxLen': 50,
 }
