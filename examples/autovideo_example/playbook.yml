@@ -4,6 +4,7 @@ bgm:
 bgImg: file://asset/bg.png
 imgSize: [1280, 768]
 padding: 0
+subtitleMaxLen: 30
 contents:
   - type: image:file
     value: asset/1.jpg
