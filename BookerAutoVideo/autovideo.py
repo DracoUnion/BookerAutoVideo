@@ -182,10 +182,8 @@ def tts(text):
 def split_text_even(text, maxlen):
     textlen = len(text)
     num = math.ceil(textlen / maxlen)
-    reallen = textlen // num
+    reallen = math.ceil(textlen / num)
     res = [text[i:i+reallen] for i in range(0, textlen, reallen)]
-    if textlen % num != 0:
-        res[-1] += text[:-textlen%num]
     return res
         
 
