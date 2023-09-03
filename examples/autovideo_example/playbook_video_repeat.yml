@@ -5,8 +5,8 @@ bgImg: file://asset/bg.png
 imgSize: [1280, 768]
 padding: 0
 contents:
-  - type: video:file
-    value: asset/demo.mp4
+  - type: image:blank
+    value: #000000
   - type: audio:tts
     value: “哥哥……”有人在黑暗里轻声地呼喊。
   - type: audio:tts

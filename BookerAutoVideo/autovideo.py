@@ -156,20 +156,14 @@ def preproc_asset(config):
         if c['type'].startswith('video:'):
             c['asset'] = resize_video_noaud(c['asset'], w, h, mode=mode)
     
-    # 如果第一张不是图片，则提升第一个图片
-    idx = -1
-    for i, c in enumerate(config['contents']):
-        if c['type'].startswith('image:') or \
-           c['type'].startswith('video:'):
-            idx = i
-            break
-    if idx == -1:
-        print('内容中无图片，无法生成视频')
-        sys.exit()
-    if idx != 0:
-        c = config['contents'][idx]
-        del config['contents'][idx]
-        config['contents'].insert(0, c)
+    # 如果第一张不是图片，插入纯黑图片
+    c0type = config['contents'][0]['type']
+    if not c0type.startswith('image:') and \
+       not c0type.startswith('video:'):
+        config['contents'].insert(0, {
+            'type': 'image:blank',
+            'value': '#000000',
+        }
 
 def tts(text):
     hash_ = hashlib.md5(text.encode('utf8')).hexdigest()
