@@ -163,7 +163,7 @@ def preproc_asset(config):
         config['contents'].insert(0, {
             'type': 'image:blank',
             'value': '#000000',
-        }
+        })
 
 def tts(text):
     hash_ = hashlib.md5(text.encode('utf8')).hexdigest()
