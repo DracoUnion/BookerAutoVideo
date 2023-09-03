@@ -110,6 +110,15 @@ def get_rand_asset_kw(dir, kw, func_filter=is_pic):
 
 # 素材预处理
 def preproc_asset(config):
+    # 如果第一张不是图片，插入纯黑图片
+    c0type = config['contents'][0]['type']
+    if not c0type.startswith('image:') and \
+       not c0type.startswith('video:'):
+        config['contents'].insert(0, {
+            'type': 'image:color',
+            'value': '#000000',
+        })
+
     # 加载或生成内容
     for cont in config['contents']:
         if cont['type'].endswith(':file'):
@@ -155,15 +164,6 @@ def preproc_asset(config):
             c['asset'] = resize_img(c['asset'], w, h, mode)
         if c['type'].startswith('video:'):
             c['asset'] = resize_video_noaud(c['asset'], w, h, mode=mode)
-    
-    # 如果第一张不是图片，插入纯黑图片
-    c0type = config['contents'][0]['type']
-    if not c0type.startswith('image:') and \
-       not c0type.startswith('video:'):
-        config['contents'].insert(0, {
-            'type': 'image:blank',
-            'value': '#000000',
-        })
 
 def tts(text):
     hash_ = hashlib.md5(text.encode('utf8')).hexdigest()
