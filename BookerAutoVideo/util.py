@@ -261,56 +261,42 @@ def ffmpeg_get_info(video, fmt='mp4'):
         safe_remove(fname)
     return res
     
-# 缩放到最小填充尺寸并剪裁
-def resize_img_fill(img, nw, nh):
+def resize_img_blur(img, nw, nh, *args, **kw):
     fmt_bytes = isinstance(img, bytes)
     if fmt_bytes:
         img = cv2.imdecode(np.frombuffer(img, np.uint8), cv2.IMREAD_COLOR)
     h, w, *_ = img.shape
-    # 计算宽高的缩放比例，使用较大值等比例缩放
+    # 生成模糊背景
     x_scale = nw / w
     y_scale = nh / h
-    scale = max(x_scale, y_scale)
-    rh, rw = int(h * scale), int(w * scale)
-    img = cv2.resize(img, (rw, rh), interpolation=cv2.INTER_CUBIC)
+    bg_scale = max(x_scale, y_scale)
+    rh, rw = int(h * bg_scale), int(w * bg_scale)
+    bg = cv2.resize(img, (rw, rh), interpolation=cv2.INTER_CUBIC)
     # 剪裁成预定大小
     cut_w = rw - nw
     cut_h = rh - nh
-    img = img[
+    bg = bg[
         cut_h // 2 : cut_h // 2 + nh,
         cut_w // 2 : cut_w // 2 + nw,
     ]
-    if fmt_bytes:
-        img = bytes(cv2.imencode('.png', img, IMWRITE_PNG_FLAG)[1])
-    return img
-
-# 缩放到最大包围并填充
-def resize_img_wrap(img, nw, nh):
-    fmt_bytes = isinstance(img, bytes)
-    if fmt_bytes:
-        img = cv2.imdecode(np.frombuffer(img, np.uint8), cv2.IMREAD_COLOR)
-    h, w, *_ = img.shape
-    # 计算宽高的缩放比例，使用较小值等比例缩放
-    x_scale = nw / w
-    y_scale = nh / h
-    scale = min(x_scale, y_scale)
-    rh, rw = int(h * scale), int(w * scale)
-    img = cv2.resize(img, (rw, rh), interpolation=cv2.INTER_CUBIC)
-    # 填充到预定大小
+    # 高斯模糊
+    bg = cv2.blur(bg, 20)
+    # 生成清晰前景
+    fg_scale = min(x_scale, y_scale)
+    rh, rw = int(h * fg_scale), int(w * fg_scale)
+    fg = cv2.resize(img, (rw, rh), interpolation=cv2.INTER_CUBIC)
+    # 将背景覆盖到前景上
     pad_w = nw - rw
     pad_h = nh - rh
-    img = cv2.copyMakeBorder(
-        img, pad_h // 2, pad_h - pad_h // 2, pad_w // 2, pad_w - pad_w // 2, 
-        cv2.BORDER_CONSTANT, None, (0,0,0)
-    ) 
+    bg[
+        pad_h // 2 : pad_h // 2 + rh,
+        pad_w // 2 : pad_w // 2 + rw 
+    ] = fg
     if fmt_bytes:
-        img = bytes(cv2.imencode('.png', img, IMWRITE_PNG_FLAG)[1])
-    return img
+        bg = bytes(cv2.imencode('.png', bg, IMWRITE_PNG_FLAG)[1])
+    return bg
     
-def resize_img(img, nw, nh, mode='wrap'):
-    assert mode in ['wrap', 'fill']
-    func_resize_img = resize_img_wrap if mode == 'wrap' else resize_img_fill
-    return func_resize_img(img, nw, nh)
+resize_img = resize_img_blur
     
 def get_video_imgs(video, fps=0):
     if isinstance(video, bytes):
