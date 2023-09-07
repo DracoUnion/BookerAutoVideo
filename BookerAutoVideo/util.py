@@ -279,8 +279,8 @@ def resize_img_blur(img, nw, nh, *args, **kw):
         cut_h // 2 : cut_h // 2 + nh,
         cut_w // 2 : cut_w // 2 + nw,
     ]
-    # 高斯模糊
-    bg = cv2.blur(bg, (20, 20))
+    # 模糊
+    bg = cv2.blur(bg, (199, 199))
     # 生成清晰前景
     fg_scale = min(x_scale, y_scale)
     rh, rw = int(h * fg_scale), int(w * fg_scale)
