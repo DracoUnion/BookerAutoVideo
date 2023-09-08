@@ -386,9 +386,10 @@ def split_text_even(text, maxlen):
     res = [text[i:i+reallen] for i in range(0, textlen, reallen)]
     return res
     
-def split_sentence(text, limit):
+def split_sentence(text, limit,  delims='。，！？'):
     # 按照标点分割
-    sentences = re.split(r'(?<=[。，！？：])', text)
+    re_punc = ''.join([f'\\u{ord(ch):04x}' for ch in delims])
+    sentences = re.split(f'(?<=[{re_punc}])', text)
     # 将后引号与前面的标点放到一起
     for i in range(1, len(sentences)):
         if sentences[i].startswith('”'):
