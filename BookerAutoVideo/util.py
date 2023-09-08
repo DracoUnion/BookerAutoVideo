@@ -401,7 +401,7 @@ def split_sentence(text, limit):
         for s in sentence
     ], [])
     res = ['']
-    for s in sentense:
+    for s in sentence:
         if len(res[-1]) + len(s) <= limit:
             res[-1] += s
         else:
