@@ -387,21 +387,22 @@ def split_text_even(text, maxlen):
     return res
     
 def split_sentence(text, limit):
-    sentence = re.split(r'(?<=[。，！？”])', text)
-    '''
-    sentence = sum([
-        ([s] if len(s) <= limit
-        else re.split(r'(?<=，)', s))
-        for s in sentence
-    ], [])
-    '''
-    sentence = sum([
+    # 按照标点分割
+    sentences = re.split(r'(?<=[。，！？：])', text)
+    # 将后引号与前面的标点放到一起
+    for i in range(1, len(sentences)):
+        if sentences[i].startswith('”'):
+            sentences[i] = sentence[i][:-1]
+            sentences[i-1] += '”'
+    # 如果单个句子长度超限，继续分割
+    sentences = sum([
         ([s] if len(s) <= limit 
         else split_text_even(s, limit))
-        for s in sentence
+        for s in sentences
     ], [])
+    # 组装不大于长度限制的文本
     res = ['']
-    for s in sentence:
+    for s in sentences:
         if len(res[-1]) + len(s) <= limit:
             res[-1] += s
         else:
