@@ -378,4 +378,33 @@ def slice_video_noaud(video, nsec, fps=0):
     imgs, fps = get_video_imgs(video, fps)
     count = nsec * fps
     video = imgs2video(imgs[:count], fps)
-   
+
+def split_text_even(text, maxlen):
+    textlen = len(text)
+    num = math.ceil(textlen / maxlen)
+    reallen = math.ceil(textlen / num)
+    res = [text[i:i+reallen] for i in range(0, textlen, reallen)]
+    return res
+    
+def split_sentence(text, limit):
+    sentence = re.split(r'(?<=[。，！？”])', text)
+    '''
+    sentence = sum([
+        ([s] if len(s) <= limit
+        else re.split(r'(?<=，)', s))
+        for s in sentence
+    ], [])
+    '''
+    sentence = sum([
+        ([s] if len(s) <= limit 
+        else split_text_even(s, limit))
+        for s in sentence
+    ], [])
+    res = ['']
+    for s in sentense:
+        if len(res[-1]) + len(s) <= limit:
+            res[-1] += s
+        else:
+            res.append(s)
+            
+    return res
