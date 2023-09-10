@@ -176,12 +176,6 @@ def tts(text, config):
     save_tts(hash_, voice, vol, rate, data)
     return data
 
-def split_text_even(text, maxlen):
-    textlen = len(text)
-    num = math.ceil(textlen / maxlen)
-    reallen = math.ceil(textlen / num)
-    res = [text[i:i+reallen] for i in range(0, textlen, reallen)]
-    return res
         
 
 def srt_time_fmt(num):
@@ -205,7 +199,7 @@ def gen_srt(audios):
     for s in subs:
         text = s['text']
         if not text: continue
-        parts = split_text_even(text, config['subtitleMaxLen'])
+        parts = split_sentence(text, config['subtitleMaxLen'])
         s['parts'] = [
             {
                 'text': p,
