@@ -173,7 +173,7 @@ def tts(text, config):
     cache = load_tts(hash_, voice, vol, rate)
     if cache: return cache
     data = edgetts_cli(text, voice=voice, volume=vol, rate=rate)
-    save_tts(hash_, voice, data)
+    save_tts(hash_, voice, vol, rate, data)
     return data
 
 def split_text_even(text, maxlen):
