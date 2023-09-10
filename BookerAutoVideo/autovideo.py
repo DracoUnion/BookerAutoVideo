@@ -136,7 +136,7 @@ def preproc_asset(config):
         elif cont['type'] == 'audio:tts':
             text = cont['value']
             print(f'TTS：{text}')
-            cont['asset'] = tts(text)
+            cont['asset'] = tts(text, config)
         elif cont['type'] == 'image:color':
             bgr = cont['value']
             if isinstance(bgr, str):
@@ -165,12 +165,17 @@ def preproc_asset(config):
         if c['type'].startswith('video:'):
             c['asset'] = resize_video_noaud(c['asset'], w, h, mode=mode)
 
-def tts(text):
+def tts(text, config):
     hash_ = hashlib.md5(text.encode('utf8')).hexdigest()
-    cache = load_tts(hash_, 'none')
+    voice = config['ttsVoice']
+    cache = load_tts(hash_, voice)
     if cache: return cache
-    data = edgetts_cli(text)
-    save_tts(hash_, 'none', data)
+    data = edgetts_cli(
+        text, voice=voice, 
+        volume=config['ttsVolume'],
+        rate=config['ttsRate'],
+    )
+    save_tts(hash_, voice, data)
     return data
 
 def split_text_even(text, maxlen):

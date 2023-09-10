@@ -19,4 +19,7 @@ config = {
     'resizeMode': 'wrap',
     'subtitleMaxLen': 50,
     'assetDir': None,
+    'ttsVoice': 'zh-CN-XiaoyiNeural',
+    'ttsVolume': '+0%',
+    'ttsRate': '-10%',
 }
