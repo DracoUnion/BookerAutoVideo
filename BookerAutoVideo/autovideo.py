@@ -168,13 +168,11 @@ def preproc_asset(config):
 def tts(text, config):
     hash_ = hashlib.md5(text.encode('utf8')).hexdigest()
     voice = config['ttsVoice']
-    cache = load_tts(hash_, voice)
+    vol = config['ttsVolume']
+    rate = config['ttsRate']
+    cache = load_tts(hash_, voice, vol, rate)
     if cache: return cache
-    data = edgetts_cli(
-        text, voice=voice, 
-        volume=config['ttsVolume'],
-        rate=config['ttsRate'],
-    )
+    data = edgetts_cli(text, voice=voice, volume=vol, rate=rate)
     save_tts(hash_, voice, data)
     return data
 

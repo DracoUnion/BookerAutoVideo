@@ -223,16 +223,16 @@ def fname_escape(name):
 
 
 
-def load_tts(hash_, voice):
-    fname = path.join(DATA_DIR, f'{hash_}-{voice}')
+def load_tts(hash_, voice, volume, rate):
+    fname = path.join(DATA_DIR, f'{hash_}-{voice}-{volume}-{rate}')
     if path.isfile(fname):
         return open(fname, 'rb').read()
     else:
         return None
         
-def save_tts(hash_, voice, data):
+def save_tts(hash_, voice, volume, rate, data):
     safe_mkdir(DATA_DIR)
-    fname = path.join(DATA_DIR, f'{hash_}-{voice}')
+    fname = path.join(DATA_DIR, f'{hash_}-{voice}-{volume}-{rate}')
     open(fname, 'wb').write(data)
 
 def ffmpeg_get_info(video, fmt='mp4'):
