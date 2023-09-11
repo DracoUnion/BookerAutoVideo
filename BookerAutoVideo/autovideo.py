@@ -289,6 +289,11 @@ def make_video(frames):
         video = ffmpeg_cat([video, footer])
     return video
 
+def norm_path_slash(p):
+    return p.replace('/', '\\')  \
+           if sys.platform == 'win32' \
+           else p.replace('\\', '/')
+
 def update_config(user_cfg, cfg_dir):
     global tts
     global tti
@@ -299,14 +304,14 @@ def update_config(user_cfg, cfg_dir):
         
     for cont in config['contents']:
         if cont['type'].endswith(':file'):
-            cont['value'] = path.join(cfg_dir, cont['value'])
+            cont['value'] = path.join(cfg_dir, norm_path_slash(cont['value']))
     if config['header']:
-        config['header'] = path.join(cfg_dir, config['header'])
+        config['header'] = path.join(cfg_dir, norm_path_slash(config['header']))
     if config['footer']:
-        config['footer'] = path.join(cfg_dir, config['footer'])
+        config['footer'] = path.join(cfg_dir, norm_path_slash(config['footer']))
         
     if config['external']:
-        mod_fname = path.join(cfg_dir, config['external'])
+        mod_fname = path.join(cfg_dir, norm_path_slash(config['external']))
         exmod = load_module(mod_fname)
         if hasattr(exmod, 'tts'): tts = exmod.tts
         if hasattr(exmod, 'tti'): tti = exmod.tti
@@ -316,7 +321,7 @@ def autovideo(args):
     if not cfg_fname.endswith('.yml'):
         print('请提供 YAML 文件')
         return
-    cfg_dir = path.dirname(cfg_fname)
+    cfg_dir = path.abspath(path.dirname(cfg_fname))
     user_cfg = yaml.safe_load(open(cfg_fname, encoding='utf8').read())
     update_config(user_cfg, cfg_dir)
         
