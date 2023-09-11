@@ -166,7 +166,7 @@ def ffmpeg_cat(videos, fmt='mp4'):
     safe_rmdir(tmpdir)
     return res
 
-def ffmpeg_add_srt(video, srt, video_fmt='mp4'):
+def ffmpeg_add_srt(video, srt, fontname='黑体', video_fmt='mp4'):
     tmpdir = path.join(tempfile.gettempdir(), uuid.uuid4().hex)
     safe_mkdir(tmpdir)
     vfname = path.join(tmpdir, f'video.{video_fmt}')
@@ -174,7 +174,11 @@ def ffmpeg_add_srt(video, srt, video_fmt='mp4'):
     sfname = path.join(tmpdir, f'subtitle.srt')
     open(sfname, 'w', encoding='utf8').write(srt)
     res_fname = path.join(tmpdir, f'merged.{video_fmt}')
-    cmd = ['ffmpeg', '-i', f'video.{video_fmt}', '-vf', f'subtitles=subtitle.srt', res_fname, '-y']
+    cmd = [
+        'ffmpeg', '-i', f'video.{video_fmt}', 
+        '-vf', f"subtitles=subtitle.srt:force_style='FontName={fontname}'", 
+        res_fname, '-y',
+    ]
     '''
     cmd = [
         'ffmpeg', '-i', vfname, '-i', sfname, 
