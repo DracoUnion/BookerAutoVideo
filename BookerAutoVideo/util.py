@@ -394,7 +394,7 @@ def split_text_even(text, maxlen):
     res = [text[i:i+reallen] for i in range(0, textlen, reallen)]
     return res
     
-def split_sentence(text, limit,  delims='。，！？'):
+def split_sentence(text, limit,  delims='。，、！？；：'):
     # 按照标点分割
     re_punc = ''.join([f'\\u{ord(ch):04x}' for ch in delims])
     sentences = re.split(f'(?<=[{re_punc}])', text)
