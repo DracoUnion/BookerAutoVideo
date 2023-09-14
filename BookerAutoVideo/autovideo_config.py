@@ -4,7 +4,7 @@ config = {
     'font': 'kaiti.ttf',
     'bgm': '',
     'bgImg': '',
-    'size': [1280, 768],
+    'size': [1920, 1080],
     'fps': 30,
     'sr': 22050,
     'padding': 0,
