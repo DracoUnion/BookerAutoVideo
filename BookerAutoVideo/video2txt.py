@@ -63,7 +63,7 @@ def whisper_cpp(args):
     fname = args.fname
     wav_fname = path.join(tempfile.gettempdir(), uuid.uuid4().hex + '.wav')
     subp.Popen(
-        ['ffmpeg', '-i', fname, '-vn', '-acodec', 'pcm_s16le', '-ar', '16000', '-ac', '2', wav_fname],
+        ['ffmpeg', '-i', fname, '-vn', '-acodec', 'pcm_s16le', '-ar', '16000', '-ac', '2', wav_fname, '-y'],
         shell=True,
     ).communicate()
     if not path.isfile(wav_fname):
