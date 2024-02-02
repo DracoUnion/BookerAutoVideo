@@ -10,7 +10,7 @@ from .imgsim import *
 
 warnings.filterwarnings("ignore")
 
-def sharpness():
+def main():
     parser = argparse.ArgumentParser(prog="BookerAutoVideo", formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("-v", "--version", action="version", version=f"PYBP version: {__version__}")
     parser.set_defaults(func=lambda x: parser.print_help())
@@ -61,4 +61,4 @@ def sharpness():
     args = parser.parse_args()
     args.func(args)
     
-if __name__ == '__main__': sharpness()
+if __name__ == '__main__': main()
