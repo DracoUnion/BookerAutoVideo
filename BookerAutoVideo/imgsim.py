@@ -133,11 +133,11 @@ def img_metric_handle(args):
     img = open(fname, 'rb').read()
     img = cv2.imdecode(
         np.frombuffer(img, np.uint8), 
-        cv2.IMREAD_UNCHANGED,
+        cv2.IMREAD_COLOR,
     )
     clrf = colorfulness(img)
     srp = sharpness(img)
-    print(f'colorfulness: {clrf}, sharpness: {sharpness}')
+    print(f'colorfulness: {clrf}, sharpness: {srp}')
 
 
 
