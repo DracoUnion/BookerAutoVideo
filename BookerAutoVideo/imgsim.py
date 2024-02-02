@@ -106,6 +106,8 @@ def max_2x2(img):
 
 def sharpness(img):
     # img = cv2.resize(img, [512, 512], interpolation=cv2.INTER_CUBIC)
+    if img.ndim == 3:
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     img = img.astype(int)
     while True:
         img = diff_once(img)
