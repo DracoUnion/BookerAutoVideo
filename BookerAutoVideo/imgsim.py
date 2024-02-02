@@ -117,7 +117,7 @@ def sharpness(img):
     freqs, _ = np.histogram(img, bins=range(0, 17), density=True)
     freqs = np.where(freqs, freqs, 1e-12)
     entro = np.sum(-freqs * np.log2(freqs)) / 4
-    print(entro)
+    return entro
 
 
 img_sim = {
