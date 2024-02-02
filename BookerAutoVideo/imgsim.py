@@ -75,32 +75,48 @@ def pixel_l1_sim(prev, next):
     diff = np.mean(np.where(max != 0, cv2.absdiff(next, prev) / max, 0))
     return 1 - diff
 
-def gs_fullness(img):
-    img = ensure_grayscale(img)
-    freqs, _ = np.histogram(img.astype("int"), bins=range(256 + 1), density=True)
-    freqs = np.where(freqs, freqs, 1e-12)
-    return np.sum(-freqs * np.log2(freqs)) / 8
-
-def color_fullness(img): 
-    b, g, r = np.split(img.astype("int") // 16, 3, axis=-1) 
+def colorfulness(img): 
+    img = img.astype("int") // 16
+    if img.ndim == 3:
+        b, g, r = np.split(img, 3, axis=-1)
+    else:
+        b, g, r = img, img, img
     rgb = r * 256 + g * 16 + b
     freqs, _ = np.histogram(rgb, bins=range(16 ** 3 + 1), density=True)
     freqs = np.where(freqs, freqs, 1e-12)
     return np.sum(-freqs * np.log2(freqs)) / 12
 
-def image_fullness(img):
-    if img.ndim == 3:
-        return (color_fullness(img) + gs_fullness(img)) / 2
-    else:
-        return gs_fullness(img)
+def diff_once(img):
+    img_h_diff = np.abs(img[1:] - img[:-1])[:, 1:]
+    img_w_diff = np.abs(img[:, 1:] - img[:, :-1])[1:]
+    img_diff = (img_h_diff + img_w_diff) / 2
+    img_diff_pad = np.zeros_like(img)
+    img_diff_pad[:img_diff.shape[0], :img_diff.shape[1]] = img_diff
+    return img_diff_pad.astype(int)
 
-def fullness_sim(prev, next):
-    ifn = image_fullness(next)
-    ph = phash_sim(prev, next) / 2
-    l1 = pixel_l1_sim(prev, next)
-    res =  ifn * ph + (1 - ifn) * l1
-    print(f'ifn: {ifn}, phash: {ph}, l1: {l1}, res: {res}')
-    return res
+def max_2x2(img):
+    h, w = img.shape
+    if h % 2 == 1:
+        img = img[:-1]
+    if w % 2 == 1:
+        img = img[:, :-1]
+    img = np.maximum(img[::2], img[1::2])
+    img = np.maximum(img[:, ::2], img[:, 1::2])
+    return img
+
+def sharpness(img):
+    # img = cv2.resize(img, [512, 512], interpolation=cv2.INTER_CUBIC)
+    img = img.astype(int)
+    while True:
+        img = diff_once(img)
+        img = max_2x2(img)
+        if min(img.shape) < 8: break
+    img = img // 16
+    freqs, _ = np.histogram(img, bins=range(0, 17), density=True)
+    freqs = np.where(freqs, freqs, 1e-12)
+    entro = np.sum(-freqs * np.log2(freqs)) / 4
+    print(entro)
+
 
 img_sim = {
     'pixel_l1':  pixel_l1_sim,
@@ -110,8 +126,20 @@ img_sim = {
     'phash': phash_sim,
     'hist_l1':   hist_l1_sim,
     'hist_cos':  hist_cos_sim,
-    'fullness':  fullness_sim,
 }
+
+def img_metric_handle(args):
+    fname = args.fname
+    img = open(fname, 'rb').read()
+    img = cv2.imdecode(
+        np.frombuffer(img, np.uint8), 
+        cv2.IMREAD_UNCHANGED,
+    )
+    clrf = colorfulness(img)
+    srp = sharpness(img)
+    print(f'colorfulness: {clrf}, sharpness: {sharpness}')
+
+
 
 def img_sim_dir_handle(args):
     dir = args.dir

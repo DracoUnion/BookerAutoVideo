@@ -10,7 +10,7 @@ from .imgsim import *
 
 warnings.filterwarnings("ignore")
 
-def main():
+def sharpness():
     parser = argparse.ArgumentParser(prog="BookerAutoVideo", formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("-v", "--version", action="version", version=f"PYBP version: {__version__}")
     parser.set_defaults(func=lambda x: parser.print_help())
@@ -44,6 +44,11 @@ def main():
     kf_parser.add_argument("-T", "--threads", type=int, default=8, help="thread count")
     kf_parser.set_defaults(func=extract_keyframe_file)
 
+    met_parser = subparsers.add_parser("img-metric", help="img metrics")
+    met_parser.add_argument("fname", help="img fname")
+    met_parser.set_defaults(func=img_metric_handle)
+
+
     sim_parser = subparsers.add_parser("img-sim", help="calc sim of 2 imgs")
     sim_parser.add_argument("img1", help="img1 fname")
     sim_parser.add_argument("img2", help="img1 fname")
@@ -56,4 +61,4 @@ def main():
     args = parser.parse_args()
     args.func(args)
     
-if __name__ == '__main__': main()
+if __name__ == '__main__': sharpness()
