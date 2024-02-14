@@ -336,9 +336,8 @@ def get_video_imgs(video, fps=0):
     
 def resize_video_noaud(video, nw, nh, fps=0, mode='wrap'):
     assert mode in ['wrap', 'fill']
-    func_resize_img = resize_img_wrap if mode == 'wrap' else resize_img_fill
     imgs, fps = get_video_imgs(video, fps)
-    imgs = [func_resize_img(img, nw, nh) for img in imgs]
+    imgs = [resize_img_blur(img, nw, nh) for img in imgs]
     video = imgs2video(imgs, fps)
     return video
     
