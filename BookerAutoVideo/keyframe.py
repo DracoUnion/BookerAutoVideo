@@ -51,7 +51,7 @@ def extract_keyframe(args):
         {
             'idx': i,
             'time': i / args.rate,
-            'img': img,
+            'img': opti_img(img, args.opti_mode, 8),
         } 
         for i, img in enumerate(imgs)
         if sharpness(img) >= args.sharpness and
@@ -72,8 +72,8 @@ def extract_keyframe(args):
             '.png', f['img'], 
             [cv2.IMWRITE_PNG_COMPRESSION, 9]
         )[1]
-        img = bytes(img)
-        f['img'] = opti_img(img, args.opti_mode, 8)
+        f['img'] = bytes(img)
+        # f['img'] = opti_img(img, args.opti_mode, 8)
     return frames
 
 def extract_keyframe_file(args):
