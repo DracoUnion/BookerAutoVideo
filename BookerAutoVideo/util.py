@@ -401,7 +401,7 @@ def split_sentence(text, limit,  delims='。，、！？；：'):
     # 将后引号与前面的标点放到一起
     for i in range(1, len(sentences)):
         if sentences[i].startswith('”'):
-            sentences[i] = sentence[i][:-1]
+            sentences[i] = sentences[i][:-1]
             sentences[i-1] += '”'
     # 如果单个句子长度超限，继续分割
     sentences = sum([

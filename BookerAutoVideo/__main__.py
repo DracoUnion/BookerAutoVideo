@@ -42,6 +42,8 @@ def main():
     kf_parser.add_argument("-d", "--direction", choices=[DIR_F, DIR_B, DIR_T], default=DIR_T, help="the direction used to calc frame diff")
     kf_parser.add_argument("-t", "--thres", type=float, default=0.6, help="thres in thres mode")
     kf_parser.add_argument("-T", "--threads", type=int, default=8, help="thread count")
+    kf_parser.add_argument("-s", "--sharpness", type=float, default=0.4, help="sharpness")
+    kf_parser.add_argument("-c", "--colorfulness", type=float, default=0.5, help="colorfulness")
     kf_parser.set_defaults(func=extract_keyframe_file)
 
     met_parser = subparsers.add_parser("img-metric", help="img metrics")
