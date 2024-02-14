@@ -35,15 +35,19 @@ def stylish_text(text):
     text = re.sub(r'，$', '。', text, flags=re.M)
     return text
 
+def ensure_gray(img):
+    return cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) \
+        if img.ndim == 3 else img
+
 def opti_img(img, mode, colors):
     if mode == 'quant':
         return imgyaso.pngquant(img, colors)
     elif mode == 'grid':
-        return imgyaso.grid(img)
+        return imgyaso.grid(ensure_gray(img))
     elif mode == 'trunc':
-        return imgyaso.trunc(img, colors)
+        return imgyaso.trunc(ensure_gray(img), colors)
     elif mode == 'thres':
-        return imgyaso.adathres(img)
+        return imgyaso.adathres(ensure_gray(img))
     else:
         return img
 
