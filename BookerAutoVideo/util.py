@@ -37,13 +37,13 @@ def stylish_text(text):
 
 def opti_img(img, mode, colors):
     if mode == 'quant':
-        return imgyaso.pngquant_bts(img, colors)
+        return imgyaso.pngquant(img, colors)
     elif mode == 'grid':
-        return imgyaso.grid_bts(img)
+        return imgyaso.grid(img)
     elif mode == 'trunc':
-        return imgyaso.trunc_bts(img, colors)
+        return imgyaso.trunc(img, colors)
     elif mode == 'thres':
-        return imgyaso.adathres_bts(img)
+        return imgyaso.adathres(img)
     else:
         return img
 
