@@ -32,7 +32,7 @@ def calc_frame_diffs(frames, args):
     direction = args.direction
     frames[0]['diff'] = 1
     for prev, curr in zip(frames[:-1], frames[1:]):
-        curr['diff'] = 1 - pixel_l1_sim(prev['text'], curr['text'])
+        curr['diff'] = 1 - pixel_l1_sim(prev['img'], curr['img'])
     if direction == DIR_B:
         for curr, next in zip(frames[:-1], frames[1:]):
             curr['diff'] = next['diff']
