@@ -10,7 +10,7 @@ import subprocess as subp
 from os import path
 from imgyaso import adathres, adathres_bts
 from .util import *
-from imgsim import *
+from .imgsim import *
 import PIL
 
 DIR_F = 'forward'
