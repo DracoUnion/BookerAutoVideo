@@ -31,7 +31,9 @@ def main():
         opti_mode='none',
         rate=0.2,
         direction=DIR_T,
-        thres=0.6,
+        thres=0.1,
+        sharpness=0.4,
+        colorfulness=0.5,
         func=video2txt_handle,
     )
 
