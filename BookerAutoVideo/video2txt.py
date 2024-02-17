@@ -31,11 +31,6 @@ def video2txt_handle(args):
     if not whisper_path:
         print('请下载 whisper.cpp 并将目录名称添加到 $PATH 中')
         return
-    if not find_cmd_path('Anime4KCPP_CLI'): 
-        print('Anime4KCPP_CLI 未找到，请下载并将其目录添加到系统变量 PATH 中')
-        return
-    if re.search(r'^[\w\-]+$', args.model):
-        args.model = path.join(whisper_path, 'models', args.model + '.bin')
     if not path.isfile(args.model):
         raise FileNotFoundError(f'模型文件 {args.model} 不存在')
     if path.isdir(args.fname):

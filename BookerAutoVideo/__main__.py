@@ -18,15 +18,28 @@ def main():
 
     autovid_parser = subparsers.add_parser("gen", help="generate video")
     autovid_parser.add_argument("config", help="config file name")
+    autovid_parser.add_argument(
+        '--glm', 
+        default=os.environ.get('CHATGLM_CPP_MODEL_PATH', ''),
+        help="chatglm.cpp model path",
+    )
+    autovid_parser.add_argument(
+        "--sd", 
+        default=os.environ.get('SD_CPP_MODEL_PATH', ''),
+        help="sd.cpp model path",
+    )
     autovid_parser.set_defaults(func=autovideo)
 
     video2txt_parser = subparsers.add_parser("totxt", help="convert audio to text")
     video2txt_parser.add_argument("fname", help="file name")
     video2txt_parser.add_argument("-t", "--threads", type=int, default=8, help="num of threads")
     video2txt_parser.add_argument("-I", "--no-image", action='store_true', help="whether to not catch screenshots")
-    video2txt_parser.add_argument("-m", "--model", default='ggml-large-v2-q5_1', help="model name or path")
+    video2txt_parser.add_argument(
+        "-m", "--model", 
+        default=os.environ.get('WHISPER_CPP_MODEL_PATH', ''), 
+        help="whisper.cpp model path"
+    )
     video2txt_parser.add_argument("-l", "--lang", default='zh',  help="language")
-    video2txt_parser.add_argument("-s", "--scene", choices=['auto', 'ppt', 'ppt2', 'movie'], default='auto', help="scene")
     video2txt_parser.set_defaults(
         opti_mode='none',
         rate=0.2,
