@@ -57,15 +57,18 @@ def extract_keyframe(args):
         if sharpness(img) >= args.sharpness and
            colorfulness(img) <= args.colorfulness
     ]
-    # 计算差分
-    calc_frame_diffs(frames, args)
-    for f in frames:
-        print(f"time {nsec2hms(f['time'])} diff: {f['diff']:.16f}")
-    # 计算关键帧
-    frames = [
-        f for f in frames
-        if f['diff'] >= args.thres
-    ]
+    while True:
+        nframe = len(frames)
+        # 计算差分
+        calc_frame_diffs(frames, args)
+        for f in frames:
+            print(f"time {nsec2hms(f['time'])} diff: {f['diff']:.16f}")
+        # 计算关键帧
+        frames = [
+            f for f in frames
+            if f['diff'] >= args.thres
+        ]
+        if len(frames) == nframe: break
     # 优化图像
     for f in frames:
         img = cv2.imencode(
