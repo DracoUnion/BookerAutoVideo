@@ -92,7 +92,6 @@ def extract_keyframe(args):
         ]
         if len(frames) == nframe: break
     # 第三个过滤：OCR 之后根据文字过滤语义相似幻灯片
-    '''
     for f in frames:
         f['text'] = img2text(f['img'])
     while True:
@@ -104,10 +103,9 @@ def extract_keyframe(args):
         # 计算关键帧
         frames = [
             f for f in frames
-            if f['textDiff'] >= args.thres
+            if f['textDiff'] >= args.ocr
         ]
         if nframe == len(frames): break
-    '''
     # 优化图像
     for f in frames:
         img = cv2.imencode(
