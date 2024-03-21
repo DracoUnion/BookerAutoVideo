@@ -42,20 +42,26 @@ def nsec2hms(nsec):
     s = nsec % 60
     return f'{h}h{m:02d}m{s:02d}s'
 
-def calc_frame_diffs(frames, args):
+def calc_diffs(frames, args, diff_func, src_prop='img', diff_prop='diff'):
     direction = args.direction
-    frames[0]['diff'] = 1
+    frames[0][diff_prop] = 1
     for prev, curr in zip(frames[:-1], frames[1:]):
-        curr['diff'] = 1 - pixel_l1_sim(prev['img'], curr['img'])
+        curr[diff_prop] = diff_func(prev[src_prop], curr[src_prop])
     if direction == DIR_B:
         for curr, next in zip(frames[:-1], frames[1:]):
-            curr['diff'] = next['diff']
-        frames[-1]['diff'] = 1
+            curr[diff_prop] = next[diff_prop]
+        frames[-1][diff_prop] = 1
     elif direction == DIR_T:
         for curr, next in zip(frames[:-1], frames[1:]):
-            curr['diff'] = (curr['diff'] + next['diff']) / 2
-        frames[-1]['diff'] = (frames[-1]['diff'] + 1) / 2
-    
+            curr[diff_prop] = (curr[diff_prop] + next[diff_prop]) / 2
+        frames[-1][diff_prop] = (frames[-1][diff_prop] + 1) / 2
+
+def calc_img_diffs(frames, args):
+    calc_diffs(frames, args, lambda x, y: 1 - pixel_l1_sim(x, y), 'img', 'diff')
+
+def calc_text_diffs(frames, args):
+    calc_diffs(frames, args, lambda x, y: text_ngram_diff(x, y), 'text', 'textDiff')
+
 def extract_keyframe(args):
     print(args)
     fname = args.fname
@@ -76,7 +82,7 @@ def extract_keyframe(args):
     while True:
         nframe = len(frames)
         # 计算差分
-        calc_frame_diffs(frames, args)
+        calc_img_diffs(frames, args)
         for f in frames:
             print(f"time {nsec2hms(f['time'])} diff: {f['diff']:.16f}")
         # 计算关键帧
@@ -91,9 +97,9 @@ def extract_keyframe(args):
     while True:
         nframe = len(frames)
         # 计算文字差异
-        frames[0]['textDiff'] = 1
-        for prev, curr in zip(frames[:-1], frames[1:]):
-            curr['textDiff'] = text_ngram_diff(prev['text'], curr['text'])
+        calc_text_diffs(frames, args)
+        for f in frames:
+            print(f"time {nsec2hms(f['time'])} textDiff: {f['textDiff']:.16f}")
         # 计算关键帧
         frames = [
             f for f in frames
