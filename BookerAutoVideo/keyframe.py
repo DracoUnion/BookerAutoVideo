@@ -11,15 +11,29 @@ from os import path
 from imgyaso import adathres, adathres_bts
 from .util import *
 from .imgsim import *
+import easyocr
 import PIL
 
 DIR_F = 'forward'
 DIR_B = 'backward'
 DIR_T = 'twoway'
 
+ocr_reader = None
 PIL.Image.ANTIALIAS = PIL.Image.LANCZOS
 
-    
+def img2text(img):
+    global ocr_reader
+    if not ocr_reader:
+        ocr_reader = easyocr.Reader(['ch_sim', 'en'])
+        
+    img = cv2.imencode(
+        '.png', img, 
+        [cv2.IMWRITE_PNG_COMPRESSION , 9]
+    )[1]
+    img = adathres_bts(bytes(img))
+    res = ocr_reader.readtext(img)
+    text = '\n'.join([line[1] for line in res])
+    return text
 
 def nsec2hms(nsec):
     nsec = int(nsec)
@@ -47,16 +61,18 @@ def extract_keyframe(args):
     fname = args.fname
     # 从视频中读取帧
     imgs, _ = get_video_imgs(fname, args.rate)
+    # 第一个过滤：根据锐度和丰度过滤出幻灯片
     frames = [
         {
             'idx': i,
             'time': i / args.rate,
-            'img': opti_img(img, args.opti_mode, 8),
+            'img': img,
         } 
         for i, img in enumerate(imgs)
         if sharpness(img) >= args.sharpness and
            colorfulness(img) <= args.colorfulness
     ]
+    # 第二个过滤：根据帧间差过滤重复幻灯片
     while True:
         nframe = len(frames)
         # 计算差分
@@ -69,6 +85,21 @@ def extract_keyframe(args):
             if f['diff'] >= args.thres
         ]
         if len(frames) == nframe: break
+    # 第三个过滤：OCR 之后根据文字过滤语义相似幻灯片
+    for f in frames:
+        f['text'] = img2text(f['img'])
+    while True:
+        nframe = len(frames)
+        # 计算文字差异
+        frames[0]['textDiff'] = 1
+        for prev, curr in zip(frames[:-1], frames[1:]):
+            curr['textDiff'] = text_ngram_diff(prev['text'], curr['text'])
+        # 计算关键帧
+        frames = [
+            f for f in frames
+            if f['textDiff'] >= args.thres
+        ]
+        if nframe == len(frames): break
     # 优化图像
     for f in frames:
         img = cv2.imencode(
@@ -76,7 +107,7 @@ def extract_keyframe(args):
             [cv2.IMWRITE_PNG_COMPRESSION, 9]
         )[1]
         f['img'] = bytes(img)
-        # f['img'] = opti_img(img, args.opti_mode, 8)
+        f['img'] = opti_img(img, args.opti_mode, 8)
     return frames
 
 def extract_keyframe_file(args):
