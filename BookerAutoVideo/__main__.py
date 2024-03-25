@@ -17,17 +17,7 @@ def main():
     subparsers = parser.add_subparsers()
 
     autovid_parser = subparsers.add_parser("gen", help="generate video")
-    autovid_parser.add_argument("config", help="config file name")
-    autovid_parser.add_argument(
-        '--glm', 
-        default=os.environ.get('CHATGLM_CPP_MODEL_PATH', ''),
-        help="chatglm.cpp model path",
-    )
-    autovid_parser.add_argument(
-        "--sd", 
-        default=os.environ.get('SD_CPP_MODEL_PATH', ''),
-        help="sd.cpp model path",
-    )
+    autovid_parser.add_argument("fname", help="src file name")
     autovid_parser.set_defaults(func=autovideo)
 
     video2txt_parser = subparsers.add_parser("totxt", help="convert audio to text")

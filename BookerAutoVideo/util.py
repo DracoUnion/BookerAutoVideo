@@ -10,10 +10,21 @@ import cv2
 import math
 import numpy  as np
 import subprocess  as subp
+from io import BytesIO
+from scipy.io import wavfile
 
 DATA_DIR = path.join(tempfile.gettempdir(), 'autovideo')
 
 IMWRITE_PNG_FLAG = [cv2.IMWRITE_PNG_COMPRESSION, 9]
+
+DIR = path.abspath(path.dirname(__file__))
+RE_MD_IMG = r'!\[.*?\]\((.*?)\)'
+RE_MD_TITLE = r'^#+ (.+?)$'
+RE_MD_PRE = r'```[\s\S]+?```'
+RE_MD_TR = r'^\|.+?\|$'
+RE_MD_PREFIX = r'^\s*(\+|\-|\*|\d+\.|\>|\#+)'
+RE_SENT_DELIM = r'\n|。|\?|？|;|；|:|：|!|！'
+RE_MD_LINK_PIC = r'!?\[[^\]]+\]\([^\)]+\)'
 
 def ensure_grayscale(img):
     return cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) \
@@ -422,3 +433,58 @@ def text_ngram_diff(text1, text2, n=3):
     set1 = {text1[i:i+n] for i in range(0, len(text1) - n + 1)}
     set2 = {text2[i:i+n] for i in range(0, len(text2) - n + 1)}
     return len(set1 & set2) / len(set1 | set2)
+
+
+
+def gen_mono_color(w, h, bgr):
+    assert len(bgr) == 3
+    img = np.zeros([h, w, 3])
+    img[:, :] = bgr
+    img = cv2.imencode('.png', img, [cv2.IMWRITE_PNG_COMPRESSION, 9])[1]
+    return bytes(img)
+
+def audio_len(data):
+    return ffmpeg_get_info(data)['duration']
+
+
+def gen_blank_audio(nsec, sr=22050, fmt='wav'):
+    audio = np.zeros(int(nsec * sr), dtype=np.uint8)
+    bio = BytesIO()
+    wavfile.write(bio, sr, audio)
+    audio = bio.getvalue()
+    if fmt != 'wav':
+        audio = ffmpeg_conv_fmt(audio, 'wav', fmt)
+    return audio
+    
+def md2lines(cont):
+    # 去掉代码块
+    cont = re.sub(RE_MD_PRE, '', cont)
+    # 去掉表格
+    cont = re.sub(RE_MD_TR, '', cont, flags=re.M)
+    # 去掉各种格式
+    cont = re.sub(RE_MD_PREFIX, '', cont, flags=re.M)
+    # 去掉图片和链接
+    cont = re.sub(RE_MD_LINK_PIC, '', cont, flags=re.M)
+    # 切分
+    lines = re.split(RE_SENT_DELIM, cont)
+    lines = [l.strip() for l in lines]
+    lines = [l for l in lines if l]
+    return lines
+
+
+def repeat_video_nsec(video, total):
+    nsec = ffmpeg_get_info(video)['duration']
+    if total == nsec:
+        return video
+    elif total < nsec:
+        return slice_video_noaud(video, total)
+    nrepeat = int(total // nsec)
+    new_len = total / nrepeat
+    multi = nsec / new_len
+    one_video = speedup_video_noaud(video, multi)
+    return ffmpeg_cat([one_video] * nrepeat)
+
+
+def extname(fname):
+    m = re.search(r'\.(\w+)$', fname.lower())
+    return m.group(1) if m else ''
