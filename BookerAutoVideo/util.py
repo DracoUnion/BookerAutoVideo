@@ -496,7 +496,7 @@ def extname(fname):
 def call_dalle_retry(text, model_name, size, quality, retry=10):
     for i in range(retry):
         try:
-            # print(f'text: {json.dumps(text, ensure_ascii=False)}')
+            print(f'tti: {json.dumps(text, ensure_ascii=False)}')
             client = openai.OpenAI(
                 base_url=openai.base_url,
                 api_key=openai.api_key,
