@@ -240,7 +240,17 @@ def fname_escape(name):
                .replace('>', '＞') \
                .replace('|', '｜')
 
-
+def load_tti(hash_):
+    fname = path.join(DATA_DIR, f'{hash_}.png')
+    if path.isfile(fname):
+        return open(fname, 'rb').read()
+    else:
+        return None
+        
+def save_tti(hash_, data):
+    safe_mkdir(DATA_DIR)
+    fname = path.join(DATA_DIR, f'{hash_}.png')
+    open(fname, 'wb').write(data)
 
 def load_tts(hash_, voice, volume, rate):
     fname = path.join(DATA_DIR, f'{hash_}-{voice}-{volume}-{rate}')

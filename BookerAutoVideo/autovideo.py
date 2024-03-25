@@ -13,11 +13,15 @@ from EpubCrawler.util import request_retry
 import base64
 
 def tti(text):
+    hash_ = hashlib.md5(text.encode('utf8')).hexdigest()
+    cache = load_tti(hash_)
+    if cache: return cache
     img = call_dalle_retry(
         text, config['ttiModel'], 
         config['ttiSize'], config['ttiQuality'],
         config['ttiRetry']
     )
+    save_tti(hash_, img)
     return img
 
 def get_rand_asset_kw(dir, kw, func_filter=is_pic):
