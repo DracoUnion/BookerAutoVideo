@@ -22,4 +22,8 @@ config = {
     'ttsVoice': 'zh-CN-XiaoyiNeural',
     'ttsVolume': '+0%',
     'ttsRate': '-10%',
+    'ttiModel': 'dall-e-3',
+    'ttiQuality': 'standard',
+    'ttiSize': '1024x1024',
+    'ttiRetry': 10,
 }

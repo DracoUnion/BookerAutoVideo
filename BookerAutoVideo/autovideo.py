@@ -12,7 +12,13 @@ from .util import *
 from EpubCrawler.util import request_retry
 
 def tti(text):
-    raise NotImplementedError()
+    img = call_dalle_retry(
+        text, config['ttiModel'], 
+        config['ttiSize'], config['ttiQuality'],
+        config['ttiRetry']
+    )
+    print(type(img))
+    return img
 
 def get_rand_asset_kw(dir, kw, func_filter=is_pic):
     tree = list(os.walk(dir))
@@ -93,32 +99,10 @@ def make_video(frames):
         video = ffmpeg_cat([video, footer])
     return video
 
-
-'''
-def update_config(user_cfg, cfg_dir):
-    global tts
-    global tti
-    
-    config.update(user_cfg)
-    if not config['contents']:
-        raise AttributeError('内容为空，无法生成')
-        
-    for cont in config['contents']:
-        if cont['type'].endswith(':file'):
-            cont['value'] = path.join(cfg_dir, norm_path_slash(cont['value']))
-    if config['header']:
-        config['header'] = path.join(cfg_dir, norm_path_slash(config['header']))
-    if config['footer']:
-        config['footer'] = path.join(cfg_dir, norm_path_slash(config['footer']))
-        
-    if config['external']:
-        mod_fname = path.join(cfg_dir, norm_path_slash(config['external']))
-        exmod = load_module(mod_fname)
-        if hasattr(exmod, 'tts'): tts = exmod.tts
-        if hasattr(exmod, 'tti'): tti = exmod.tti
-'''
-
 def autovideo(args):
+    set_openai_props(args.key, args.proxy, args.host)
+    config['ttiRetry'] = args.retry
+    config['ttiModel'] = args.model
     ext = extname(args.fname)
     if ext not in ['md', 'txt']:
         raise ValueError('文件扩展名必须是 TXT 或 MD')

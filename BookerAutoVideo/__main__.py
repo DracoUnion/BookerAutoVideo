@@ -16,8 +16,15 @@ def main():
     parser.set_defaults(func=lambda x: parser.print_help())
     subparsers = parser.add_subparsers()
 
+    openai_key = os.environ.get('OPENAI_API_KEY')
+    openai_url = os.environ.get('OPENAI_BASE_URL')
     autovid_parser = subparsers.add_parser("gen", help="generate video")
     autovid_parser.add_argument("fname", help="src file name")
+    autovid_parser.add_argument("-P", "--proxy", help="proxy")
+    autovid_parser.add_argument("-m", "--model", default='dall-e-3', help="model name")
+    autovid_parser.add_argument("-k", "--key", default=openai_key, help="OpenAI API key")
+    autovid_parser.add_argument("-r", "--retry", type=int, default=1_000_000, help="times of retry")
+    autovid_parser.add_argument("-H", "--host", default=openai_url, help="api host")
     autovid_parser.set_defaults(func=autovideo)
 
     video2txt_parser = subparsers.add_parser("totxt", help="convert audio to text")

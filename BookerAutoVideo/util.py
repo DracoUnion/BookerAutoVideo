@@ -12,6 +12,9 @@ import numpy  as np
 import subprocess  as subp
 from io import BytesIO
 from scipy.io import wavfile
+import json
+import openai
+import httpx
 
 DATA_DIR = path.join(tempfile.gettempdir(), 'autovideo')
 
@@ -488,3 +491,33 @@ def repeat_video_nsec(video, total):
 def extname(fname):
     m = re.search(r'\.(\w+)$', fname.lower())
     return m.group(1) if m else ''
+
+def call_dalle_retry(text, model_name, size, quality, retry=10):
+    for i in range(retry):
+        try:
+            # print(f'text: {json.dumps(text, ensure_ascii=False)}')
+            client = openai.OpenAI(
+                base_url=openai.base_url,
+                api_key=openai.api_key,
+                http_client=httpx.Client(
+                    proxies=openai.proxy,
+                    transport=httpx.HTTPTransport(local_address="0.0.0.0"),
+                )
+            )
+            ans = client.images.generate(
+                model=model_name, 
+                size='1024x1024',
+                prompt=text,
+                n=1,
+                response_format='b64_json',
+            ).data[0].b64_json
+            # print(f'ans: {json.dumps(ans, ensure_ascii=False)}')
+            return ans
+        except Exception as ex:
+            print(f'OpenAI retry {i+1}: {str(ex)}')
+            if i == retry - 1: raise ex
+
+def set_openai_props(key=None, proxy=None, host=None):
+    openai.api_key = key
+    openai.proxy = proxy
+    openai.base_url = host
