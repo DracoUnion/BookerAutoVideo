@@ -6,3 +6,4 @@ librosa
 edge-tts
 pyyaml
 EpubCrawler
+openai
