@@ -480,7 +480,8 @@ def md2lines(cont):
     # 去掉图片和链接
     cont = re.sub(RE_MD_LINK_PIC, '', cont, flags=re.M)
     # 切分
-    lines = re.split(RE_SENT_DELIM, cont)
+    # lines = re.split(RE_SENT_DELIM, cont)
+    lines = cont.split('\n')
     lines = [l.strip() for l in lines]
     lines = [l for l in lines if l]
     return lines

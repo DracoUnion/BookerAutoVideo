@@ -113,6 +113,7 @@ def autovideo(args):
     # 将文件内容切分成行
     cont = open(args.fname, encoding='utf8').read()
     lines = md2lines(cont)
+    print(lines)
     # 使用 TTS 和 TTI 工具生成语音和图像
     frames = [
         { 
