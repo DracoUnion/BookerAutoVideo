@@ -21,7 +21,7 @@ def get_rand_asset_kw(dir, kw, func_filter=is_pic):
     cand = [n for n in pics if kw in n]
     return random.choice(cand) if len(cand) else  random.choice(pics)
 
-def tts(text, config):
+def tts(text):
     hash_ = hashlib.md5(text.encode('utf8')).hexdigest()
     voice = config['ttsVoice']
     vol = config['ttsVolume']
@@ -129,8 +129,8 @@ def autovideo(args):
     frames = [
         { 
             'subtitle': text,
-            'audio': tts(text, config),
-            'image': tti(text, config),
+            'audio': tts(text),
+            'image': tti(text),
         }
         for text in lines
     ]
