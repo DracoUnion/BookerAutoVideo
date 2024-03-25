@@ -10,6 +10,7 @@ import hashlib
 from .autovideo_config import config
 from .util import *
 from EpubCrawler.util import request_retry
+import base64
 
 def tti(text):
     img = call_dalle_retry(
@@ -17,7 +18,6 @@ def tti(text):
         config['ttiSize'], config['ttiQuality'],
         config['ttiRetry']
     )
-    print(type(img))
     return img
 
 def get_rand_asset_kw(dir, kw, func_filter=is_pic):

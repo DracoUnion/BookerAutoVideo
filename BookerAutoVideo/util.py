@@ -15,6 +15,7 @@ from scipy.io import wavfile
 import json
 import openai
 import httpx
+import base64
 
 DATA_DIR = path.join(tempfile.gettempdir(), 'autovideo')
 
@@ -504,7 +505,7 @@ def call_dalle_retry(text, model_name, size, quality, retry=10):
                     transport=httpx.HTTPTransport(local_address="0.0.0.0"),
                 )
             )
-            ans = client.images.generate(
+            img = client.images.generate(
                 model=model_name, 
                 size='1024x1024',
                 prompt=text,
@@ -512,7 +513,7 @@ def call_dalle_retry(text, model_name, size, quality, retry=10):
                 response_format='b64_json',
             ).data[0].b64_json
             # print(f'ans: {json.dumps(ans, ensure_ascii=False)}')
-            return ans
+            return base64.b64decode(img)
         except Exception as ex:
             print(f'OpenAI retry {i+1}: {str(ex)}')
             if i == retry - 1: raise ex
