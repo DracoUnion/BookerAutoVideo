@@ -28,7 +28,7 @@ RE_MD_PRE = r'```[\s\S]+?```'
 RE_MD_TR = r'^\|.+?\|$'
 RE_MD_PREFIX = r'^\s*(\+|\-|\*|\d+\.|\>|\#+)'
 RE_SENT_DELIM = r'\n|。|\?|？|;|；|:|：|!|！'
-RE_MD_LINK_PIC = r'!?\[[^\]]+\]\([^\)]+\)'
+RE_MD_LINK_PIC = r'!?\[[^\]]*\]\([^\)]*\)'
 
 def ensure_grayscale(img):
     return cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) \
