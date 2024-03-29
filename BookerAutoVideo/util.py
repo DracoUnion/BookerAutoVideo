@@ -34,18 +34,28 @@ def ensure_grayscale(img):
     return cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) \
            if img.ndim == 3 else img
 
-def stylish_text(text):
-    # 英文标点转成中文，并补齐末尾句号
-    text = (
+# 英文标点转成中文
+def punc_en2zh(text):
+    return  (
         text.replace(',', '，')
             .replace('.', '。')
             .replace('?', '？')
             .replace('!', '！')
-    ) + '。'
+            .replace(';', '；')
+            .replace(':', '：')
+    )
+
+# 
+def add_end_punc(text):
+    pass
+
+def stylish_text(text):
+    # 英文标点转成中文，并补齐末尾句号
+    text = punc_en2zh(text) + '。'
     # 连续多个标点只取一个
-    text = re.sub(r'[。，！？]{2,}', lambda m: m.group()[0], text)
+    text = re.sub(r'[。，！？：；]{2,}', lambda m: m.group()[0], text)
     # 50~100 个字为一段
-    text = re.sub(r'(.{50,100}[。，！？])', r'\1\n\n', text)
+    text = re.sub(r'(.{50,100}[。，！？：；])', r'\1\n\n', text)
     # 段尾逗号变句号
     text = re.sub(r'，$', '。', text, flags=re.M)
     return text
@@ -479,11 +489,25 @@ def md2lines(cont):
     cont = re.sub(RE_MD_PREFIX, '', cont, flags=re.M)
     # 去掉图片和链接
     cont = re.sub(RE_MD_LINK_PIC, '', cont, flags=re.M)
+    # 英文标点转中文
+    cont = punc_en2zh(cont)
     # 切分
     # lines = re.split(RE_SENT_DELIM, cont)
     lines = cont.split('\n')
     lines = [l.strip() for l in lines]
     lines = [l for l in lines if l]
+
+    # 补充末尾标点
+    for l in lines:
+        if not re.search(r'[。，：；！？]$', l):
+            l += '。'
+    # 合并较短的段落
+    for i in range(1, len(lines)):
+        if len(lines[i - 1]) < 15:
+            lines[i] = lines[i - 1] + lines[i]
+            lines[i - 1] = ''
+    lines = [l for l in lines if l]
+
     return lines
 
 
