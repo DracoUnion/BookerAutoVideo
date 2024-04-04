@@ -110,6 +110,9 @@ def autovideo(args):
     ext = extname(args.fname)
     if ext not in ['md', 'txt']:
         raise ValueError('文件扩展名必须是 TXT 或 MD')
+    video_fname = args.fname[:-len(ext)-1] + '.' + config['format']
+    if path.isfile(video_fname):
+        raise ValueError('该文件已生成视频')
     # 将文件内容切分成行
     cont = open(args.fname, encoding='utf8').read()
     lines = md2lines(cont)
@@ -139,7 +142,6 @@ def autovideo(args):
     srt = gen_srt(frames)
     video = ffmpeg_add_srt(video, srt)
     # 写文件
-    video_fname = args.fname[:-len(ext)-1] + '.' + config['format']
     print(video_fname)
     open(video_fname, 'wb').write(video)
 
