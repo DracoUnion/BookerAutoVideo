@@ -498,9 +498,9 @@ def md2lines(cont):
     lines = [l for l in lines if l]
 
     # 补充末尾标点
-    for l in lines:
+    for i, l in enumerate(lines):
         if not re.search(r'[。，：；！？]$', l):
-            l += '。'
+            lines[i] =  l + '。'
     # 合并较短的段落
     for i in range(1, len(lines)):
         if len(lines[i - 1]) < 15:
