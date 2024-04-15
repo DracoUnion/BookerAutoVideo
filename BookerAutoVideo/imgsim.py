@@ -105,19 +105,10 @@ def max_2x2(img):
     return img
 
 def sharpness(img):
-    # img = cv2.resize(img, [512, 512], interpolation=cv2.INTER_CUBIC)
     if img.ndim == 3:
         img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     img = img.astype(int)
-    while True:
-        img = diff_once(img)
-        img = max_2x2(img)
-        if min(img.shape) < 8: break
-    img = img // 16
-    freqs, _ = np.histogram(img, bins=range(0, 17), density=True)
-    freqs = np.where(freqs, freqs, 1e-12)
-    entro = np.sum(-freqs * np.log2(freqs)) / 4
-    return entro
+    return np.mean(cv2.Canny(img, 50, 150) / 255)
 
 
 img_sim = {

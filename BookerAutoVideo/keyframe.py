@@ -75,7 +75,7 @@ def extract_keyframe(args):
             'img': img,
         } 
         for i, img in enumerate(imgs)
-        if sharpness(img) >= args.sharpness and
+        if sharpness(img) <= args.sharpness and
            colorfulness(img) <= args.colorfulness
     ]
     # 第二个过滤：根据帧间差过滤重复幻灯片

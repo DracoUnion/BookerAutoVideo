@@ -42,7 +42,7 @@ def main():
         rate=0.2,
         direction=DIR_T,
         thres=0.1,
-        sharpness=0.4,
+        sharpness=0.1,
         colorfulness=0.5,
         func=video2txt_handle,
     )
@@ -55,7 +55,7 @@ def main():
     kf_parser.add_argument("-t", "--thres", type=float, default=0.1, help="img diff thres")
     kf_parser.add_argument("--ocr", type=float, default=0.1, help="text diff thres")
     kf_parser.add_argument("-T", "--threads", type=int, default=8, help="thread count")
-    kf_parser.add_argument("-s", "--sharpness", type=float, default=0.4, help="sharpness")
+    kf_parser.add_argument("-s", "--sharpness", type=float, default=0.1, help="sharpness")
     kf_parser.add_argument("-c", "--colorfulness", type=float, default=0.5, help="colorfulness")
     kf_parser.set_defaults(func=extract_keyframe_file)
 
