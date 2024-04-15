@@ -490,7 +490,7 @@ def md2lines(cont):
     # 去掉图片和链接
     cont = re.sub(RE_MD_LINK_PIC, '', cont, flags=re.M)
     # 英文标点转中文
-    cont = punc_en2zh(cont)
+    # cont = punc_en2zh(cont)
     # 切分
     # lines = re.split(RE_SENT_DELIM, cont)
     lines = cont.split('\n')
