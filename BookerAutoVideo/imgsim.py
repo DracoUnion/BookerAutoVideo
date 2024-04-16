@@ -108,7 +108,6 @@ def sharpness(img):
     img = img.astype(np.uint8)
     if img.ndim == 3:
         img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    img = img.astype(int)
     return np.mean(cv2.Canny(img, 50, 150) / 255)
 
 
