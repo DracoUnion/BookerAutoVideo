@@ -456,7 +456,7 @@ def split_sentence(text, limit,  delims='。，、！？；：'):
 def text_ngram_diff(text1, text2, n=3):
     set1 = {text1[i:i+n] for i in range(0, len(text1) - n + 1)}
     set2 = {text2[i:i+n] for i in range(0, len(text2) - n + 1)}
-    return len(set1 & set2) / len(set1 | set2)
+    return len(set1 & set2) / (len(set1 | set2) + 1e-8)
 
 
 
