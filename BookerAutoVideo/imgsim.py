@@ -105,6 +105,7 @@ def max_2x2(img):
     return img
 
 def sharpness(img):
+    img = img.astype(np.uint8)
     if img.ndim == 3:
         img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     img = img.astype(int)
