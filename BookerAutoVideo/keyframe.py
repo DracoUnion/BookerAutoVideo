@@ -60,7 +60,7 @@ def calc_img_diffs(frames, args):
     calc_diffs(frames, args, lambda x, y: 1 - pixel_l1_sim(x, y), 'img', 'diff')
 
 def calc_text_diffs(frames, args):
-    calc_diffs(frames, args, lambda x, y: text_ngram_diff(x, y), 'text', 'textDiff')
+    calc_diffs(frames, args, lambda x, y: word_ngram_diff(x, y), 'text', 'textDiff')
 
 def extract_keyframe(args):
     print(args)
