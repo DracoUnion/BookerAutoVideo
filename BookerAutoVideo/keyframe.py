@@ -92,22 +92,22 @@ def extract_keyframe(args):
         ]
         if len(frames) == nframe: break
     # 第三个过滤：OCR 之后根据文字过滤语义相似幻灯片
-    '''
-    for f in frames:
-        f['text'] = img2text(f['img'])
-    while True:
-        nframe = len(frames)
-        # 计算文字差异
-        calc_text_diffs(frames, args)
+    if args.ocr > 0:
         for f in frames:
-            print(f"time {nsec2hms(f['time'])} textDiff: {f['textDiff']:.16f}")
-        # 计算关键帧
-        frames = [
-            f for f in frames
-            if f['textDiff'] >= args.ocr
-        ]
-        if nframe == len(frames): break
-    '''
+            f['text'] = img2text(f['img'])
+        fnames = [f for f in frames if f['text']]
+        while True:
+            nframe = len(frames)
+            # 计算文字差异
+            calc_text_diffs(frames, args)
+            for f in frames:
+                print(f"time {nsec2hms(f['time'])} textDiff: {f['textDiff']:.16f}")
+            # 计算关键帧
+            frames = [
+                f for f in frames
+                if f['textDiff'] >= args.ocr
+            ]
+            if nframe == len(frames): break
     # 优化图像
     for f in frames:
         img = cv2.imencode(
