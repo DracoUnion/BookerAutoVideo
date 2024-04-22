@@ -53,7 +53,7 @@ def main():
     kf_parser.add_argument("-r", "--rate", type=float, default=0.2, help="how many frames to extract in 1s")
     kf_parser.add_argument("-d", "--direction", choices=[DIR_F, DIR_B, DIR_T], default=DIR_B, help="the direction used to calc frame diff")
     kf_parser.add_argument("-t", "--thres", type=float, default=0.05, help="img diff thres")
-    kf_parser.add_argument("--ocr", type=float, default=0.1, help="text diff thres")
+    kf_parser.add_argument("--ocr", type=float, default=0.5, help="text diff thres")
     kf_parser.add_argument("-T", "--threads", type=int, default=8, help="thread count")
     kf_parser.add_argument("-s", "--sharpness", type=float, default=0.1, help="sharpness")
     kf_parser.add_argument("-c", "--colorfulness", type=float, default=0.5, help="colorfulness")
