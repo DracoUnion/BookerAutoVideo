@@ -456,9 +456,9 @@ def split_sentence(text, limit,  delims='。，、！？；：'):
 def word_ngram_diff(text1, text2, n=3):
     words1 = re.findall(r'\w+|[\u4e00-\u9fff]', text1)
     words2 = re.findall(r'\w+|[\u4e00-\u9fff]', text2)
-    set1 = {words1[i:i+n] for i in range(0, len(words1) - n + 1)}
-    set2 = {words2[i:i+n] for i in range(0, len(words2) - n + 1)}
-    return len(set1 & set2) / (len(set1 | set2) + 1e-8)
+    set1 = {tuple(words1[i:i+n]) for i in range(0, len(words1) - n + 1)}
+    set2 = {tuple(words2[i:i+n]) for i in range(0, len(words2) - n + 1)}
+    return 1 - len(set1 & set2) / (len(set1 | set2) + 1e-8)
 
 
 
