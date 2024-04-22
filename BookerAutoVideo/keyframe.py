@@ -96,7 +96,10 @@ def extract_keyframe(args):
     if args.ocr > 0:
         for f in frames:
             f['text'] = img2text(f['img'])
-        fnames = [f for f in frames if f['text']]
+        frames = [f for f in frames if f['text']]
+        for f in frames:
+            print(f"time {nsec2hms(f['time'])} text: {json.dumps(f['text'], ensure_ascii=False)}")
+        print('=' * 30)
         while True:
             nframe = len(frames)
             # 计算文字差异
