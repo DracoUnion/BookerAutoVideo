@@ -85,6 +85,7 @@ def extract_keyframe(args):
         calc_img_diffs(frames, args)
         for f in frames:
             print(f"time {nsec2hms(f['time'])} diff: {f['diff']:.16f}")
+        print('=' * 30)
         # 计算关键帧
         frames = [
             f for f in frames
@@ -102,6 +103,7 @@ def extract_keyframe(args):
             calc_text_diffs(frames, args)
             for f in frames:
                 print(f"time {nsec2hms(f['time'])} textDiff: {f['textDiff']:.16f}")
+            print('=' * 30)
             # 计算关键帧
             frames = [
                 f for f in frames
