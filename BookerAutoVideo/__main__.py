@@ -40,11 +40,12 @@ def main():
     video2txt_parser.set_defaults(
         opti_mode='none',
         rate=0.2,
-        direction=DIR_T,
-        thres=0.1,
+        direction=DIR_B,
+        thres=0.05,
         sharpness=0.1,
         colorfulness=0.5,
         func=video2txt_handle,
+        ocr=0.5,
     )
 
     kf_parser = subparsers.add_parser("ext-kf", help="extract keyframes")
