@@ -24,11 +24,13 @@ IMWRITE_PNG_FLAG = [cv2.IMWRITE_PNG_COMPRESSION, 9]
 DIR = path.abspath(path.dirname(__file__))
 RE_MD_IMG = r'!\[.*?\]\((.*?)\)'
 RE_MD_TITLE = r'^#+ (.+?)$'
-RE_MD_PRE = r'```[\s\S]+?```'
+RE_MD_PRE = r'```\w*[\s\S]+?```'
 RE_MD_TR = r'^\|.+?\|$'
 RE_MD_PREFIX = r'^\s*(\+|\-|\*|\d+\.|\>|\#+)'
 RE_SENT_DELIM = r'\n|。|\?|？|;|；|:|：|!|！'
-RE_MD_LINK_PIC = r'!?\[[^\]]*\]\([^\)]*\)'
+RE_MD_PIC = r'!?\[[^\]]*\]\([^\)]*\)'
+RE_MD_LINK = r'(?<!!)\[([^\]]*)\]\([^\)]*\)'
+RE_MD_BI = r'(?<!\\)\*+'
 
 def ensure_grayscale(img):
     return cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) \
@@ -489,8 +491,10 @@ def md2lines(cont):
     cont = re.sub(RE_MD_TR, '', cont, flags=re.M)
     # 去掉各种格式
     cont = re.sub(RE_MD_PREFIX, '', cont, flags=re.M)
+    cont = re.sub(RE_MD_BI, '', cont, flags=re.M)
     # 去掉图片和链接
-    cont = re.sub(RE_MD_LINK_PIC, '', cont, flags=re.M)
+    cont = re.sub(RE_MD_PIC, '', cont, flags=re.M)
+    cont = re.sub(RE_MD_LINK, r'\1', cont, flags=re.M)
     # 英文标点转中文
     # cont = punc_en2zh(cont)
     # 切分
