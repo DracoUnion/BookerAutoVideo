@@ -509,7 +509,7 @@ def md2lines(cont):
             lines[i] =  l + '。'
     # 合并较短的段落
     for i in range(1, len(lines)):
-        if len(lines[i - 1]) < 35:
+        if len(lines[i - 1]) < 100:
             lines[i] = lines[i - 1] + lines[i]
             lines[i - 1] = ''
     lines = [l for l in lines if l]
