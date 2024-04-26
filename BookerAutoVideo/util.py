@@ -534,7 +534,7 @@ def extname(fname):
     m = re.search(r'\.(\w+)$', fname.lower())
     return m.group(1) if m else ''
 
-def call_dalle_retry(text, model_name, size, quality, retry=10):
+def call_dalle_retry(text, model_name, size, quality, retry=10, nothrow=True):
     for i in range(retry):
         try:
             print(f'tti: {json.dumps(text, ensure_ascii=False)}')
@@ -557,7 +557,7 @@ def call_dalle_retry(text, model_name, size, quality, retry=10):
             return base64.b64decode(img)
         except Exception as ex:
             print(f'OpenAI retry {i+1}: {str(ex)}')
-            if i == retry - 1: raise ex
+            if i == retry - 1 and not nothrow: raise ex
 
 def set_openai_props(key=None, proxy=None, host=None):
     openai.api_key = key
