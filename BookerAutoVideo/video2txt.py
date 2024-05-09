@@ -97,9 +97,12 @@ def video2txt_file(args):
         print(f'{nfname} 已存在')
         return
     # 加载缓存
-    hash_ = 
-    # 语音识别
-    words = whisper_cpp(args)
+    hash_ = hashlib.md5(open(fname, 'rb').read()).hexdigest()
+    words = load_asr(hash_)
+    if not words:
+        # 语音识别
+        words = whisper_cpp(args)
+        save_asr(hash_, words)
     '''
     model = whisper.load_model(args.asr_model, device=args.device)
     r = model.transcribe(fname, fp16=False, language=args.language)
