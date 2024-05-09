@@ -111,12 +111,12 @@ def video2txt_file(args):
         for s in r['segments']
     ]
     '''
-    print(words)
     # 获取关键帧
     if not args.no_image and is_video(fname):
         frames = extract_keyframe(args)
         words += frames
         words.sort(key=lambda x: x['time'])
+    print(words)
     # 排版
     title = path.basename(fname)
     title = re.sub(r'\.\w+$', '', title)

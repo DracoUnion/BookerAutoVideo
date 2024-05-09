@@ -115,6 +115,7 @@ def extract_keyframe(args):
             if nframe == len(frames): break
     # 优化图像
     for f in frames:
+        if 'text' in f: del f['text']
         img = cv2.imencode(
             '.png', f['img'], 
             [cv2.IMWRITE_PNG_COMPRESSION, 9]
