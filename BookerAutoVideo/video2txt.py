@@ -96,6 +96,8 @@ def video2txt_file(args):
     if path.isfile(nfname):
         print(f'{nfname} 已存在')
         return
+    # 加载缓存
+    hash_ = 
     # 语音识别
     words = whisper_cpp(args)
     '''

@@ -250,8 +250,23 @@ def fname_escape(name):
                .replace('>', '＞') \
                .replace('|', '｜')
 
+def load_asr(hash_):
+    fname = path.join(DATA_DIR, f'asr-{hash_}.json')
+    if not path.isfile(fname):
+        return None
+    try:
+        j = json.loads(open(fname, encoding='utf8').read())
+        return j
+    except:
+        return None
+
+def save_asr(hash_, j):
+    safe_mkdir(DATA_DIR)
+    fname = path.join(DATA_DIR, f'asr-{hash_}.json')
+    open(fname, 'w', encoding='utf8').write(json.dumps(j))
+
 def load_tti(hash_):
-    fname = path.join(DATA_DIR, f'{hash_}.png')
+    fname = path.join(DATA_DIR, f'tti-{hash_}.png')
     if path.isfile(fname):
         return open(fname, 'rb').read()
     else:
@@ -259,7 +274,7 @@ def load_tti(hash_):
         
 def save_tti(hash_, data):
     safe_mkdir(DATA_DIR)
-    fname = path.join(DATA_DIR, f'{hash_}.png')
+    fname = path.join(DATA_DIR, f'tti-{hash_}.png')
     open(fname, 'wb').write(data)
 
 def load_tts(hash_, voice, volume, rate):
