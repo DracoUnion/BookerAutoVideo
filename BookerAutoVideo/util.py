@@ -24,11 +24,13 @@ IMWRITE_PNG_FLAG = [cv2.IMWRITE_PNG_COMPRESSION, 9]
 DIR = path.abspath(path.dirname(__file__))
 RE_MD_IMG = r'!\[.*?\]\((.*?)\)'
 RE_MD_TITLE = r'^#+ (.+?)$'
-RE_MD_PRE = r'```[\s\S]+?```'
+RE_MD_PRE = r'```\w*[\s\S]+?```'
 RE_MD_TR = r'^\|.+?\|$'
 RE_MD_PREFIX = r'^\s*(\+|\-|\*|\d+\.|\>|\#+)'
 RE_SENT_DELIM = r'\n|。|\?|？|;|；|:|：|!|！'
-RE_MD_LINK_PIC = r'!?\[[^\]]*\]\([^\)]*\)'
+RE_MD_PIC = r'!?\[[^\]]*\]\([^\)]*\)'
+RE_MD_LINK = r'(?<!!)\[([^\]]*)\]\([^\)]*\)'
+RE_MD_BI = r'(?<!\\)\*+'
 
 def ensure_grayscale(img):
     return cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) \
@@ -504,8 +506,10 @@ def md2lines(cont):
     cont = re.sub(RE_MD_TR, '', cont, flags=re.M)
     # 去掉各种格式
     cont = re.sub(RE_MD_PREFIX, '', cont, flags=re.M)
+    cont = re.sub(RE_MD_BI, '', cont, flags=re.M)
     # 去掉图片和链接
-    cont = re.sub(RE_MD_LINK_PIC, '', cont, flags=re.M)
+    cont = re.sub(RE_MD_PIC, '', cont, flags=re.M)
+    cont = re.sub(RE_MD_LINK, r'\1', cont, flags=re.M)
     # 英文标点转中文
     # cont = punc_en2zh(cont)
     # 切分
@@ -520,7 +524,7 @@ def md2lines(cont):
             lines[i] =  l + '。'
     # 合并较短的段落
     for i in range(1, len(lines)):
-        if len(lines[i - 1]) < 35:
+        if len(lines[i - 1]) < 100:
             lines[i] = lines[i - 1] + lines[i]
             lines[i - 1] = ''
     lines = [l for l in lines if l]
@@ -545,7 +549,7 @@ def extname(fname):
     m = re.search(r'\.(\w+)$', fname.lower())
     return m.group(1) if m else ''
 
-def call_dalle_retry(text, model_name, size, quality, retry=10):
+def call_dalle_retry(text, model_name, size, quality, retry=10, nothrow=True):
     for i in range(retry):
         try:
             print(f'tti: {json.dumps(text, ensure_ascii=False)}')
@@ -568,7 +572,7 @@ def call_dalle_retry(text, model_name, size, quality, retry=10):
             return base64.b64decode(img)
         except Exception as ex:
             print(f'OpenAI retry {i+1}: {str(ex)}')
-            if i == retry - 1: raise ex
+            if i == retry - 1 and not nothrow: raise ex
 
 def set_openai_props(key=None, proxy=None, host=None):
     openai.api_key = key

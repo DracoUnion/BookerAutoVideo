@@ -1,3 +1,7 @@
+from os import path
+
+DIR = path.abspath(path.dirname(__file__))
+
 config = {
     'name': '',
     'format': 'mp4',
@@ -26,4 +30,5 @@ config = {
     'ttiQuality': 'standard',
     'ttiSize': '1024x1024',
     'ttiRetry': 10,
+    'defaultImg': path.join(DIR, 'asset', 'sound_only.png'),
 }

@@ -21,6 +21,7 @@ def tti(text):
         config['ttiSize'], config['ttiQuality'],
         config['ttiRetry']
     )
+    if img is None: img = open(config['defaultImg'], 'rb').read()
     save_tti(hash_, img)
     return img
 
