@@ -13,6 +13,7 @@ from .util import *
 from .imgsim import *
 import easyocr
 import PIL
+from .clip import *
 
 DIR_F = 'forward'
 DIR_B = 'backward'
@@ -62,23 +63,7 @@ def calc_img_diffs(frames, args):
 def calc_text_diffs(frames, args):
     calc_diffs(frames, args, lambda x, y: word_ngram_diff(x, y), 'text', 'textDiff')
 
-def extract_keyframe(args):
-    print(args)
-    fname = args.fname
-    # 从视频中读取帧
-    imgs, _ = get_video_imgs(fname, args.rate)
-    # 第一个过滤：根据锐度和丰度过滤出幻灯片
-    frames = [
-        {
-            'idx': i,
-            'time': i / args.rate,
-            'img': img,
-        } 
-        for i, img in enumerate(imgs)
-        if sharpness(img) <= args.sharpness and
-           colorfulness(img) <= args.colorfulness
-    ]
-    # 第二个过滤：根据帧间差过滤重复幻灯片
+def filter_repeat(frames, args):
     while True:
         nframe = len(frames)
         # 计算差分
@@ -92,27 +77,81 @@ def extract_keyframe(args):
             if f['diff'] >= args.thres
         ]
         if len(frames) == nframe: break
-    # 第三个过滤：OCR 之后根据文字过滤语义相似幻灯片
-    if args.ocr > 0:
+    return frames
+
+def filter_by_clip(frames, args):
+    model, proc = load_clip(
+        args.model_path, 
+        'cuda' if torch.cuda.is_available() else 'cpu'
+    )
+    cates = ['图文', '幻灯片', '人像', '景物']
+    cids = proc(text=cates)
+    pad_ids(cids, proc.tokenizer.pad_token_id)
+    cids = torch.tensor(cids, dtype=int, device=model.device).input_ids
+    imgs = [f['img'] for f in frames]
+    imgs = [
+        np.ascontiguousarray(img.transpose([2, 0, 1])[::-1]) 
+        for img in imgs
+    ]
+    imgs_norm = proc(images=imgs, return_tensors='np').pixel_values
+
+    probs = []
+    for i in range(0, len(imgs_norm), args.batch_size):
+        imgs_batch = imgs_norm[i:i+args.batch_size]
+        imgs_batch = torch.tensor(imgs_batch, device=model.device)
+        logits_batch = model.forward(input_ids=cids, pixel_values=imgs_batch).logits_per_image
+        probs_batch = torch.softmax(logits_batch, -1)
+        probs += probs_batch.tolist()
+
+    top_labels = np.argmax(probs, -1)
+    ppt_masks = top_labels < 2
+    for f, m in zip(frames, ppt_masks):
+        print(f"{f['time']}: {m}")
+    return [f for f, m in zip(frames, ppt_masks) if m]
+
+def filter_by_ocr(frames, args):
+    if args.ocr <= 0: return frames
+    for f in frames:
+        f['text'] = img2text(f['img'])
+    frames = [f for f in frames if f['text']]
+    for f in frames:
+        print(f"time {nsec2hms(f['time'])} text: {json.dumps(f['text'], ensure_ascii=False)}")
+    print('=' * 30)
+    while True:
+        nframe = len(frames)
+        # 计算文字差异
+        calc_text_diffs(frames, args)
         for f in frames:
-            f['text'] = img2text(f['img'])
-        frames = [f for f in frames if f['text']]
-        for f in frames:
-            print(f"time {nsec2hms(f['time'])} text: {json.dumps(f['text'], ensure_ascii=False)}")
+            print(f"time {nsec2hms(f['time'])} textDiff: {f['textDiff']:.16f}")
         print('=' * 30)
-        while True:
-            nframe = len(frames)
-            # 计算文字差异
-            calc_text_diffs(frames, args)
-            for f in frames:
-                print(f"time {nsec2hms(f['time'])} textDiff: {f['textDiff']:.16f}")
-            print('=' * 30)
-            # 计算关键帧
-            frames = [
-                f for f in frames
-                if f['textDiff'] >= args.ocr
-            ]
-            if nframe == len(frames): break
+        # 计算关键帧
+        frames = [
+            f for f in frames
+            if f['textDiff'] >= args.ocr
+        ]
+        if nframe == len(frames): break
+    return frames
+   
+def extract_keyframe(args):
+    print(args)
+    fname = args.fname
+    # 从视频中读取帧
+    imgs, _ = get_video_imgs(fname, args.rate)
+    frames = [
+        {
+            'idx': i,
+            'time': i / args.rate,
+            'img': img,
+        } 
+        for i, img in enumerate(imgs)
+    ]
+    # 第一个过滤：根据帧间差过滤重复幻灯片
+    frames = filter_repeat(frames, args)
+    # 第二个过滤：过滤人像和景物
+    frames = filter_by_clip(frames, args)
+    frames = filter_repeat(frames, args)
+    # 第三个过滤：OCR 之后根据文字过滤语义相似幻灯片
+    frames = filter_by_ocr(frames, args)
     # 优化图像
     for f in frames:
         if 'text' in f: del f['text']

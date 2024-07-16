@@ -55,10 +55,9 @@ def main():
     kf_parser.add_argument("-r", "--rate", type=float, default=0.2, help="how many frames to extract in 1s")
     kf_parser.add_argument("-d", "--direction", choices=[DIR_F, DIR_B, DIR_T], default=DIR_B, help="the direction used to calc frame diff")
     kf_parser.add_argument("-t", "--thres", type=float, default=0.05, help="img diff thres")
-    kf_parser.add_argument("--ocr", type=float, default=0.5, help="text diff thres")
-    kf_parser.add_argument("-T", "--threads", type=int, default=8, help="thread count")
-    kf_parser.add_argument("-s", "--sharpness", type=float, default=0.1, help="sharpness")
-    kf_parser.add_argument("-c", "--colorfulness", type=float, default=0.5, help="colorfulness")
+    kf_parser.add_argument("--ocr", type=float, default=0, help="text diff thres")
+    kf_parser.add_argument("-m", "--model-path", default=os.environ.get('CLIP_PATH', ''), help="clip path")
+    kf_parser.add_argument("-s", "--batch-size", type=int, default=32, help="batch_size")
     kf_parser.set_defaults(func=extract_keyframe_file)
 
     clip_parser = subparsers.add_parser("clip-test", help="test clip")
