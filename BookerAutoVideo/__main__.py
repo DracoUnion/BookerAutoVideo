@@ -43,10 +43,8 @@ def main():
         rate=0.2,
         direction=DIR_B,
         thres=0.05,
-        sharpness=0.1,
-        colorfulness=0.5,
         func=video2txt_handle,
-        ocr=0.5,
+        ocr=0,
     )
 
     kf_parser = subparsers.add_parser("ext-kf", help="extract keyframes")
@@ -56,7 +54,7 @@ def main():
     kf_parser.add_argument("-d", "--direction", choices=[DIR_F, DIR_B, DIR_T], default=DIR_B, help="the direction used to calc frame diff")
     kf_parser.add_argument("-t", "--thres", type=float, default=0.05, help="img diff thres")
     kf_parser.add_argument("--ocr", type=float, default=0, help="text diff thres")
-    kf_parser.add_argument("-m", "--model-path", default=os.environ.get('CLIP_PATH', ''), help="clip path")
+    kf_parser.add_argument("-m", "--clip-path", default=os.environ.get('CLIP_PATH', ''), help="clip path")
     kf_parser.add_argument("-s", "--batch-size", type=int, default=32, help="batch_size")
     kf_parser.set_defaults(func=extract_keyframe_file)
 

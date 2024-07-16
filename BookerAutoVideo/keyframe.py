@@ -81,7 +81,7 @@ def filter_repeat(frames, args):
 
 def filter_by_clip(frames, args):
     model, proc = load_clip(
-        args.model_path, 
+        args.clip_path, 
         'cuda' if torch.cuda.is_available() else 'cpu'
     )
     cates = ['图文', '幻灯片', '人像', '景物']
