@@ -85,9 +85,9 @@ def filter_by_clip(frames, args):
         'cuda' if torch.cuda.is_available() else 'cpu'
     )
     cates = ['图文', '幻灯片', '人像', '景物']
-    cids = proc(text=cates)
+    cids = proc(text=cates).input_ids
     pad_ids(cids, proc.tokenizer.pad_token_id)
-    cids = torch.tensor(cids, dtype=int, device=model.device).input_ids
+    cids = torch.tensor(cids, dtype=int, device=model.device)
     imgs = [f['img'] for f in frames]
     imgs = [
         np.ascontiguousarray(img.transpose([2, 0, 1])[::-1]) 
