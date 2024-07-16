@@ -33,11 +33,13 @@ def main():
     video2txt_parser.add_argument("-t", "--threads", type=int, default=8, help="num of threads")
     video2txt_parser.add_argument("-I", "--no-image", action='store_true', help="whether to not catch screenshots")
     video2txt_parser.add_argument(
-        "-m", "--model", 
+        "-w", "--whisper", 
         default=os.environ.get('WHISPER_CPP_MODEL_PATH', ''), 
         help="whisper.cpp model path"
     )
     video2txt_parser.add_argument("-l", "--lang", default='zh',  help="language")
+    video2txt_parser.add_argument("-c", "--clip-path", default=os.environ.get('CLIP_PATH', ''), help="clip path")
+    video2txt_parser.add_argument("-s", "--batch-size", type=int, default=32, help="batch_size")
     video2txt_parser.set_defaults(
         opti_mode='none',
         rate=0.2,
