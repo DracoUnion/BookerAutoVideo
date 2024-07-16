@@ -64,7 +64,7 @@ def whisper_cpp(args):
     if not path.isfile(wav_fname):
         raise FileNotFoundError(f'{fname} 转换失败')
     subp.Popen(
-        ['whisper', '-f', wav_fname, '-m', args.model, '-t', str(args.threads), '-l', args.lang, '-oj'],
+        ['whisper', '-f', wav_fname, '-m', args.whisper, '-t', str(args.threads), '-l', args.lang, '-oj'],
         shell=True, 
     ).communicate()
     json_fname = wav_fname + '.json'
