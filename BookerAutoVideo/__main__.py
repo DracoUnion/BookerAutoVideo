@@ -7,6 +7,7 @@ from .autovideo import *
 from .video2txt import *
 from .keyframe import *
 from .imgsim import *
+from .clip import *
 
 warnings.filterwarnings("ignore")
 
@@ -60,19 +61,12 @@ def main():
     kf_parser.add_argument("-c", "--colorfulness", type=float, default=0.5, help="colorfulness")
     kf_parser.set_defaults(func=extract_keyframe_file)
 
-    met_parser = subparsers.add_parser("img-metric", help="img metrics")
-    met_parser.add_argument("fname", help="img fname")
-    met_parser.set_defaults(func=img_metric_handle)
-
-
-    sim_parser = subparsers.add_parser("img-sim", help="calc sim of 2 imgs")
-    sim_parser.add_argument("img1", help="img1 fname")
-    sim_parser.add_argument("img2", help="img1 fname")
-    sim_parser.set_defaults(func=img_sim_handle)
-    
-    sim_dir_parser = subparsers.add_parser("img-dir-sim", help="calc sim of imgs in dir")
-    sim_dir_parser.add_argument("dir", help="dir name")
-    sim_dir_parser.set_defaults(func=img_sim_dir_handle)
+    clip_parser = subparsers.add_parser("clip-test", help="test clip")
+    clip_parser.add_argument("img", help="img file name for dir")
+    clip_parser.add_argument("-c", "--cates", default="图文,幻灯片,人像,景物", help="cates")
+    clip_parser.add_argument("-m", "--model-path", default=os.environ.get('CLIP_PATH', ''), help="clip path")
+    clip_parser.add_argument("-s", "--batch-size", type=int, default=32, help="batch_size")
+    clip_parser.set_defaults(func=clip_test)
 
     args = parser.parse_args()
     args.func(args)

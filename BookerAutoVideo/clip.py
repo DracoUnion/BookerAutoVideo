@@ -27,7 +27,7 @@ def pad_ids(ids_batch: List[List[int]], pad_id=0, max_len=None, pad_left=False):
 
 def clip_test(args):
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
-    model, proc = load_clip(args.clip_path, device)
+    model, proc = load_clip(args.model_path, device)
     cates = args.cates.split(',')
     if len(cates) == 0:
         raise ValueError('请提供类别')
@@ -57,10 +57,12 @@ def clip_test(args):
         logits_batch = model.forward(input_ids=cids, pixel_values=imgs_batch).logits_per_image
         probs_batch = torch.softmax(logits_batch, -1)
         probs += probs_batch.tolist()
-    
-    for f, ps in zip(img_fnames, probs):
-        print(f)
-        for c, p in zip(cates, ps):
-            print(f'{c}: {p:.3f}')
+    best_labels = np.argmax(probs, -1)
+    best_labels = [cates[l] for l in best_labels]
+    for f, ps, l in zip(img_fnames, probs, best_labels):
+        print(f'{f}: {l}')
+        prob_msg = ', '.join([f'{c}: {p:.3f}' for c, p in zip(cates, ps)])
+        print(prob_msg)
+        
     
 

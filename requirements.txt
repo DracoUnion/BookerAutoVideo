@@ -7,3 +7,4 @@ edge-tts
 pyyaml
 EpubCrawler
 openai
+transformers
