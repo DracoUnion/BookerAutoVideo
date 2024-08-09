@@ -164,7 +164,7 @@ def ffmpeg_conv_fmt(video, from_, to):
     open(from_fname, 'wb').write(video)
     cmd = ['ffmpeg', '-i', from_fname, '-c', 'copy', to_fname, '-y']
     print(f'cmd: {cmd}')
-    subp.Popen(cmd, shell=True).communicate()
+    subp.Popen(cmd, shell=True, stdin=subp.PIPE).communicate()
     res = open(to_fname, 'rb').read()
     safe_remove(from_fname)
     safe_remove(to_fname)
@@ -188,7 +188,7 @@ def ffmpeg_cat(videos, fmt='mp4'):
         '-i', video_li_fname, '-c', 'copy', ofname, '-y',
     ]
     print(f'cmd: {cmd}')
-    subp.Popen(cmd, shell=True).communicate()
+    subp.Popen(cmd, shell=True, stdin=subp.PIPE).communicate()
     res = open(ofname, 'rb').read()
     safe_rmdir(tmpdir)
     return res
@@ -214,7 +214,7 @@ def ffmpeg_add_srt(video, srt, fontname='黑体', video_fmt='mp4'):
     if video_fmt == 'mp4': cmd += ['-c:s', 'mov_text']
     '''
     print(f'cmd: {cmd}')
-    subp.Popen(cmd, shell=True, cwd=tmpdir).communicate()
+    subp.Popen(cmd, shell=True, cwd=tmpdir, stdin=subp.PIPE).communicate()
     res = open(res_fname, 'rb').read()
     safe_rmdir(tmpdir)
     return res
@@ -236,7 +236,7 @@ def ffmpeg_merge_video_audio(video, audio, video_fmt='mp4', audio_fmt='mp4'):
     ]
     for cmd in cmds:
         print(f'cmd: {cmd}')
-        subp.Popen(cmd, shell=True).communicate()
+        subp.Popen(cmd, shell=True, stdin=subp.PIPE).communicate()
     res = open(res_fname, 'rb').read()
     safe_rmdir(tmpdir)
     return res
@@ -300,7 +300,9 @@ def ffmpeg_get_info(video, fmt='mp4'):
     cmd = ['ffmpeg', '-i', fname]
     print(f'cmd: {cmd}')
     r = subp.Popen(
-            cmd, stdout=subp.PIPE, stderr=subp.PIPE, shell=True
+            cmd, stdin=subp.PIPE,
+            stdout=subp.PIPE, 
+            stderr=subp.PIPE, shell=True
     ).communicate()
     text = r[1].decode('utf8')
     res = {}
