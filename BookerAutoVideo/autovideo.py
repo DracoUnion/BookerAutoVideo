@@ -11,6 +11,7 @@ from .autovideo_config import config
 from .util import *
 from EpubCrawler.util import request_retry
 import base64
+from concurrent.futures import ThreadPoolExecutor
 
 def tti(text):
     hash_ = hashlib.md5(text.encode('utf8')).hexdigest()
@@ -104,6 +105,22 @@ def make_video(frames):
         video = ffmpeg_cat([video, footer])
     return video
 
+def tr_tts_tti(frame):
+    text = frame['subtitle']
+    frame['audio'] = tts(text)
+    frame['image'] = tti(text)
+
+def tr_asm_audio_video(frame):
+    w, h = config['size']
+    mode = config['resizeMode']
+    # 缩放图像尺寸
+    frame['image'] = resize_img(frame['image'], w, h, mode)
+    # 静态图片转视频
+    frame['len'] = audio_len(frame['audio'])
+    frame['video_noaud'] = img_nsec_2video(frame['image'], frame['len'], config['fps'])
+    # 组装音频和视频
+    frame['video'] = ffmpeg_merge_video_audio(frame['video_noaud'], frame['audio'], audio_fmt='mp3')
+
 def autovideo(args):
     set_openai_props(args.key, args.proxy, args.host)
     config['ttiRetry'] = args.retry
@@ -120,23 +137,22 @@ def autovideo(args):
     print(lines)
     # 使用 TTS 和 TTI 工具生成语音和图像
     frames = [
-        { 
-            'subtitle': text,
-            'audio': tts(text),
-            'image': tti(text),
-        }
+        { 'subtitle': text }
         for text in lines
     ]
-    w, h = config['size']
-    mode = config['resizeMode']
+    pool = ThreadPoolExecutor(args.threads)
+    hdls = []
     for f in frames:
-        # 缩放图像尺寸
-        f['image'] = resize_img(f['image'], w, h, mode)
-        # 静态图片转视频
-        f['len'] = audio_len(f['audio'])
-        f['video_noaud'] = img_nsec_2video(f['image'], f['len'], config['fps'])
-        # 组装音频和视频
-        f['video'] = ffmpeg_merge_video_audio(f['video_noaud'], f['audio'], audio_fmt='mp3')
+        h = pool.submit(tr_tts_tti, f)
+        hdls.append(h)
+    for h in hdls:
+        h.result()
+    hdls.clear()
+    for f in frames:
+        h = pool.submit(tr_asm_audio_video, f)
+        hdls.append(h)
+    for h in hdls:
+        h.result()
     # 组装视频
     video = make_video(frames)
     # 添加字幕

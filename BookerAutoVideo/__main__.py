@@ -26,6 +26,7 @@ def main():
     autovid_parser.add_argument("-k", "--key", default=openai_key, help="OpenAI API key")
     autovid_parser.add_argument("-r", "--retry", type=int, default=1_000_000, help="times of retry")
     autovid_parser.add_argument("-H", "--host", default=openai_url, help="api host")
+    autovid_parser.add_argument("-t", "--threads", type=int, default=8, help="num of threads")
     autovid_parser.set_defaults(func=autovideo)
 
     video2txt_parser = subparsers.add_parser("totxt", help="convert audio to text")
