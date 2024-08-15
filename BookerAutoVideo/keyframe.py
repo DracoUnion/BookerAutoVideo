@@ -132,8 +132,7 @@ def filter_by_ppt_model(frames, args):
         imgs_batch = torch.tensor(imgs_batch).half()
         if torch.cuda.is_available():
             imgs_batch = imgs_batch.cuda()
-        logits_batch = model.forward(imgs_batch).flatten()
-        probs_batch = torch.sigmoid(logits_batch)
+        probs_batch = torch.sigmoid(model.forward(imgs_batch)).flatten()
         probs += probs_batch.tolist()
 
     is_ppt = np.greater_equal(probs, args.ppt_thres)
