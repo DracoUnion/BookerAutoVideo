@@ -137,8 +137,8 @@ def filter_by_ppt_model(frames, args):
         probs += probs_batch.tolist()
 
     is_ppt = np.greater_equal(probs, args.ppt_thres)
-    for f, l in zip(frames, is_ppt):
-        print(f"{f['time']}: {l}")
+    for f, p, l in zip(frames, probs, is_ppt):
+        print(f"{f['time']}: {p}, {l}")
     return [f for f, l in zip(frames, is_ppt) if l]
 
 def filter_by_ocr(frames, args):
