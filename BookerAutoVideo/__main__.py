@@ -41,8 +41,8 @@ def main():
     video2txt_parser.add_argument("-l", "--lang", default='zh',  help="language")
     video2txt_parser.add_argument("-m", "--model-path", default=os.environ.get('PPT_MODEL_PATH', ''), help="PPT model path")
     video2txt_parser.add_argument("-s", "--batch-size", type=int, default=32, help="batch_size")
-    video2txt_parser.add_argument("-t", "--diff-thres", type=float, default=0.1, help="img diff thres")
-    video2txt_parser.add_argument("-p", "--ppt-thres", type=float, default=0.6, help="img ppt thres")
+    video2txt_parser.add_argument("-t", "--diff-thres", type=float, default=0.01, help="img diff thres")
+    video2txt_parser.add_argument("-p", "--ppt-thres", type=float, default=0.4, help="img ppt thres")
     video2txt_parser.set_defaults(
         opti_mode='none',
         rate=0.2,
@@ -55,8 +55,8 @@ def main():
     kf_parser.add_argument("-o", "--opti-mode", default="none", help="img opti mode, default 'none'")
     kf_parser.add_argument("-r", "--rate", type=float, default=0.2, help="how many frames to extract in 1s")
     kf_parser.add_argument("-d", "--direction", choices=[DIR_F, DIR_B, DIR_T], default=DIR_B, help="the direction used to calc frame diff")
-    kf_parser.add_argument("-t", "--diff-thres", type=float, default=0.1, help="img diff thres")
-    kf_parser.add_argument("-p", "--ppt-thres", type=float, default=0.6, help="img ppt thres")
+    kf_parser.add_argument("-t", "--diff-thres", type=float, default=0.01, help="img diff thres")
+    kf_parser.add_argument("-p", "--ppt-thres", type=float, default=0.4, help="img ppt thres")
     kf_parser.add_argument("-m", "--model-path", default=os.environ.get('PPT_MODEL_PATH', ''), help="PPT model path")
     kf_parser.add_argument("-s", "--batch-size", type=int, default=32, help="batch_size")
     kf_parser.set_defaults(func=extract_keyframe_file)
