@@ -43,6 +43,10 @@ def main():
     video2txt_parser.add_argument("-s", "--batch-size", type=int, default=32, help="batch_size")
     video2txt_parser.add_argument("-t", "--diff-thres", type=float, default=0.05, help="img diff thres")
     video2txt_parser.add_argument("-p", "--ppt-thres", type=float, default=0.4, help="img ppt thres")
+    video2txt_parser.add_argument("--left", type=float, default=0, help="left cut 0~1")
+    video2txt_parser.add_argument("--right", type=float, default=0, help="right cut 0~1")
+    video2txt_parser.add_argument("--bottom", type=float, default=0, help="bottom cut 0~1")
+    video2txt_parser.add_argument("--top", type=float, default=0, help="top cut 0~1")
     video2txt_parser.set_defaults(
         opti_mode='none',
         rate=0.2,
@@ -59,6 +63,10 @@ def main():
     kf_parser.add_argument("-p", "--ppt-thres", type=float, default=0.4, help="img ppt thres")
     kf_parser.add_argument("-m", "--model-path", default=os.environ.get('PPT_MODEL_PATH', ''), help="PPT model path")
     kf_parser.add_argument("-s", "--batch-size", type=int, default=32, help="batch_size")
+    kf_parser.add_argument("--left", type=float, default=0, help="left cut 0~1")
+    kf_parser.add_argument("--right", type=float, default=0, help="right cut 0~1")
+    kf_parser.add_argument("--bottom", type=float, default=0, help="bottom cut 0~1")
+    kf_parser.add_argument("--top", type=float, default=0, help="top cut 0~1")
     kf_parser.set_defaults(func=extract_keyframe_file)
 
     clip_parser = subparsers.add_parser("clip-test", help="test clip")
