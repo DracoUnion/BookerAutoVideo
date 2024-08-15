@@ -123,7 +123,7 @@ def filter_repeat(frames, args):
     return frames
 
 def filter_by_ppt_model(frames, args):
-    model = load_ppt_ext_model(args.model_path)
+    model = load_ppt_ext_model(args.model_path).eval()
     imgs = preproc_imgs([f['img'] for f in frames])
 
     probs = []
