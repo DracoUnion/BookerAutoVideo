@@ -163,8 +163,34 @@ def filter_by_ocr(frames, args):
         if nframe == len(frames): break
     return frames
    
+def check_cut_args(args):
+    assert (
+        args.left >= 0 and
+        args.right >= 0 and
+        args.top >= 0 and
+        args.bottom >= 0
+    )
+
+    assert (
+        args.left + args.right <= 1 and
+        args.bottom + args.top <= 1
+    )
+
+def cut_img(img, args):
+    h, w, *_ = img.shape
+    left = int(args.left * w)
+    right = -int(args.right * w)
+    if right == 0:
+        right = None
+    top = int(args.top * h)
+    bottom = -int(args.bottom * h)
+    if bottom == 0:
+        bottom = None
+    return img[top:bottom, left:right]
+
 def extract_keyframe(args):
     print(args)
+    check_cut_args(args)
     fname = args.fname
     # 从视频中读取帧
     imgs, _ = get_video_imgs(fname, args.rate)
@@ -172,7 +198,7 @@ def extract_keyframe(args):
         {
             'idx': i,
             'time': i / args.rate,
-            'img': img,
+            'img': cut_img(img, args),
         } 
         for i, img in enumerate(imgs)
     ]
