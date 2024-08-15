@@ -31,7 +31,7 @@ def main():
 
     video2txt_parser = subparsers.add_parser("totxt", help="convert audio to text")
     video2txt_parser.add_argument("fname", help="file name")
-    video2txt_parser.add_argument("-t", "--threads", type=int, default=8, help="num of threads")
+    video2txt_parser.add_argument("-T", "--threads", type=int, default=8, help="num of threads")
     video2txt_parser.add_argument("-I", "--no-image", action='store_true', help="whether to not catch screenshots")
     video2txt_parser.add_argument(
         "-w", "--whisper", 
