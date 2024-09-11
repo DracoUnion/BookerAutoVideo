@@ -121,10 +121,14 @@ def tr_asm_audio_video(frame):
     # 组装音频和视频
     frame['video'] = ffmpeg_merge_video_audio(frame['video_noaud'], frame['audio'], audio_fmt='mp3')
 
-def autovideo(args):
-    set_openai_props(args.key, args.proxy, args.host)
+def update_config(args):
+    config['onePic'] = args.one_pic
     config['ttiRetry'] = args.retry
     config['ttiModel'] = args.model
+
+def autovideo(args):
+    set_openai_props(args.key, args.proxy, args.host)
+    update_config(args)
     ext = extname(args.fname)
     if ext not in ['md', 'txt']:
         raise ValueError('文件扩展名必须是 TXT 或 MD')
