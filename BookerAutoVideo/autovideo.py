@@ -17,6 +17,10 @@ def tti(text):
     hash_ = hashlib.md5(text.encode('utf8')).hexdigest()
     cache = load_tti(hash_)
     if cache: return cache
+    if config['onePic']:
+        img =  open(config['onePic'], 'rb').read()
+        save_tti(hash_, img)
+        return img
     img = call_dalle_retry(
         text, config['ttiModel'], 
         config['ttiSize'], config['ttiQuality'],
