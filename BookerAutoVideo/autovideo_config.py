@@ -31,4 +31,5 @@ config = {
     'ttiSize': '1024x1024',
     'ttiRetry': 10,
     'defaultImg': path.join(DIR, 'asset', 'sound_only.png'),
+    'onePic': None,
 }
