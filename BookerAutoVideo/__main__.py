@@ -12,20 +12,21 @@ from .clip import *
 warnings.filterwarnings("ignore")
 
 def main():
+    openai_key = os.environ.get('OPENAI_API_KEY')
+    openai_url = os.environ.get('OPENAI_BASE_URL')
+
     parser = argparse.ArgumentParser(prog="BookerAutoVideo", formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("-v", "--version", action="version", version=f"PYBP version: {__version__}")
+    parser.add_argument("-k", "--key", default=openai_key, help="OpenAI API key")
+    parser.add_argument("-H", "--host", default=openai_url, help="api host")
+    parser.add_argument("-P", "--proxy", help="proxy")
     parser.set_defaults(func=lambda x: parser.print_help())
     subparsers = parser.add_subparsers()
 
-    openai_key = os.environ.get('OPENAI_API_KEY')
-    openai_url = os.environ.get('OPENAI_BASE_URL')
     autovid_parser = subparsers.add_parser("gen", help="generate video")
     autovid_parser.add_argument("fname", help="src file name")
-    autovid_parser.add_argument("-P", "--proxy", help="proxy")
     autovid_parser.add_argument("-m", "--model", default='dall-e-3', help="model name")
-    autovid_parser.add_argument("-k", "--key", default=openai_key, help="OpenAI API key")
     autovid_parser.add_argument("-r", "--retry", type=int, default=1_000_000, help="times of retry")
-    autovid_parser.add_argument("-H", "--host", default=openai_url, help="api host")
     autovid_parser.add_argument("-t", "--threads", type=int, default=8, help="num of threads")
     autovid_parser.set_defaults(func=autovideo)
 
