@@ -33,7 +33,7 @@ def main():
 
     video2txt_parser = subparsers.add_parser("totxt", help="convert audio to text")
     video2txt_parser.add_argument("fname", help="file name")
-    video2txt_parser.add_argument("-t", "--threads", type=int, default=8, help="num of threads")
+    video2txt_parser.add_argument("-T", "--threads", type=int, default=8, help="num of threads")
     video2txt_parser.add_argument("-I", "--no-image", action='store_true', help="whether to not catch screenshots")
     video2txt_parser.add_argument(
         "-w", "--whisper", 
@@ -41,15 +41,19 @@ def main():
         help="whisper.cpp model path"
     )
     video2txt_parser.add_argument("-l", "--lang", default='zh',  help="language")
-    video2txt_parser.add_argument("-c", "--clip-path", default=os.environ.get('CLIP_PATH', ''), help="clip path")
+    video2txt_parser.add_argument("-m", "--model-path", default=os.environ.get('PPT_MODEL_PATH', ''), help="PPT model path")
     video2txt_parser.add_argument("-s", "--batch-size", type=int, default=32, help="batch_size")
+    video2txt_parser.add_argument("-t", "--diff-thres", type=float, default=0.1, help="img diff thres")
+    video2txt_parser.add_argument("-p", "--ppt-thres", type=float, default=0.5, help="img ppt thres")
+    video2txt_parser.add_argument("--left", type=float, default=0, help="left cut 0~1")
+    video2txt_parser.add_argument("--right", type=float, default=0, help="right cut 0~1")
+    video2txt_parser.add_argument("--bottom", type=float, default=0, help="bottom cut 0~1")
+    video2txt_parser.add_argument("--top", type=float, default=0, help="top cut 0~1")
     video2txt_parser.set_defaults(
         opti_mode='none',
         rate=0.2,
         direction=DIR_B,
-        thres=0.05,
         func=video2txt_handle,
-        ocr=0,
     )
 
     kf_parser = subparsers.add_parser("ext-kf", help="extract keyframes")
@@ -57,10 +61,14 @@ def main():
     kf_parser.add_argument("-o", "--opti-mode", default="none", help="img opti mode, default 'none'")
     kf_parser.add_argument("-r", "--rate", type=float, default=0.2, help="how many frames to extract in 1s")
     kf_parser.add_argument("-d", "--direction", choices=[DIR_F, DIR_B, DIR_T], default=DIR_B, help="the direction used to calc frame diff")
-    kf_parser.add_argument("-t", "--thres", type=float, default=0.05, help="img diff thres")
-    kf_parser.add_argument("--ocr", type=float, default=0, help="text diff thres")
-    kf_parser.add_argument("-m", "--clip-path", default=os.environ.get('CLIP_PATH', ''), help="clip path")
+    kf_parser.add_argument("-t", "--diff-thres", type=float, default=0.1, help="img diff thres")
+    kf_parser.add_argument("-p", "--ppt-thres", type=float, default=0.5, help="img ppt thres")
+    kf_parser.add_argument("-m", "--model-path", default=os.environ.get('PPT_MODEL_PATH', ''), help="PPT model path")
     kf_parser.add_argument("-s", "--batch-size", type=int, default=32, help="batch_size")
+    kf_parser.add_argument("--left", type=float, default=0, help="left cut 0~1")
+    kf_parser.add_argument("--right", type=float, default=0, help="right cut 0~1")
+    kf_parser.add_argument("--bottom", type=float, default=0, help="bottom cut 0~1")
+    kf_parser.add_argument("--top", type=float, default=0, help="top cut 0~1")
     kf_parser.set_defaults(func=extract_keyframe_file)
 
     clip_parser = subparsers.add_parser("clip-test", help="test clip")

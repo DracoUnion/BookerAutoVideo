@@ -14,6 +14,7 @@ from .imgsim import *
 import easyocr
 import PIL
 from .clip import *
+import torchvision as tv
 
 DIR_F = 'forward'
 DIR_B = 'backward'
@@ -21,6 +22,48 @@ DIR_T = 'twoway'
 
 ocr_reader = None
 PIL.Image.ANTIALIAS = PIL.Image.LANCZOS
+
+def preproc_imgs(imgs):
+    # bytes -> ndarray
+    if isinstance(imgs[0], bytes):
+        imgs = [
+            cv2.imdecode(np.frombuffer(i, np.uint8), cv2.IMREAD_COLOR)
+            for i in imgs
+        ]
+    # resize -> 224x224
+    imgs = [
+        cv2.resize(i, [224, 224], interpolation=cv2.INTER_CUBIC) 
+        for i in imgs
+    ]
+    imgs = (
+        np.asarray(imgs) 
+            # HWC -> CHW
+            .transpose([0, 3, 1, 2])
+            # BGR -> RGB
+            [:, ::-1]
+            # norm
+            .__truediv__(255)
+    )
+    return imgs
+
+def load_ppt_ext_model(model_path=None, freeze_nonlast=True):
+    model = tv.models.resnet18(num_classes=1)
+    if model_path:
+        stdc = torch.load(model_path)
+        if 'fc.weight' in stdc and stdc['fc.weight'].shape != torch.Size([1, 512]):
+            del stdc['fc.weight']
+        if 'fc.bias' in stdc and stdc['fc.bias'].shape != torch.Size([1]):
+            del stdc['fc.bias']
+        model.load_state_dict(stdc, False)
+    model = model.half()
+    if torch.cuda.is_available():
+        model = model.cuda()
+    if freeze_nonlast:
+        for name, param in model.named_parameters():
+            if not name.startswith('fc.'):
+                param.requires_grad = False
+            
+    return model
 
 def img2text(img):
     global ocr_reader
@@ -74,40 +117,28 @@ def filter_repeat(frames, args):
         # 计算关键帧
         frames = [
             f for f in frames
-            if f['diff'] >= args.thres
+            if f['diff'] >= args.diff_thres
         ]
         if len(frames) == nframe: break
     return frames
 
-def filter_by_clip(frames, args):
-    model, proc = load_clip(
-        args.clip_path, 
-        'cuda' if torch.cuda.is_available() else 'cpu'
-    )
-    cates = ['图文', '幻灯片', '人像', '景物']
-    cids = proc(text=cates).input_ids
-    pad_ids(cids, proc.tokenizer.pad_token_id)
-    cids = torch.tensor(cids, dtype=int, device=model.device)
-    imgs = [f['img'] for f in frames]
-    imgs = [
-        np.ascontiguousarray(img.transpose([2, 0, 1])[::-1]) 
-        for img in imgs
-    ]
-    imgs_norm = proc(images=imgs, return_tensors='np').pixel_values
+def filter_by_ppt_model(frames, args):
+    model = load_ppt_ext_model(args.model_path).eval()
+    imgs = preproc_imgs([f['img'] for f in frames])
 
     probs = []
-    for i in range(0, len(imgs_norm), args.batch_size):
-        imgs_batch = imgs_norm[i:i+args.batch_size]
-        imgs_batch = torch.tensor(imgs_batch, device=model.device)
-        logits_batch = model.forward(input_ids=cids, pixel_values=imgs_batch).logits_per_image
-        probs_batch = torch.softmax(logits_batch, -1)
+    for i in range(0, len(imgs), args.batch_size):
+        imgs_batch = imgs[i:i+args.batch_size]
+        imgs_batch = torch.tensor(imgs_batch).half()
+        if torch.cuda.is_available():
+            imgs_batch = imgs_batch.cuda()
+        probs_batch = torch.sigmoid(model.forward(imgs_batch)).flatten()
         probs += probs_batch.tolist()
 
-    top_labels = np.argmax(probs, -1)
-    ppt_masks = top_labels < 2
-    for f, m in zip(frames, ppt_masks):
-        print(f"{f['time']}: {m}")
-    return [f for f, m in zip(frames, ppt_masks) if m]
+    is_ppt = np.greater_equal(probs, args.ppt_thres)
+    for f, p, l in zip(frames, probs, is_ppt):
+        print(f"{f['time']}: {p}, {l}")
+    return [f for f, l in zip(frames, is_ppt) if l]
 
 def filter_by_ocr(frames, args):
     if args.ocr <= 0: return frames
@@ -132,8 +163,34 @@ def filter_by_ocr(frames, args):
         if nframe == len(frames): break
     return frames
    
+def check_cut_args(args):
+    assert (
+        args.left >= 0 and
+        args.right >= 0 and
+        args.top >= 0 and
+        args.bottom >= 0
+    )
+
+    assert (
+        args.left + args.right <= 1 and
+        args.bottom + args.top <= 1
+    )
+
+def cut_img(img, args):
+    h, w, *_ = img.shape
+    left = int(args.left * w)
+    right = -int(args.right * w)
+    if right == 0:
+        right = None
+    top = int(args.top * h)
+    bottom = -int(args.bottom * h)
+    if bottom == 0:
+        bottom = None
+    return img[top:bottom, left:right]
+
 def extract_keyframe(args):
     print(args)
+    check_cut_args(args)
     fname = args.fname
     # 从视频中读取帧
     imgs, _ = get_video_imgs(fname, args.rate)
@@ -141,17 +198,18 @@ def extract_keyframe(args):
         {
             'idx': i,
             'time': i / args.rate,
-            'img': img,
+            'img': cut_img(img, args),
         } 
         for i, img in enumerate(imgs)
     ]
     # 第一个过滤：根据帧间差过滤重复幻灯片
     frames = filter_repeat(frames, args)
     # 第二个过滤：过滤人像和景物
-    frames = filter_by_clip(frames, args)
-    frames = filter_repeat(frames, args)
+    frames = filter_by_ppt_model(frames, args)
+    if frames:
+        frames = filter_repeat(frames, args)
     # 第三个过滤：OCR 之后根据文字过滤语义相似幻灯片
-    frames = filter_by_ocr(frames, args)
+    # frames = filter_by_ocr(frames, args)
     # 优化图像
     for f in frames:
         if 'text' in f: del f['text']
