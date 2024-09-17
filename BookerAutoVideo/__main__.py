@@ -78,6 +78,11 @@ def main():
     clip_parser.add_argument("-s", "--batch-size", type=int, default=32, help="batch_size")
     clip_parser.set_defaults(func=clip_test)
 
+    metric_parser = subparsers.add_parser("metric", help="test clip")
+    metric_parser.add_argument("fname", help="img file name for dir")
+    metric_parser.set_defaults(func=img_metric_handle)
+
+
     args = parser.parse_args()
     args.func(args)
     
