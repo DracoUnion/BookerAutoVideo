@@ -204,6 +204,7 @@ def extract_keyframe(args):
     ]
     for f in frames:
         tm = f['time']
+        img = f['img']
         print(f'time: {tm}, color: {colorfulness(img)}, hog: {hog_entro(img)}')
     frames = [
         f for f in frames 
