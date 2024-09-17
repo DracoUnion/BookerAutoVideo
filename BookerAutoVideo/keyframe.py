@@ -199,16 +199,20 @@ def extract_keyframe(args):
             'idx': i,
             'time': i / args.rate,
             'img': cut_img(img, args),
+            'color': colorfulness(img),
+            'hog': hog_entro(img),
         } 
         for i, img in enumerate(imgs)
     ]
     for f in frames:
         tm = f['time']
         img = f['img']
-        print(f'time: {tm}, color: {colorfulness(img)}, hog: {hog_entro(img)}')
+        color = f['color']
+        hog = f['hog']
+        print(f'time: {tm}, color: {color}, hog: {hog}')
     frames = [
         f for f in frames 
-        if colorfulness(f['img']) < 0.4 and hog_entro(f['img']) < 0.5
+        if f['color'] < 0.4 and f['hog'] < 0.5
     ]
     # 第一个过滤：根据帧间差过滤重复幻灯片
     frames = filter_repeat(frames, args)
