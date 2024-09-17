@@ -83,7 +83,7 @@ def hog_entro(img):
     bins=np.arange(0, 1, 1e-3)
     freqs, _ = np.histogram(
         hog_features, bins=bins, density=True)
-    freqs /= 1e-3
+    freqs *= 1e-3
     freqs = np.where(freqs, freqs, 1e-12)
     return np.sum(-freqs * np.log2(freqs)) / np.log2(1e3)
 
