@@ -201,7 +201,7 @@ def extract_keyframe(args):
             'img': cut_img(img, args),
         } 
         for i, img in enumerate(imgs)
-        if colorfulness(img) < 0.4 and hog_entro(img) < 0.5
+        if colorfulness(img) < 0.3 and hog_entro(img) < 0.5
     ]
     # 第一个过滤：根据帧间差过滤重复幻灯片
     frames = filter_repeat(frames, args)
