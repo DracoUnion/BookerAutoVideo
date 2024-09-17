@@ -217,9 +217,10 @@ def extract_keyframe(args):
     # 第一个过滤：根据帧间差过滤重复幻灯片
     frames = filter_repeat(frames, args)
     # 第二个过滤：过滤人像和景物
-    frames = filter_by_ppt_model(frames, args)
-    if frames:
-        frames = filter_repeat(frames, args)
+    if args.model_path:
+        frames = filter_by_ppt_model(frames, args)
+        if frames:
+            frames = filter_repeat(frames, args)
     # 第三个过滤：OCR 之后根据文字过滤语义相似幻灯片
     # frames = filter_by_ocr(frames, args)
     # 优化图像
