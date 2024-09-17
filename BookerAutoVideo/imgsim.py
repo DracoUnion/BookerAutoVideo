@@ -80,12 +80,12 @@ def hog_entro(img):
         img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     hog = cv2.HOGDescriptor()
     hog_features = np.abs(hog.compute(img))
-    bins=np.arange(0, 1, 1e-2)
+    bins=np.arange(0, 1, 1e-3)
     freqs, _ = np.histogram(
         hog_features, bins=bins, density=True)
-    freqs *= 1e-2
+    freqs *= 1e-3
     freqs = np.where(freqs, freqs, 1e-12)
-    return np.sum(-freqs * np.log2(freqs)) / np.log2(1e2)
+    return np.sum(-freqs * np.log2(freqs)) / np.log2(1e3)
 
 def colorfulness(img): 
     img = img.astype("int") // 16
