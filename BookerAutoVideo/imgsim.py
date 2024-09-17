@@ -80,6 +80,7 @@ def hog_entro(img):
         img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     hog = cv2.HOGDescriptor()
     hog_features = hog.compute(img)
+    hog_features /= hog_features.max()
     bins=np.arange(0, 1, 1e-3)
     freqs, _ = np.histogram(
         hog_features, bins=bins, density=True)
