@@ -75,6 +75,16 @@ def pixel_l1_sim(prev, next):
     diff = np.mean(np.where(max != 0, cv2.absdiff(next, prev) / max, 0))
     return 1 - diff
 
+def hog_entro(img):
+    if img.ndim == 3:
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    hog = cv2.HOGDescriptor()
+    hog_features = hog.compute(img).flatten()
+    freqs, bins = np.histogram(
+        hog_features, bins=np.arange(0, 1, 1e-3), density=True)
+    freqs = np.where(freqs, freqs, 1e-12)
+    return np.sum(-freqs * np.log2(freqs)) / np.log2(len(bins))
+
 def colorfulness(img): 
     img = img.astype("int") // 16
     if img.ndim == 3:
@@ -129,8 +139,9 @@ def img_metric_handle(args):
         cv2.IMREAD_COLOR,
     )
     clrf = colorfulness(img)
+    hog = hog_entro(img)
     srp = sharpness(img)
-    print(f'colorfulness: {clrf}, sharpness: {srp}')
+    print(f'colorfulness: {clrf}, hog: {hog}, sharpness: {srp}')
 
 
 
