@@ -15,6 +15,7 @@ import easyocr
 import PIL
 from .clip import *
 import torchvision as tv
+from concurrent.futures import ThreadPoolExecutor
 
 DIR_F = 'forward'
 DIR_B = 'backward'
@@ -188,6 +189,13 @@ def cut_img(img, args):
         bottom = None
     return img[top:bottom, left:right]
 
+def tr_calc_met(f):
+    img = f['img']
+    f.update({
+     'color': colorfulness(img),
+      'hog': hog_entro(img),
+    })
+
 def extract_keyframe(args):
     print(args)
     check_cut_args(args)
@@ -199,11 +207,17 @@ def extract_keyframe(args):
             'idx': i,
             'time': i / args.rate,
             'img': cut_img(img, args),
-            'color': colorfulness(img),
-            'hog': hog_entro(img),
+            # 'color': colorfulness(img),
+            # 'hog': hog_entro(img),
         } 
         for i, img in enumerate(imgs)
     ]
+    pool = ThreadPoolExecutor(args.threads)
+    hdls = []
+    for f in frames:
+        h = pool.submit(tr_calc_met, f)
+        hdls.append(h)
+    for h in hdls: h.result()
     for f in frames:
         tm = f['time']
         img = f['img']
