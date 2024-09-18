@@ -49,6 +49,7 @@ def main():
     video2txt_parser.add_argument("--right", type=float, default=0, help="right cut 0~1")
     video2txt_parser.add_argument("--bottom", type=float, default=0, help="bottom cut 0~1")
     video2txt_parser.add_argument("--top", type=float, default=0, help="top cut 0~1")
+    video2txt_parser.add_argument("-T", "--threads", type=int, default=8, help="#threads")
     video2txt_parser.set_defaults(
         opti_mode='none',
         rate=0.2,
@@ -62,6 +63,7 @@ def main():
     kf_parser.add_argument("-r", "--rate", type=float, default=0.2, help="how many frames to extract in 1s")
     kf_parser.add_argument("-d", "--direction", choices=[DIR_F, DIR_B, DIR_T], default=DIR_B, help="the direction used to calc frame diff")
     kf_parser.add_argument("-t", "--diff-thres", type=float, default=0.05, help="img diff thres")
+    kf_parser.add_argument("-T", "--threads", type=int, default=8, help="#threads")
     kf_parser.add_argument("-p", "--ppt-thres", type=float, default=0.4, help="img ppt thres")
     kf_parser.add_argument("-m", "--model-path", default=os.environ.get('PPT_MODEL_PATH', ''), help="PPT model path")
     kf_parser.add_argument("-s", "--batch-size", type=int, default=32, help="batch_size")
