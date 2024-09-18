@@ -92,6 +92,10 @@ def calc_diffs(frames, args, diff_func, src_prop='img', diff_prop='diff'):
     frames[0][diff_prop] = 1
     for prev, curr in zip(frames[:-1], frames[1:]):
         curr[diff_prop] = diff_func(prev[src_prop], curr[src_prop])
+    # 实验性归一化
+    max_ = max(f[diff_prop] for f in frames[1:])
+    for f in frames[1:]:
+        f[diff_prop] /= max_
     if direction == DIR_B:
         for curr, next in zip(frames[:-1], frames[1:]):
             curr[diff_prop] = next[diff_prop]
