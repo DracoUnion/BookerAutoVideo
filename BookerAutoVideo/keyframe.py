@@ -87,11 +87,18 @@ def nsec2hms(nsec):
     s = nsec % 60
     return f'{h}h{m:02d}m{s:02d}s'
 
+def tr_calc_diff(prev, curr, src_prop, diff_prop, diff_func):
+    curr[diff_prop] = diff_func(prev[src_prop], curr[src_prop])
+
 def calc_diffs(frames, args, diff_func, src_prop='img', diff_prop='diff'):
     direction = args.direction
     frames[0][diff_prop] = 1
+    pool = ThreadPoolExecutor(args.threads)
+    hdls = []
     for prev, curr in zip(frames[:-1], frames[1:]):
-        curr[diff_prop] = diff_func(prev[src_prop], curr[src_prop])
+        h = pool.submit(tr_calc_diff, prev, curr, src_prop, diff_prop, diff_func)
+        hdls.append(h)
+    for h in hdls: h.result()
     # 实验性归一化
     max_ = max(f[diff_prop] for f in frames[1:])
     for f in frames[1:]:
