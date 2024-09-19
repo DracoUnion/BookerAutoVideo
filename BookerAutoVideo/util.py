@@ -604,5 +604,5 @@ def parse_srt(srt):
 
 def hhmmss2time(text):
     hhmmmss, ms = text.split('.')
-    h, m, s = text.split(":")
+    h, m, s = hhmmmss.split(":")
     return int(h) * 3600 + int(m) * 60 + int(s) + int(ms) / 10000
