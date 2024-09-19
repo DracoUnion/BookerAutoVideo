@@ -94,8 +94,9 @@ def asr(args):
     if not words:
         srt_fname = re.sub(r'\.\w+$', '', fname) + '.srt'
         if path.isfile(srt_fname):
-            words = parse_srt(
-                open(srt_fname, encoding='utf8').read())
+            srt = open(srt_fname, encoding='utf8').read()
+            print(srt)
+            words = parse_srt(srt)
         else:
             # 语音识别
             words = whisper_cpp(args)
