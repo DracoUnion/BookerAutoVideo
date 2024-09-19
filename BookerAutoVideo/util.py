@@ -580,3 +580,28 @@ def set_openai_props(key=None, proxy=None, host=None):
     openai.api_key = key
     openai.proxy = proxy
     openai.base_url = host
+
+
+RE_SRT = r'''
+    ^(\d+)\n
+    ^(\d+:\d+:\d+.\d+)\x20+\-+>\x20+(\d+:\d+:\d+.\d+)\n
+    ^(.+)\n
+'''
+
+def parse_srt(srt):
+    ms = re.findall(RE_SRT, srt, flags=re.M | re.VERBOSE)
+    frames = []
+    for m in ms:
+        f = {
+            'idx': int(m[0]),
+            'start': hhmmss2time(m[1]),
+            'end': hhmmss2time(m[2]),
+            'text': m[3],
+        }
+        frames.append(f)
+    return frames
+
+def hhmmss2time(text):
+    hhmmmss, ms = text.split('.')
+    h, m, s = text.split(":")
+    return int(h) * 3600 + int(m) * 60 + int(s) + int(ms) / 10000
