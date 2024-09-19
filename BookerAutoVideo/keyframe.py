@@ -252,12 +252,15 @@ def extract_keyframe(args):
     # 优化图像
     for f in frames:
         if 'text' in f: del f['text']
-        img = cv2.imencode(
+        img = bytes(cv2.imencode(
             '.png', f['img'], 
             [cv2.IMWRITE_PNG_COMPRESSION, 9]
-        )[1]
-        f['img'] = bytes(img)
+        )[1])
         f['img'] = opti_img(img, args.opti_mode, 8)
+        f['img'] = cv2.imdecode(
+            np.frombuffer(f['img'], np.uint8), 
+            cv2.IMREAD_COLOR
+        )
     return frames
 
 def extract_keyframe_file(args):
