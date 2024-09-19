@@ -50,7 +50,7 @@ def main():
     video2txt_parser.add_argument("--bottom", type=float, default=0, help="bottom cut 0~1")
     video2txt_parser.add_argument("--top", type=float, default=0, help="top cut 0~1")
     video2txt_parser.set_defaults(
-        opti_mode='none',
+        opti_mode='quant',
         rate=0.2,
         direction=DIR_B,
         func=video2txt_handle,
@@ -58,7 +58,7 @@ def main():
 
     kf_parser = subparsers.add_parser("ext-kf", help="extract keyframes")
     kf_parser.add_argument("fname", help="file name")
-    kf_parser.add_argument("-o", "--opti-mode", default="none", help="img opti mode, default 'none'")
+    kf_parser.add_argument("-o", "--opti-mode", default="quant", help="img opti mode, default 'none'")
     kf_parser.add_argument("-r", "--rate", type=float, default=0.2, help="how many frames to extract in 1s")
     kf_parser.add_argument("-d", "--direction", choices=[DIR_F, DIR_B, DIR_T], default=DIR_B, help="the direction used to calc frame diff")
     kf_parser.add_argument("-t", "--diff-thres", type=float, default=0.1, help="img diff thres")
