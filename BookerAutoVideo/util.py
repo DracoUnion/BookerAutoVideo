@@ -598,6 +598,7 @@ def parse_srt(srt):
             'end': hhmmss2time(m[2]),
             'text': m[3],
         }
+        f['time'] = f['start']
         frames.append(f)
     return frames
 

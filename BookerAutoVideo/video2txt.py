@@ -86,6 +86,23 @@ def whisper_cpp(args):
         for s in res['transcription']
     ]
 
+def asr(args):
+    # 加载缓存
+    fname = args.fname
+    hash_ = hashlib.md5(open(fname, 'rb').read()).hexdigest()
+    words = load_asr(hash_)
+    if not words:
+        srt_fname = re.sub(r'\.\w+$', '', fname) + '.srt'
+        if path.isfile(srt_fname):
+            words = parse_srt(
+                open(srt_fname, encoding='utf8').read())
+        else:
+            # 语音识别
+            words = whisper_cpp(args)
+        save_asr(hash_, words)
+    return words
+
+
 def video2txt_file(args):
     fname = args.fname
     if not (path.isfile(fname) and is_video_or_audio(fname)):
@@ -96,21 +113,8 @@ def video2txt_file(args):
     if path.isfile(nfname):
         print(f'{nfname} 已存在')
         return
-    # 加载缓存
-    hash_ = hashlib.md5(open(fname, 'rb').read()).hexdigest()
-    words = load_asr(hash_)
-    if not words:
-        # 语音识别
-        words = whisper_cpp(args)
-        save_asr(hash_, words)
-    '''
-    model = whisper.load_model(args.asr_model, device=args.device)
-    r = model.transcribe(fname, fp16=False, language=args.language)
-    words = [
-        {'time': s['start'], 'text': s['text']}
-        for s in r['segments']
-    ]
-    '''
+    # 启动 ASR
+    words = asr(args)
     # 获取关键帧
     if not args.no_image and is_video(fname):
         frames = extract_keyframe(args)
