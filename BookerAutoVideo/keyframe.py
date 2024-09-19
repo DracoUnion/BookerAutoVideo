@@ -257,10 +257,12 @@ def extract_keyframe(args):
             [cv2.IMWRITE_PNG_COMPRESSION, 9]
         )[1])
         f['img'] = opti_img(img, args.opti_mode, 8)
+        '''
         f['img'] = cv2.imdecode(
             np.frombuffer(f['img'], np.uint8), 
             cv2.IMREAD_COLOR
         )
+        '''
     return frames
 
 def extract_keyframe_file(args):
