@@ -149,5 +149,8 @@ def video2txt_file(args):
         img_fname = path.join(imgdir, imgname)
         print(img_fname)
         if isinstance(img, np.ndarray):
-            img = bytes(cv2.imencode('.png', img)[1])
+            img = bytes(cv2.imencode(
+                '.png', img, 
+                [cv2.IMWRITE_PNG_COMPRESSION, 9]
+            )[1])
         open(img_fname, 'wb').write(img)
