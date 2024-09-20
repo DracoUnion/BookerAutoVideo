@@ -121,7 +121,6 @@ def video2txt_file(args):
         frames = extract_keyframe(args)
         words += frames
         words.sort(key=lambda x: x['time'])
-    print(words)
     # 排版
     title = path.basename(fname)
     title = re.sub(r'\.\w+$', '', title)
