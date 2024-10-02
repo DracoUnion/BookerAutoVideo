@@ -237,7 +237,7 @@ def extract_keyframe(args):
         print(f'time: {tm}, color: {color}, hog: {hog}')
     frames = [
         f for f in frames 
-        if f['color'] < 0.4 and f['hog'] < 0.5
+        if f['color'] <= args.color and f['hog'] < 0.5
     ]
     # 第一个过滤：根据帧间差过滤重复幻灯片
     if frames:
