@@ -12,6 +12,7 @@ from .util import *
 from EpubCrawler.util import request_retry
 import base64
 from concurrent.futures import ThreadPoolExecutor
+from sencevoice import *
 
 def tti(text):
     hash_ = hashlib.md5(text.encode('utf8')).hexdigest()
