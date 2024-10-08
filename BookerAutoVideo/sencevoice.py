@@ -16,7 +16,7 @@ from .util import *
 def sencevoice(args):
 
     # 模型路径
-    model_dir = args.model_path #r"D:\src\SenseVoiceSmall"
+    model_dir = args.whisper #r"D:\src\SenseVoiceSmall"
     vad_model_dir = "fsmn-vad"  # VAD模型路径
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
