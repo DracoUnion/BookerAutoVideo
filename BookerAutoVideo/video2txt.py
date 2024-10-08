@@ -28,12 +28,6 @@ def merge_words(words, maxl=500):
     return res
 
 def video2txt_handle(args):
-    whisper_path = find_cmd_path('whisper')
-    if not whisper_path:
-        print('请下载 whisper.cpp 并将目录名称添加到 $PATH 中')
-        return
-    if not path.isfile(args.whisper):
-        raise FileNotFoundError(f'模型文件 {args.whisper} 不存在')
     if path.isdir(args.fname):
         video2txt_dir(args)
     else: 
