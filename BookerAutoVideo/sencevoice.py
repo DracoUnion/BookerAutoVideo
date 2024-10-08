@@ -109,5 +109,8 @@ def sencevoice(args):
         #    print(f"Start: {result['start']} s, End: {result['end']} s, Text: {result['text']}")
 if __name__ == '__main__':
     fname = 'C:/Users/Administrator/Videos/leemldl/【国语+资料下载】李宏毅 HYLEE ｜ 机器学习(深度学习)(2021最新·完整版) - P3：L3- 机器学习任务攻略 - ShowMeAI - BV1fM4y137M4.mp4'
-    res = sencevoice(fname, argparse.Namespace(model_path="D:\src\SenseVoiceSmall"))
+    res = sencevoice(argparse.Namespace(
+        fname=fname,
+        model_path="D:\src\SenseVoiceSmall"
+    ))
     print(res[0])
