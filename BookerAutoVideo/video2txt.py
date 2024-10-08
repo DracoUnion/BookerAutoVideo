@@ -12,6 +12,7 @@ import json
 from .util import *
 from .keyframe import *
 # from paddlespeech.cli.text.infer import TextExecutor 
+from sencevoice import *
 
 def merge_words(words, maxl=500):
     res = []
@@ -99,7 +100,7 @@ def asr(args):
             words = parse_srt(srt)
         else:
             # 语音识别
-            words = whisper_cpp(args)
+            words = sencevoice(args)
         save_asr(hash_, words)
     return words
 

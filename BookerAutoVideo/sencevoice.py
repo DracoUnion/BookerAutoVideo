@@ -3,15 +3,17 @@ from funasr import AutoModel
 from funasr.utils.postprocess_utils import rich_transcription_postprocess
 import soundfile as sf  # 用于读取和裁剪音频文件
 import os
+from os import path
 import pandas as pd
 import subprocess as subp
 import tempfile 
 import uuid
 import torch
 import argparse
+from .util import *
 
 
-def sencevoice(fname, args):
+def sencevoice(args):
 
     # 模型路径
     model_dir = args.model_path #r"D:\src\SenseVoiceSmall"
@@ -19,7 +21,7 @@ def sencevoice(fname, args):
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
     # 音频文件路径
-    vid_fname = fname
+    vid_fname = args.fname
      
     if not vid_fname.endswith('.mp3'):
         aud_fname = tempfile.gettempdir() + '/' + uuid.uuid4().hex + '.mp3'
@@ -28,6 +30,8 @@ def sencevoice(fname, args):
             '-vn', '-acodec', 'libmp3lame', 
             aud_fname
         ], shell=True, stdin=subp.PIPE).communicate()
+        if not path.isfile(aud_fname):
+            raise FileNotFoundError(f'{fname} 转换失败')
     else:
         aud_fname = vid_fname
     # 加载VAD模型
@@ -92,7 +96,7 @@ def sencevoice(fname, args):
         # 处理输出结果
         text = rich_transcription_postprocess(res[0]["text"])
         # 添加时间戳
-        results.append({"start": start_time // 1000, "end": end_time // 1000, "text": text})  # 转换为秒
+        results.append({"start": start_time / 1000, "end": end_time / 1000, "text": text})  # 转换为秒
         results[-1]['time'] = results[-1]['start']
         os.unlink(aud_seg_fname)
      
