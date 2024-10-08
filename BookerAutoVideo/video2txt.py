@@ -12,7 +12,7 @@ import json
 from .util import *
 from .keyframe import *
 # from paddlespeech.cli.text.infer import TextExecutor 
-from sencevoice import *
+from .sencevoice import *
 
 def merge_words(words, maxl=500):
     res = []
