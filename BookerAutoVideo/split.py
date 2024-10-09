@@ -12,7 +12,6 @@ def split(args):
         dura = math.ceil(info['duration'] / nseg)
     elif m := re.search(RE_HMS, args.seg):
         dura = 0
-        print(m.groups())
         for tmstr in m.groups()[1:]:
             if tmstr is None: continue
             elif 'h' in tmstr:
@@ -24,6 +23,7 @@ def split(args):
             elif 's' in tmstr:
                 tm = int(tmstr[:-1])
                 dura += tm
+        nseg = info['duration'] // dura
     else:
         raise ValueError('时间格式错误，只接受表示段落数的整数，或者hms')
 
