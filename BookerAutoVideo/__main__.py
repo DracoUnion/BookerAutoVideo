@@ -8,6 +8,7 @@ from .video2txt import *
 from .keyframe import *
 from .imgsim import *
 from .clip import *
+from .split import *
 
 warnings.filterwarnings("ignore")
 
@@ -86,6 +87,11 @@ def main():
     metric_parser = subparsers.add_parser("metric", help="test clip")
     metric_parser.add_argument("fname", help="img file name for dir")
     metric_parser.set_defaults(func=img_metric_handle)
+
+    split_parser = subparsers.add_parser("split", help="split video")
+    split_parser.add_argument("fname", help="video file name for dir")
+    split_parser.add_argument("dura", help="nseg, or duration")
+    split_parser.set_defaults(func=split)
 
 
     args = parser.parse_args()

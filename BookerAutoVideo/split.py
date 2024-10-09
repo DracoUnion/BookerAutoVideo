@@ -11,6 +11,9 @@ def split(args):
         nseg = int(m.group(1))
         dura = math.ceil(info['duration'] / nseg)
     elif m := re.search(RE_HMS, args.seg):
+        tmstr = m.group()
+        dura = 0
+        
         times = m.groups()[::-1]
         dura = int(times[0])
         if len(times) > 2:
