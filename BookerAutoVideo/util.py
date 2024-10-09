@@ -291,12 +291,7 @@ def save_tts(hash_, voice, volume, rate, data):
     fname = path.join(DATA_DIR, f'{hash_}-{voice}-{volume}-{rate}')
     open(fname, 'wb').write(data)
 
-def ffmpeg_get_info(video, fmt='mp4'):
-    if isinstance(video, bytes):
-        fname = path.join(tempfile.gettempdir(), uuid.uuid4().hex + '.' + fmt)
-        open(fname, 'wb').write(video)
-    else:
-        fname = video
+def ffmpeg_get_info_fname(fname):
     cmd = ['ffmpeg', '-i', fname]
     print(f'cmd: {cmd}')
     r = subp.Popen(
@@ -319,9 +314,19 @@ def ffmpeg_get_info(video, fmt='mp4'):
     m = re.search(r'(\d+)\x20Hz', text)
     if m:
         res['sr'] = int(m.group(1))
+    return res
+
+def ffmpeg_get_info(video, fmt='mp4'):
+    if isinstance(video, bytes):
+        fname = path.join(tempfile.gettempdir(), uuid.uuid4().hex + '.' + fmt)
+        open(fname, 'wb').write(video)
+    else:
+        fname = video
+    info = ffmpeg_get_info_fname(fname)
+    
     if isinstance(video, bytes):
         safe_remove(fname)
-    return res
+    return info
     
 def resize_img_blur(img, nw, nh, *args, **kw):
     fmt_bytes = isinstance(img, bytes)
