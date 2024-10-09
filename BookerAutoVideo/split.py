@@ -25,7 +25,8 @@ def split(args):
     else:
         raise ValueError('时间格式错误，只接受表示段落数的整数，或者hms')
 
-    for i in range(0, dura, int(info['duration'])):
+    print(f'nseg: {nseg}, duration: {dura}')
+    for i in range(0, int(info['duration']), dura):
         st, ed = i, i + dura - 1
         ofname = fname[:-len(ext)-1] + f'_{i}.{ext}'
         print(ofname)
@@ -35,6 +36,7 @@ def split(args):
             '-to', str(ed), 
             '-c', 'copy', ofname
         ]
+        print(cmd)
         subp.Popen(cmd, shell=True, stdin=subp.PIPE).communicate()
 
     
