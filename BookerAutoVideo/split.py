@@ -6,7 +6,7 @@ def split(args):
     ext = extname(fname)
     info = ffmpeg_get_info_fname(fname)
     RE_NSEG = r'^(\d+)$'
-    RE_HMS = r'^(?:(\d+)h)?(?:(\d+)m)?(:?(\d+)s)?'
+    RE_HMS = r'^(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s)?$'
     if m := re.search(RE_NSEG, args.seg):
         nseg = int(m.group(1))
         dura = math.ceil(info['duration'] / nseg)
