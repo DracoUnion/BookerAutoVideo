@@ -12,7 +12,7 @@ def split(args):
         dura = math.ceil(info['duration'] / nseg)
     elif m := re.search(RE_HMS, args.seg):
         dura = 0
-        for tmstr in m.groups()[1:]:
+        for tmstr in m.groups():
             if tmstr is None: continue
             elif 'h' in tmstr:
                 tm = int(tmstr[:-1]) * 3600
