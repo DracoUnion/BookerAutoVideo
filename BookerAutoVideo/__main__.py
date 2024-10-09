@@ -90,7 +90,7 @@ def main():
 
     split_parser = subparsers.add_parser("split", help="split video")
     split_parser.add_argument("fname", help="video file name for dir")
-    split_parser.add_argument("dura", help="nseg, or duration")
+    split_parser.add_argument("seg", help="nseg, or duration")
     split_parser.set_defaults(func=split)
 
 
