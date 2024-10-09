@@ -25,7 +25,7 @@ def split(args):
     else:
         raise ValueError('时间格式错误，只接受表示段落数的整数，或者hms')
 
-    for i in range(0, dura, info['duration']):
+    for i in range(0, dura, int(info['duration'])):
         st, ed = i, i + dura - 1
         ofname = fname[:-len(ext)-1] + f'_{i}.{ext}'
         print(ofname)
