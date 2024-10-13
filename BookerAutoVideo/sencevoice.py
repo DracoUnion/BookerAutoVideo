@@ -17,7 +17,7 @@ def sencevoice(args):
 
     # 模型路径
     model_dir = args.whisper #r"D:\src\SenseVoiceSmall"
-    vad_model_dir = "fsmn-vad"  # VAD模型路径
+    vad_model_dir = path.join(args.whisper, "fsmn-vad")  # VAD模型路径
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
     # 音频文件路径
