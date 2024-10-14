@@ -20,8 +20,7 @@ def parse_seg_dura(seg: str, total: float):
         if gs[2] is not None:
             tm = int(gs[2][:-1])
             dura += tm
-        # 至少应该有一段才对
-        nseg = max(total // dura, 1)
+        nseg = math.ceil(total / dura)
     else:
         raise ValueError('时间格式错误，只接受表示段落数的整数，或者hms')
     return nseg, dura
