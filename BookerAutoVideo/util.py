@@ -556,7 +556,7 @@ def extname(fname):
     m = re.search(r'\.(\w+)$', fname.lower())
     return m.group(1) if m else ''
 
-def call_tts_retry(text, model_name='tts-1', voice='alloy', retry=10, nothrow=True):
+def call_tts_retry(text, model_name='tts-1', voice='nova', retry=10, nothrow=True):
     for i in range(retry):
         try:
             print(f'tts: {json.dumps(text, ensure_ascii=False)}')
