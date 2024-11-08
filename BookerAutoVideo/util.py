@@ -572,9 +572,9 @@ def call_tts_retry(text, model_name='tts-1', voice='alloy', retry=10, nothrow=Tr
                 model=model_name,
                 voice=voice,
                 input=text,
-            ).data[0].b64_json
+            ).content
             # print(f'ans: {json.dumps(ans, ensure_ascii=False)}')
-            return base64.b64decode(audio)
+            return audio
         except Exception as ex:
             print(f'OpenAI retry {i+1}: {str(ex)}')
             if i == retry - 1 and not nothrow: raise ex
