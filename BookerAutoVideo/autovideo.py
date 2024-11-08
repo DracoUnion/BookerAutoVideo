@@ -44,7 +44,8 @@ def tts(text):
     rate = config['ttsRate']
     cache = load_tts(hash_, voice, vol, rate)
     if cache: return cache
-    data = edgetts_cli(text, voice=voice, volume=vol, rate=rate)
+    # data = edgetts_cli(text, voice=voice, volume=vol, rate=rate)
+    data = call_tts_retry(text, 'tts-1', retry=config['ttsRetry'])
     save_tts(hash_, voice, vol, rate, data)
     return data
 
