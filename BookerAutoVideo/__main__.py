@@ -26,7 +26,7 @@ def main():
 
     autovid_parser = subparsers.add_parser("gen", help="generate video")
     autovid_parser.add_argument("fname", help="src file name")
-    autovid_parser.add_argument("-m", "--model", default='dall-e-3', help="model name")
+    autovid_parser.add_argument("-m", "--model", default=os.environ.get('OPENAI_TTI_MODEL', ''), help="model name")
     autovid_parser.add_argument("-r", "--retry", type=int, default=1_000_000, help="times of retry")
     autovid_parser.add_argument("-t", "--threads", type=int, default=8, help="num of threads")
     autovid_parser.add_argument("-p", "--one-pic", help="whether to use one pic for all frames, and it's path")
