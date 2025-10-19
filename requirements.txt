@@ -9,3 +9,4 @@ EpubCrawler
 openai
 transformers
 funasr
+requests
