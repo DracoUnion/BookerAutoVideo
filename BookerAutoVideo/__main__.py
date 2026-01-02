@@ -34,7 +34,7 @@ def main():
 
     video2txt_parser = subparsers.add_parser("totxt", help="convert audio to text")
     video2txt_parser.add_argument("fname", help="file name")
-    video2txt_parser.add_argument("-T", "--threads", type=int, default=8, help="num of threads")
+    video2txt_parser.add_argument("-t", "--threads", type=int, default=8, help="num of threads")
     video2txt_parser.add_argument("-I", "--no-image", action='store_true', help="whether to not catch screenshots")
     video2txt_parser.add_argument(
         "-w", "--whisper", 
@@ -44,8 +44,8 @@ def main():
     video2txt_parser.add_argument("-l", "--lang", default='zh',  help="language")
     video2txt_parser.add_argument("-m", "--model-path", default=os.environ.get('PPT_MODEL_PATH', ''), help="PPT model path")
     video2txt_parser.add_argument("-s", "--batch-size", type=int, default=32, help="batch_size")
-    video2txt_parser.add_argument("-t", "--diff-thres", type=float, default=0.1, help="img diff thres")
-    video2txt_parser.add_argument("-p", "--ppt-thres", type=float, default=0.4, help="img ppt thres")
+    video2txt_parser.add_argument("-dt", "--diff-thres", type=float, default=0.1, help="img diff thres")
+    video2txt_parser.add_argument("-pt", "--ppt-thres", type=float, default=0.4, help="img ppt thres")
     video2txt_parser.add_argument("-c", "--color", type=float, default=0.4, help="color entro")
     video2txt_parser.add_argument("-H", "--hog", type=float, default=0.5, help="hog entro")
     video2txt_parser.add_argument("--left", type=float, default=0, help="left cut 0~1")
@@ -64,9 +64,9 @@ def main():
     kf_parser.add_argument("-o", "--opti-mode", default="quant", help="img opti mode, default 'none'")
     kf_parser.add_argument("-r", "--rate", type=float, default=0.2, help="how many frames to extract in 1s")
     kf_parser.add_argument("-d", "--direction", choices=[DIR_F, DIR_B, DIR_T], default=DIR_B, help="the direction used to calc frame diff")
-    kf_parser.add_argument("-t", "--diff-thres", type=float, default=0.1, help="img diff thres")
-    kf_parser.add_argument("-T", "--threads", type=int, default=8, help="#threads")
-    kf_parser.add_argument("-p", "--ppt-thres", type=float, default=0.4, help="img ppt thres")
+    kf_parser.add_argument("-dt", "--diff-thres", type=float, default=0.1, help="img diff thres")
+    kf_parser.add_argument("-t", "--threads", type=int, default=8, help="#threads")
+    kf_parser.add_argument("-pt", "--ppt-thres", type=float, default=0.4, help="img ppt thres")
     kf_parser.add_argument("-m", "--model-path", default=os.environ.get('PPT_MODEL_PATH', ''), help="PPT model path")
     kf_parser.add_argument("-s", "--batch-size", type=int, default=32, help="batch_size")
     kf_parser.add_argument("-c", "--color", type=float, default=0.4, help="color entro")
