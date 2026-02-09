@@ -119,7 +119,7 @@ def calc_text_diffs(frames, args):
     calc_diffs(frames, args, lambda x, y: word_ngram_diff(x, y), 'text', 'textDiff')
 
 def filter_repeat(frames, args):
-    while frames:
+    while len(frames) > 1:
         nframe = len(frames)
         # 计算差分
         calc_img_diffs(frames, args)
