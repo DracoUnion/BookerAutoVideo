@@ -69,7 +69,7 @@ def sencevoice(args):
         model=model_dir,
         trust_remote_code=True,
         remote_code="./model.py",
-        device="cuda:0",
+        device=device,
         disable_update=True
     )
      
