@@ -110,10 +110,10 @@ def make_video(frames):
         video = ffmpeg_cat([video, footer])
     return video
 
-def tr_tts_tti(frame):
+def tr_tts_tti(frame, args):
     text = frame['subtitle']
     frame['audio'] = tts(text)
-    frame['image'] = tti(text)
+    frame['image'] = tti(args.prefix + text + args.suffix)
 
 def tr_asm_audio_video(frame):
     w, h = config['size']
@@ -152,7 +152,7 @@ def autovideo(args):
     pool = ThreadPoolExecutor(args.threads)
     hdls = []
     for f in frames:
-        h = pool.submit(tr_tts_tti, f)
+        h = pool.submit(tr_tts_tti, f, args)
         hdls.append(h)
     for h in hdls:
         h.result()
