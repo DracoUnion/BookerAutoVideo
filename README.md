@@ -1,18 +1,23 @@
 # BookerAutoVideo
 
 
-## `contents[*].type`字段详解
+```
+usage: BookerAutoVideo [-h] [-v] [-k KEY] [-H HOST] [-P PROXY] {gen,totxt,ext-kf,clip-test,metric,split} ...
 
-+   `video:file`：读取本地视频
-+   `video:dir`：从素材目中搜索带有指定关键词的视频
-+   `video:url`：下载网络视频
-+   `image:file`：读取本地文件
-+   `image:dir`：从素材目中搜索带有指定关键词的图片
-+   `image:url`：下载网络文件
-+   `image:color`：纯色填充
-+   `image:tti`：文生图
-+   `image:ppt`：将文本做成幻灯（未实现）
-+   `audio:file`：读取本地文件
-+   `audio:url`：下载网络文件
-+   `audio:tts`：EdgeTTS 文字转语音
-+   `audio:blank`：空白音频
+positional arguments:
+  {gen,totxt,ext-kf,clip-test,metric,split}
+    gen                 generate video
+    totxt               convert audio to text
+    ext-kf              extract keyframes
+    clip-test           test clip
+    metric              test clip
+    split               split video
+
+options:
+  -h, --help            show this help message and exit
+  -v, --version         show program's version number and exit
+  -k KEY, --key KEY     OpenAI API key
+  -H HOST, --host HOST  api host
+  -P PROXY, --proxy PROXY
+                        proxy
+```

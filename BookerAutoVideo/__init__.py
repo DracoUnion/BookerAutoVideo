@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 
 """BookerAutoVideo
-https://github.com/apachecnBookerAutoVideo"""
+https://github.com/DracoUnion/BookerAutoVideo"""
 
-__author__ = "ApacheCN"
-__email__ = "apachecn@163.com"
+__author__ = "wizardforcel"
+__email__ = "wizard.z@qq.com"
 __license__ = "SATA"
-__version__ = "2023.5.30.0"
+__version__ = "2026.3.25.0"
