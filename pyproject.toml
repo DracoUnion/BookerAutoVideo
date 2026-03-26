@@ -1,0 +1,63 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "BookerAutoVideo"
+version = "2026.3.25.0"
+description = "audio & video tool for DracoUnion"
+readme = "README.md"
+license = {text = "SATA"}
+requires-python = ">=3.6"
+authors = [
+    {name = "wizardforcel", email = "wizard.z@qq.com"},
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Intended Audience :: End Users/Desktop",
+    "License :: Other/Proprietary License",
+    "Natural Language :: Chinese (Simplified)",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Topic :: Text Processing :: Markup :: Markdown",
+    "Topic :: Text Processing :: Markup :: HTML",
+    "Topic :: Internet :: WWW/HTTP",
+    "Topic :: Software Development :: Documentation",
+    "Topic :: Documentation",
+]
+keywords = []
+dependencies = [
+    "numpy",
+    "opencv-python",
+    "scipy",
+    "imgyaso",
+    "librosa",
+    "edge-tts",
+    "pyyaml",
+    "EpubCrawler",
+    "openai",
+    "transformers",
+    "funasr",
+    "requests",
+]
+
+[project.scripts]
+BookerAutoVideo = "BookerAutoVideo.__main__:main"
+bav = "BookerAutoVideo.__main__:main"
+auto-video = "BookerAutoVideo.__main__:main"
+
+[project.urls]
+Homepage = "https://github.com/DracoUnion/BookerAutoVideo"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["BookerAutoVideo*"]
+
+[tool.setuptools.package-data]
+"*" = ["*"]
