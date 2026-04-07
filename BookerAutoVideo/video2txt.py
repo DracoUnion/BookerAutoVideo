@@ -47,6 +47,8 @@ def video2txt_dir(args):
     
 def video2txt_file_safe(args):
     try: video2txt_file(args)
+    except KeyboardInterrupt:
+        raise
     except: traceback.print_exc()
 
 def whisper_cpp(args):
