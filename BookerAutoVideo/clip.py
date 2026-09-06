@@ -3,6 +3,7 @@ import torch
 from typing import List
 from os import path
 import os
+import argparse
 from .util import *
 from io import BytesIO
 from PIL import Image
@@ -63,6 +64,14 @@ def clip_test(args):
         print(f'{f}: {l}')
         prob_msg = ', '.join([f'{c}: {p:.3f}' for c, p in zip(cates, ps)])
         print(prob_msg)
+
+def reg_subparser(subparsers):
+    parser = subparsers.add_parser("clip-test", help="test clip")
+    parser.add_argument("img", help="img file name for dir")
+    parser.add_argument("-c", "--cates", default="图文,幻灯片,人像,景物", help="cates")
+    parser.add_argument("-m", "--model-path", default=os.environ.get('CLIP_PATH', ''), help="clip path")
+    parser.add_argument("-s", "--batch-size", type=int, default=32, help="batch_size")
+    parser.set_defaults(func=clip_test)
         
     
 

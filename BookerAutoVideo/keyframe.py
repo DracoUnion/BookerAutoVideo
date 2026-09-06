@@ -281,4 +281,23 @@ def extract_keyframe_file(args):
         print(ofname)
         open(ofname, 'wb').write(f['img'])
 
+def reg_subparser(subparsers):
+    parser = subparsers.add_parser("ext-kf", help="extract keyframes")
+    parser.add_argument("fname", help="file name")
+    parser.add_argument("-o", "--opti-mode", default="quant", help="img opti mode, default 'none'")
+    parser.add_argument("-r", "--rate", type=float, default=0.2, help="how many frames to extract in 1s")
+    parser.add_argument("-d", "--direction", choices=[DIR_F, DIR_B, DIR_T], default=DIR_B, help="the direction used to calc frame diff")
+    parser.add_argument("-dt", "--diff-thres", type=float, default=0.1, help="img diff thres")
+    parser.add_argument("-t", "--threads", type=int, default=8, help="#threads")
+    parser.add_argument("-pt", "--ppt-thres", type=float, default=0.4, help="img ppt thres")
+    parser.add_argument("-m", "--model-path", default=os.environ.get('PPT_MODEL_PATH', ''), help="PPT model path")
+    parser.add_argument("-s", "--batch-size", type=int, default=32, help="batch_size")
+    parser.add_argument("-c", "--color", type=float, default=0.4, help="color entro")
+    parser.add_argument("-H", "--hog", type=float, default=0.5, help="hog entro")
+    parser.add_argument("--left", type=float, default=0, help="left cut 0~1")
+    parser.add_argument("--right", type=float, default=0, help="right cut 0~1")
+    parser.add_argument("--bottom", type=float, default=0, help="bottom cut 0~1")
+    parser.add_argument("--top", type=float, default=0, help="top cut 0~1")
+    parser.set_defaults(func=extract_keyframe_file)
+
     

@@ -1,4 +1,5 @@
 import yaml
+import os
 from os import path
 import sys
 import cv2
@@ -7,6 +8,7 @@ import numpy as np
 import librosa
 import random
 import hashlib
+import argparse
 from .autovideo_config import config
 from .util import *
 from EpubCrawler.util import request_retry
@@ -170,5 +172,16 @@ def autovideo(args):
     # 写文件
     print(video_fname)
     open(video_fname, 'wb').write(video)
+
+def reg_subparser(subparsers):
+    parser = subparsers.add_parser("gen", help="generate video")
+    parser.add_argument("fname", help="src file name")
+    parser.add_argument("-m", "--model", default=os.environ.get('OPENAI_TTI_MODEL', ''), help="model name")
+    parser.add_argument("-r", "--retry", type=int, default=1_000_000, help="times of retry")
+    parser.add_argument("-t", "--threads", type=int, default=8, help="num of threads")
+    parser.add_argument("-p", "--one-pic", help="whether to use one pic for all frames, and it's path")
+    parser.add_argument("-pf", "--prefix", default='', help="tti prompt prefix")
+    parser.add_argument("-sf", "--suffix", default='', help="tti prompt suffix")
+    parser.set_defaults(func=autovideo)
 
     

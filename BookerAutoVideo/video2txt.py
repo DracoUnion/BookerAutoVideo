@@ -5,6 +5,7 @@ import copy
 import os
 import json
 import hashlib
+import argparse
 from os import path
 from multiprocessing import Pool
 import subprocess as subp
@@ -150,3 +151,31 @@ def video2txt_file(args):
                 [cv2.IMWRITE_PNG_COMPRESSION, 9]
             )[1])
         open(img_fname, 'wb').write(img)
+
+def reg_subparser(subparsers):
+    parser = subparsers.add_parser("totxt", help="convert audio to text")
+    parser.add_argument("fname", help="file name")
+    parser.add_argument("-t", "--threads", type=int, default=8, help="num of threads")
+    parser.add_argument("-I", "--no-image", action='store_true', help="whether to not catch screenshots")
+    parser.add_argument(
+        "-w", "--whisper",
+        default=os.environ.get('WHISPER_CPP_MODEL_PATH', ''),
+        help="whisper.cpp model path"
+    )
+    parser.add_argument("-l", "--lang", default='zh',  help="language")
+    parser.add_argument("-m", "--model-path", default=os.environ.get('PPT_MODEL_PATH', ''), help="PPT model path")
+    parser.add_argument("-s", "--batch-size", type=int, default=32, help="batch_size")
+    parser.add_argument("-dt", "--diff-thres", type=float, default=0.1, help="img diff thres")
+    parser.add_argument("-pt", "--ppt-thres", type=float, default=0.4, help="img ppt thres")
+    parser.add_argument("-c", "--color", type=float, default=0.4, help="color entro")
+    parser.add_argument("-H", "--hog", type=float, default=0.5, help="hog entro")
+    parser.add_argument("--left", type=float, default=0, help="left cut 0~1")
+    parser.add_argument("--right", type=float, default=0, help="right cut 0~1")
+    parser.add_argument("--bottom", type=float, default=0, help="bottom cut 0~1")
+    parser.add_argument("--top", type=float, default=0, help="top cut 0~1")
+    parser.set_defaults(
+        opti_mode='quant',
+        rate=0.2,
+        direction=DIR_B,
+        func=video2txt_handle,
+    )

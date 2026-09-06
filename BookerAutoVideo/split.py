@@ -1,3 +1,4 @@
+import argparse
 from .util import *
 
 def parse_seg_dura(seg: str, total: float):
@@ -43,5 +44,11 @@ def split(args):
         ]
         print(cmd)
         subp.Popen(cmd, shell=True, stdin=subp.PIPE).communicate()
+
+def reg_subparser(subparsers):
+    parser = subparsers.add_parser("split", help="split video")
+    parser.add_argument("fname", help="video file name for dir")
+    parser.add_argument("seg", help="nseg, or duration")
+    parser.set_defaults(func=split)
 
     

@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 import os
+import argparse
 from .util import *
 
 # 直方图余弦
@@ -174,5 +175,10 @@ def img_sim_handle(args):
     )
     for mode, func in img_sim.items():
         print(f'mode: {mode}, sim: {func(img1, img2)}')
+
+def reg_subparser(subparsers):
+    parser = subparsers.add_parser("metric", help="test clip")
+    parser.add_argument("fname", help="img file name for dir")
+    parser.set_defaults(func=img_metric_handle)
     
     
