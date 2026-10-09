@@ -123,16 +123,38 @@ class RemotionOrchestrator:
     # ── 步骤 5：渲染视频 ───────────────────────────────────────
 
     def _discover_compositions(self) -> List[str]:
-        """列出工程里实际注册的 Composition id（用于校验/回退）。"""
-        rc, out = _run('npx remotion compositions --json', self.pj_dir)
-        if rc == 0:
-            try:
-                data = json.loads(out)
-                # 结构: {"compositions": [{"id": ...}, ...]} 或扁平数组
-                comps = data.get('compositions', data) if isinstance(data, dict) else data
-                return [c['id'] for c in comps if isinstance(c, dict) and 'id' in c]
-            except (json.JSONDecodeError, KeyError, TypeError):
-                pass
+        """列出工程里实际注册的 Composition id（用于校验/回退）。
+
+        容忍 Remotion 在 JSON 前后打印的日志/进度行；取从首个 [ 或 { 起
+        到最后一段 JSON 的内容解析，失败则用正则兜底抽取引号包裹的 id。
+        """
+        for cmd in ('npx remotion compositions --json', 'npx remotion compositions'):
+            rc, out = _run(cmd, self.pj_dir)
+            if rc != 0:
+                continue
+            # 提取 JSON 片段：从第一个 [ 或 { 到字符串末尾
+            m = re.search(r'[\[\{][\s\S]*', out)
+            if m:
+                try:
+                    data = json.loads(m.group(0))
+                except json.JSONDecodeError:
+                    data = None
+                if data is not None:
+                    comps = (
+                        data.get('compositions', data)
+                        if isinstance(data, dict) else data
+                    )
+                    ids = [
+                        c['id'] for c in comps
+                        if isinstance(c, dict) and 'id' in c
+                    ]
+                    if ids:
+                        return ids
+            # 兜底：按"每行一个 id"或带引号的 id 抽取
+            ids = re.findall(r'^\s*([A-Za-z0-9_-]+)\s*$', out, re.M)
+            ids = [i for i in ids if i not in ('remotion', 'npx', 'json')]
+            if ids:
+                return ids
         return []
 
     def _resolve_composition(self, wanted: str) -> str:
@@ -151,7 +173,20 @@ class RemotionOrchestrator:
         if self.args.still:
             _run(f'npx remotion still {composition} out/preview.png', self.pj_dir)
         out = path.join(self.pj_dir, out_fname)
-        rc, _ = _run(f'npx remotion render {composition} {out_fname}', self.pj_dir)
+        rc, text = _run(f'npx remotion render {composition} {out_fname}', self.pj_dir)
+        if not is_video(out):
+            # 从 Remotion 报错里抢救出真实可用的 composition id 并重试一次
+            m = re.search(r'Available compositions:\s*([^\n]+)', text)
+            if m:
+                avail = [c.strip() for c in m.group(1).split(',') if c.strip()]
+                for cand in avail:
+                    if cand == composition:
+                        continue
+                    logger.warn(f'[5] 改用真实存在的 composition "{cand}" 重试')
+                    composition = cand
+                    _run(f'npx remotion render {composition} {out_fname}', self.pj_dir)
+                    if is_video(out):
+                        break
         if is_video(out):
             logger.info(f'[*] 视频已生成：{out}')
         else:
