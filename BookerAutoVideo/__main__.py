@@ -4,7 +4,7 @@ import sys
 import math
 import warnings
 from . import __version__
-from . import autovideo, video2txt, keyframe, imgsim, clip, split
+from . import autovideo, video2txt, keyframe, imgsim, clip, split, remotion
 
 warnings.filterwarnings("ignore")
 
@@ -26,6 +26,7 @@ def main():
     imgsim.reg_subparser(subparsers)
     clip.reg_subparser(subparsers)
     split.reg_subparser(subparsers)
+    remotion.reg_subparser(subparsers)
 
 
     args = parser.parse_args()
