@@ -122,16 +122,40 @@ class RemotionOrchestrator:
 
     # ── 步骤 5：渲染视频 ───────────────────────────────────────
 
+    def _discover_compositions(self) -> List[str]:
+        """列出工程里实际注册的 Composition id（用于校验/回退）。"""
+        rc, out = _run('npx remotion compositions --json', self.pj_dir)
+        if rc == 0:
+            try:
+                data = json.loads(out)
+                # 结构: {"compositions": [{"id": ...}, ...]} 或扁平数组
+                comps = data.get('compositions', data) if isinstance(data, dict) else data
+                return [c['id'] for c in comps if isinstance(c, dict) and 'id' in c]
+            except (json.JSONDecodeError, KeyError, TypeError):
+                pass
+        return []
+
+    def _resolve_composition(self, wanted: str) -> str:
+        """确认要渲染的 composition id；若不存在则回退到工程里实际注册的第一个。"""
+        ids = self._discover_compositions()
+        if not ids:
+            return wanted
+        if wanted in ids:
+            return wanted
+        logger.warn(f'[5] 未找到 composition "{wanted}"，实际注册：{ids}，改用 "{ids[0]}"')
+        return ids[0]
+
     def step_render(self, composition: str, out_fname: str):
         logger.info('[5] 渲染视频')
+        composition = self._resolve_composition(composition)
         if self.args.still:
             _run(f'npx remotion still {composition} out/preview.png', self.pj_dir)
         out = path.join(self.pj_dir, out_fname)
-        _run(f'npx remotion render {composition} {out_fname}', self.pj_dir)
+        rc, _ = _run(f'npx remotion render {composition} {out_fname}', self.pj_dir)
         if is_video(out):
             logger.info(f'[*] 视频已生成：{out}')
         else:
-            logger.warn(f'[*] 未找到输出文件 {out}，渲染可能失败')
+            logger.warn(f'[*] 未找到输出文件 {out}（退出码 {rc}），渲染可能失败')
 
     # ── 主流程 ─────────────────────────────────────────────────
 
