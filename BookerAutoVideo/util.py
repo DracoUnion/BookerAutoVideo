@@ -505,6 +505,25 @@ def hhmmss2time(text):
     h, m, s = hhmmmss.split(":")
     return int(h) * 3600 + int(m) * 60 + int(s) + int(ms) / 10000
 
+def json_dump_model(obj) -> str:
+    """将对象（含 pydantic 模型/列表）序列化为 JSON 字符串。"""
+    if isinstance(obj, BaseModel):
+        obj = obj.model_dump()
+    elif isinstance(obj, list):
+        obj = [
+            it.dict() if isinstance(it, BaseModel) else it
+            for it in obj
+        ]
+    return json.dumps(obj, ensure_ascii=False)
+
+def json_load_model(text: str, model: Type[BaseModel]):
+    """将 JSON 文本解析为指定 pydantic 模型。"""
+    try:
+        return parse_obj_as(model, json.loads(text))
+    except json.JSONDecodeError:
+        return None
+    except ValidationError:
+        return None
 
 def write_text(fname: str, text: str, append: bool = False) -> None:
     """将 text 以 UTF-8 写入 fname（自动创建父目录）。"""
