@@ -11,6 +11,7 @@ import hashlib
 import argparse
 from .autovideo_config import config
 from .util import *
+from .ffmpeg import ffmpeg_cat, ffmpeg_add_srt, ffmpeg_merge_video_audio
 from EpubCrawler.util import request_retry
 import base64
 from concurrent.futures import ThreadPoolExecutor

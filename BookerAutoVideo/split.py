@@ -1,5 +1,6 @@
 import argparse
 from .util import *
+from .ffmpeg import ffmpeg_get_info_fname
 
 def parse_seg_dura(seg: str, total: float):
     RE_NSEG = r'^(\d+)$'
