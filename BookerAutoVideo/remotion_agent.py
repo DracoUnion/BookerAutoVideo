@@ -26,7 +26,7 @@ class RemotionAgent:
         self.pj_dir = path.abspath(args.dir)
         self.asset_dir = path.join(self.pj_dir, 'asset')
         os.makedirs(self.asset_dir, exist_ok=True)
-        set_openai_props(args.key, getattr(args, 'proxy', None), args.host)
+        set_openai_props(args)
 
     def _cache(self, prefix: str, key: str, ext: str = '.yaml') -> str:
         return path.join(self.asset_dir, f'{prefix}_{key}{ext}')

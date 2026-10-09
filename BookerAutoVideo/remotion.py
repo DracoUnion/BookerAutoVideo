@@ -156,6 +156,6 @@ def reg_subparser(subparsers):
     parser.add_argument('-c', '--check', type=int, default=3, help='编译校验 / 修复轮数')
     parser.add_argument('-o', '--out', default='out.mp4', help='输出视频相对路径')
     parser.add_argument('--composition', default='Main', help='Composition id')
-    parser.add_argument('-st', '--still', action='store_true', help='渲染前出一帧预览 PNG')
+    parser.add_argument('-sl', '--still', action='store_true', help='渲染前出一帧预览 PNG')
     parser.add_argument('-D', '--debug', action='store_true', help='调试模式')
     parser.set_defaults(func=remotion)
