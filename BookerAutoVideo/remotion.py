@@ -29,10 +29,9 @@ def _run(cmd: str, cwd: str):
         cmd, cwd=cwd, shell=True,
         stdout=subp.PIPE, stderr=subp.STDOUT,
         encoding='utf-8', errors='ignore',
-
+        text=True,
     )
-    out = (r.stdout or b'')
-    text = out.decode('utf-8', errors='replace')
+    text = (r.stdout or '')
     if r.returncode != 0:
         logger.warn(f'命令退出码 {r.returncode}：\n{text[-2000:]}')
     return r.returncode, text
