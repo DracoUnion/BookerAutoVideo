@@ -18,15 +18,22 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-def _run(cmd: str, cwd: str) -> int:
-    """运行命令（Windows 下 npx/npm 需 shell=True），记录日志。"""
+def _run(cmd: str, cwd: str):
+    """运行命令（Windows 下 npx/npm 需 shell=True），记录日志。
+
+    以字节捕获输出，用 UTF-8（回退 GBK）解码，避免子进程输出含 CJK/emoji
+    时因 Windows 默认 GBK 解码抛 UnicodeDecodeError。
+    """
     logger.info(f'cmd: {cmd}')
-    r = subp.run(cmd, cwd=cwd, shell=True, stdout=subp.PIPE, stderr=subp.STDOUT, text=True)
-    out = r.stdout or ''
-    logger.debug(out)
+    r = subp.run(
+        cmd, cwd=cwd, shell=True,
+        stdout=subp.PIPE, stderr=subp.STDOUT,
+    )
+    out = (r.stdout or b'')
+    text = out.decode('utf-8', errors='replace')
     if r.returncode != 0:
-        logger.warn(f'命令退出码 {r.returncode}：\n{out[-2000:]}')
-    return r.returncode, out
+        logger.warn(f'命令退出码 {r.returncode}：\n{text[-2000:]}')
+    return r.returncode, text
 
 
 class RemotionOrchestrator:
@@ -45,8 +52,13 @@ class RemotionOrchestrator:
         if path.isfile(path.join(self.pj_dir, 'package.json')):
             logger.info('[1] 已存在 package.json，跳过 create-video')
         else:
-            _run('npx create-video@latest --yes --blank --no-tailwind .', self.pj_dir)
-            _run('npm i', self.pj_dir)
+            rc, _ = _run('npx create-video@latest --yes --blank --no-tailwind .', self.pj_dir)
+            if not path.isfile(path.join(self.pj_dir, 'package.json')):
+                raise RuntimeError(
+                    f'create-video 脚手架失败（目录 {self.pj_dir} 未生成 package.json）。'
+                    '请确认 Node.js / npx 可用且目录可写。'
+                )
+        _run('npm i', self.pj_dir)
         safe_mkdir(path.join(self.pj_dir, 'public'))
 
     # ── 步骤 2：生成代码文件 ───────────────────────────────────
