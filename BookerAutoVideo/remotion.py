@@ -28,6 +28,8 @@ def _run(cmd: str, cwd: str):
     r = subp.run(
         cmd, cwd=cwd, shell=True,
         stdout=subp.PIPE, stderr=subp.STDOUT,
+        encoding='utf-8', errors='ignore',
+
     )
     out = (r.stdout or b'')
     text = out.decode('utf-8', errors='replace')
