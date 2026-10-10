@@ -45,6 +45,7 @@ dependencies = [
     "transformers",
     "funasr",
     "requests",
+    "flask",
 ]
 
 [project.scripts]

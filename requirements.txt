@@ -10,3 +10,4 @@ openai
 transformers
 funasr
 requests
+flask
