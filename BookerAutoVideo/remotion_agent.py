@@ -10,7 +10,8 @@ from pydantic import BaseModel, parse_obj_as
 from .util import write_yaml_model, read_yaml_model
 from .openai import ask_chatgpt_retry, set_openai_props
 from .remotion_pmt import (
-    REMOTION_PLAN_PMT, REMOTION_ROOT_PMT, REMOTION_SCENE_PMT, REMOTION_FIX_PMT,
+    REMOTION_PLAN_PMT, REMOTION_ROOT_PMT, REMOTION_SCENE_PMT,
+    REMOTION_FIX_PMT, REMOTION_RENDER_FIX_PMT,
     render_prompt, ext_code_block, gen_objs_md5,
     json_dump_plan, _extract_files, _extract_file_tag, _split_code_blocks,
 )
@@ -113,5 +114,39 @@ class RemotionAgent:
         )
         out = ask_chatgpt_retry(ques, self.model, self.args, parse_output=ext_code_block)
         res = RemotionFile(fname=fname, code=out)
+        write_yaml_model(cache, res)
+        return res
+
+    # ── 步骤 5：修复渲染错误 ───────────────────────────────────
+
+    def fix_render(
+        self, plan: RemotionPlan, composition: str,
+        err: str, files: List[RemotionFile],
+    ) -> RemotionFile:
+        """把 Remotion 渲染报错 + 当前源文件喂给 LLM，返回需要修改的文件。"""
+        # 把各文件渲染成「// file: ... ```tsx 代码 ```」拼成一段供 LLM 参考
+        files_block = '\n\n'.join(
+            f'// file: {f.fname}\n```tsx\n{f.code}\n```' for f in files
+        )
+        key = gen_objs_md5(plan, composition, err, files, 'render_fix')
+        cache = self._cache('render_fix', key, ext='.json')
+        r = read_yaml_model(cache, RemotionFile)
+        if r:
+            return r
+        ques = render_prompt(
+            REMOTION_RENDER_FIX_PMT,
+            plan=json_dump_plan(plan), composition=composition,
+            err=err, files=files_block,
+        )
+        out = ask_chatgpt_retry(ques, self.model, self.args, parse_output=ext_code_block)
+        # LLM 只输出单个要改的文件；用 _extract_files 解析 // file: 标注
+        parsed = _extract_files(out)
+        if parsed and parsed[0].code.strip():
+            res = parsed[0]
+        else:
+            # 兜底：无法解析出文件名时，按代码块猜路径，默认改 Root.tsx
+            res = RemotionFile(
+                fname=_extract_file_tag(out) or 'src/Root.tsx', code=out,
+            )
         write_yaml_model(cache, res)
         return res

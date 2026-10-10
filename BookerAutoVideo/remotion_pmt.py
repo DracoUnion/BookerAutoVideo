@@ -181,3 +181,33 @@ REMOTION_FIX_PMT = '''
 请修复后输出该文件的完整内容，用 ```tsx 反引号包裹，块前单独一行写 `// file: {fname}`。
 只修复报错，不改动与错误无关的逻辑；保持 Remotion 最佳实践。
 '''
+
+# ── 修复渲染错误 ───────────────────────────────────────────────
+
+REMOTION_RENDER_FIX_PMT = '''
+你是一位 Remotion 工程师。下面的 Remotion 工程在 `npx remotion render` 渲染视频时
+在浏览器（Remotion 自带的 Chromium）中运行出错。请根据渲染报错修复代码。
+
+【分镜大纲】
+{plan}
+
+【当前渲染的 Composition】{composition}
+
+【渲染报错（Remotion / Puppeteer 输出，节选）】
+{err}
+
+【工程当前源文件】
+{files}
+
+请分析报错，定位到需要修改的文件，然后只输出**需要修改的那一个文件**的完整内容，
+用 ```tsx 反引号包裹，块前单独一行写 `// file: <相对路径>`（例如 `// file: src/Root.tsx`）。
+
+常见原因与对策：
+- "Could not find composition with ID X"：改 Root.tsx 里的 <Composition id=...> 与渲染 id 一致，
+  或修正渲染命令的 composition 名；此时可直接输出修正后的 src/Root.tsx。
+- 场景组件在运行时抛错（如 undefined、越界帧、缺失 import）：修对应 src/Scene*.tsx。
+- 缺失依赖（@remotion/transitions、@remotion/media 等）：在输出前提示安装，并把用法改到已装包上。
+- 静态资源不存在：把 staticFile() 指向 public/ 下真实存在的文件，或移除该引用。
+保持 Remotion 最佳实践（interpolate 内联、Easing、scale/translate/rotate、premountFor={fps}）。
+'''
+

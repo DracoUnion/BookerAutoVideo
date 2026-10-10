@@ -167,30 +167,48 @@ class RemotionOrchestrator:
         logger.warn(f'[5] 未找到 composition "{wanted}"，实际注册：{ids}，改用 "{ids[0]}"')
         return ids[0]
 
-    def step_render(self, composition: str, out_fname: str):
+    def step_render(
+        self, composition: str, out_fname: str,
+        files: List[RemotionFile], plan,
+    ):
+        """渲染视频，失败时读 Remotion 报错 → 喂 LLM 修代码 → 重试（受 args.check 约束）。"""
         logger.info('[5] 渲染视频')
+        # 维护当前各文件内容，作为喂给 LLM 修复的"工程现状"
+        err_map = {f.fname: f.code for f in files}
         composition = self._resolve_composition(composition)
         if self.args.still:
             _run(f'npx remotion still {composition} out/preview.png', self.pj_dir)
         out = path.join(self.pj_dir, out_fname)
-        rc, text = _run(f'npx remotion render {composition} {out_fname}', self.pj_dir)
-        if not is_video(out):
-            # 从 Remotion 报错里抢救出真实可用的 composition id 并重试一次
+
+        for i in range(self.args.check + 1):
+            rc, text = _run(f'npx remotion render {composition} {out_fname}', self.pj_dir)
+            if is_video(out):
+                logger.info(f'[5] 渲染完成：{out}')
+                return
+
+            # 渲染失败：先尝试 composition id 不匹配的兜底（换真实 id 重试一次）
             m = re.search(r'Available compositions:\s*([^\n]+)', text)
-            if m:
+            if m and i == 0:
                 avail = [c.strip() for c in m.group(1).split(',') if c.strip()]
-                for cand in avail:
-                    if cand == composition:
-                        continue
-                    logger.warn(f'[5] 改用真实存在的 composition "{cand}" 重试')
-                    composition = cand
-                    _run(f'npx remotion render {composition} {out_fname}', self.pj_dir)
+                other = [c for c in avail if c != composition]
+                if other:
+                    logger.warn(f'[5] 未找到 "{composition}"，改用真实 id "{other[0]}" 重试')
+                    composition = other[0]
+                    rc, text = _run(f'npx remotion render {composition} {out_fname}', self.pj_dir)
                     if is_video(out):
-                        break
-        if is_video(out):
-            logger.info(f'[*] 视频已生成：{out}')
-        else:
-            logger.warn(f'[*] 未找到输出文件 {out}（退出码 {rc}），渲染可能失败')
+                        logger.info(f'[5] 渲染完成：{out}')
+                        return
+
+            # 用 LLM 修复循环
+            if i == self.args.check:
+                break
+            logger.info(f'[5] 渲染失败（第 {i+1} 轮），交给 LLM 修复代码')
+            cur_files = [RemotionFile(fname=k, code=v) for k, v in err_map.items()]
+            fix = self.agent.fix_render(plan, composition, text[-3000:], cur_files)
+            err_map[fix.fname] = fix.code
+            self._write_file(fix)
+
+        logger.warn(f'[5] 渲染仍未成功（退出码 {rc}）。最后一次 Remotion 输出：\n{text[-2000:]}')
 
     # ── 主流程 ─────────────────────────────────────────────────
 
@@ -206,7 +224,7 @@ class RemotionOrchestrator:
         logger.info(f'分镜：{plan.title}，{len(plan.scenes)} 个场景')
         files = self.step_gen_files(plan, self.args.composition)
         files = self.step_validate(files, plan, self.args.composition)
-        self.step_render(self.args.composition, self.args.out)
+        self.step_render(self.args.composition, self.args.out, files, plan)
         logger.info('[*] 已完成，产物在 %s', self.pj_dir)
 
 
