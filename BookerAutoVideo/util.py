@@ -558,3 +558,7 @@ def read_yaml_model(fname: str, model: Optional[Type[BaseModel]]):
         return None
     except ValidationError:
         return None
+
+def render_prompt(pmt: str, **kw) -> str:
+    """将提示词模板中的 {key} 占位符替换为 kw[key]。"""
+    return re.sub(r"{(\w+)}", lambda g: kw.get(g.group(1), g.group(0)), pmt)
