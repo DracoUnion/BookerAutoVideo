@@ -8,7 +8,7 @@ import json_repair
 from pydantic import BaseModel, parse_obj_as
 
 from .util import write_yaml_model, read_yaml_model
-from .openai import ask_chatgpt_retry, set_openai_props
+from .openai import OpenAIClient
 from .remotion_pmt import (
     REMOTION_PLAN_PMT, REMOTION_ROOT_PMT, REMOTION_SCENE_PMT,
     REMOTION_FIX_PMT, REMOTION_RENDER_FIX_PMT,
@@ -27,7 +27,7 @@ class RemotionAgent:
         self.pj_dir = path.abspath(args.dir)
         self.asset_dir = path.join(self.pj_dir, 'asset')
         os.makedirs(self.asset_dir, exist_ok=True)
-        set_openai_props(args)
+        self.oa = OpenAIClient.from_args(args)
 
     def _cache(self, prefix: str, key: str, ext: str = '.yaml') -> str:
         return path.join(self.asset_dir, f'{prefix}_{key}{ext}')
@@ -48,7 +48,7 @@ class RemotionAgent:
         parse_output = lambda s: RemotionPlan(
             **json_repair.loads(ext_code_block(s))
         )
-        res: RemotionPlan = ask_chatgpt_retry(ques, self.model, self.args, parse_output=parse_output)
+        res: RemotionPlan = self.oa.ask_chatgpt_retry(ques, self.model, self.args, parse_output=parse_output)
         # 规格兜底
         res.fps = res.fps or fps
         res.width = res.width or width
@@ -68,7 +68,7 @@ class RemotionAgent:
             REMOTION_ROOT_PMT,
             plan=json_dump_plan(plan), composition=composition,
         )
-        out = ask_chatgpt_retry(
+        out = self.oa.ask_chatgpt_retry(
             ques, self.model, self.args,
             parse_output=ext_code_block,
         )
@@ -92,7 +92,7 @@ class RemotionAgent:
             plan=json_dump_plan(plan), scene=json_dump_plan(scene),
             width=str(plan.width), height=str(plan.height),
         )
-        out = ask_chatgpt_retry(ques, self.model, self.args, parse_output=ext_code_block)
+        out = self.oa.ask_chatgpt_retry(ques, self.model, self.args, parse_output=ext_code_block)
         fname = _extract_file_tag(out) or f'src/Scene{scene.name}.tsx'
         files = _extract_files(out)
         code = files[0].code if files and files[0].code.strip() else out
@@ -112,7 +112,7 @@ class RemotionAgent:
             REMOTION_FIX_PMT,
             plan=json_dump_plan(plan), fname=fname, code=code, err=err,
         )
-        out = ask_chatgpt_retry(ques, self.model, self.args, parse_output=ext_code_block)
+        out = self.oa.ask_chatgpt_retry(ques, self.model, self.args, parse_output=ext_code_block)
         res = RemotionFile(fname=fname, code=out)
         write_yaml_model(cache, res)
         return res
@@ -138,7 +138,7 @@ class RemotionAgent:
             plan=json_dump_plan(plan), composition=composition,
             err=err, files=files_block,
         )
-        out = ask_chatgpt_retry(ques, self.model, self.args, parse_output=ext_code_block)
+        out = self.oa.ask_chatgpt_retry(ques, self.model, self.args, parse_output=ext_code_block)
         # LLM 只输出单个要改的文件；用 _extract_files 解析 // file: 标注
         parsed = _extract_files(out)
         if parsed and parsed[0].code.strip():

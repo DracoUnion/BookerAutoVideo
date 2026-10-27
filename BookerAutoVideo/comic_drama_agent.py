@@ -11,7 +11,7 @@ import json_repair
 from pydantic import parse_obj_as
 
 from .util import write_yaml_model, read_yaml_model
-from .openai import ask_chatgpt_retry, set_openai_props, call_tti_retry
+from .openai import OpenAIClient
 from .comic_drama_pmt import (
     CD_BREAK_PMT, CD_BREAK_FIX_PMT, CD_IMAGE_FIX_PMT,
     CD_KEYFRAME_PMT, CD_VIDEO_PROMPT_PMT,
@@ -32,7 +32,7 @@ class ComicDramaAgent:
         self.pj_dir = path.abspath(getattr(args, 'out', '.'))
         self.asset_dir = path.join(self.pj_dir, 'asset')
         os.makedirs(self.asset_dir, exist_ok=True)
-        set_openai_props(args)
+        self.oa = OpenAIClient.from_args(args)
 
     def _cache(self, prefix: str, key: str, ext: str = '.yaml') -> str:
         return path.join(self.asset_dir, f'{prefix}_{key}{ext}')
@@ -57,7 +57,7 @@ class ComicDramaAgent:
         parse_output = lambda s: Storyboard(
             **json_repair.loads(ext_code_block(s))
         )
-        sb: Storyboard = ask_chatgpt_retry(ques, self.model, self.args, parse_output=parse_output)
+        sb: Storyboard = self.oa.ask_chatgpt_retry(ques, self.model, self.args, parse_output=parse_output)
         sb.project_id = project_id
         write_yaml_model(cache, sb)
         return sb
@@ -77,7 +77,7 @@ class ComicDramaAgent:
         parse_output = lambda s: Storyboard(
             **json_repair.loads(ext_code_block(s))
         )
-        res: Storyboard = ask_chatgpt_retry(ques, self.model, self.args, parse_output=parse_output)
+        res: Storyboard = self.oa.ask_chatgpt_retry(ques, self.model, self.args, parse_output=parse_output)
         res.project_id = sb.project_id
         write_yaml_model(cache, res)
         return res
@@ -99,7 +99,7 @@ class ComicDramaAgent:
             style=sb.style_preset, characters=self._characters_json(sb),
             shot_id=str(shot.shot_id), prompt=shot.image_prompt, problem=problem,
         )
-        res = ask_chatgpt_retry(ques, self.model, self.args, parse_output=ext_cont_block)
+        res = self.oa.ask_chatgpt_retry(ques, self.model, self.args, parse_output=ext_cont_block)
         open(cache, 'w', encoding='utf8').write(res)
         return res
 
@@ -107,7 +107,7 @@ class ComicDramaAgent:
         """文生图（call_tti_retry，OpenAI 图像接口）。无模型时返回 None 由编排器兜底。"""
         if not self.tt_model:
             return None
-        return call_tti_retry(prompt, self.tt_model, size=size, retry=self.args.retry)
+        return self.oa.call_tti_retry(prompt, self.tt_model, size=size, retry=self.args.retry)
 
     # ── 模块 3：关键帧 ────────────────────────────────────────
 
@@ -123,7 +123,7 @@ class ComicDramaAgent:
             shot=json_dump_plan(shot),
         )
         parse_output = lambda s: json_repair.loads(ext_code_block(s))
-        obj = ask_chatgpt_retry(ques, self.model, self.args, parse_output=parse_output)
+        obj = self.oa.ask_chatgpt_retry(ques, self.model, self.args, parse_output=parse_output)
         res = KeyframePair(
             shot_id=shot.shot_id,
             start_frame=f'keyframes/shot_{shot.shot_id:03d}_start.png',
@@ -146,6 +146,6 @@ class ComicDramaAgent:
             CD_VIDEO_PROMPT_PMT,
             shot=json_dump_plan(shot), motion=motion, duration=str(duration),
         )
-        res = ask_chatgpt_retry(ques, self.model, self.args, parse_output=ext_cont_block)
+        res = self.oa.ask_chatgpt_retry(ques, self.model, self.args, parse_output=ext_cont_block)
         open(cache, 'w', encoding='utf8').write(res)
         return res
