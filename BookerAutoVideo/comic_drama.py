@@ -334,5 +334,4 @@ def reg_subparser(subparsers):
                         help='用户素材映射 "shot_id=path,..."，或留空用 images/ 目录自动匹配')
     parser.add_argument('--video-backend', default='ffmpeg',
                         help='视频后端：ffmpeg（本地关键帧过渡）/ sora / runway（留待接入）')
-    parser.add_argument('-D', '--debug', action='store_true', help='调试模式')
     parser.set_defaults(func=comic_drama)
