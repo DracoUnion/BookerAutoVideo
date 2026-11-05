@@ -562,3 +562,6 @@ def read_yaml_model(fname: str, model: Optional[Type[BaseModel]]):
 def render_prompt(pmt: str, **kw) -> str:
     """将提示词模板中的 {key} 占位符替换为 kw[key]。"""
     return re.sub(r"{(\w+)}", lambda g: kw.get(g.group(1), g.group(0)), pmt)
+
+ext_code_block = lambda s: re.search(r'```\w*([\s\S]+)```', s).group(1)
+ext_cont_block = lambda s: re.search(r'\[content\]([\s\S]+)\[/content\]', s).group(1)
