@@ -43,22 +43,8 @@ def mknote_file_safe(args):
     except:
         traceback.print_exc()
 
-
-def mknote_file(args):
-
-    if not args.fname.endswith('.md'):
-        print('请提供 MD 文件!')
-        return
-    if args.fname.endswith('_note.md'):
-        print('文件已总结')
-        return
-    ofname = args.fname[:-3] + '_note.md'
-    if path.isfile(ofname):
-        print('文件已总结')
-        return
+def mknote_text(text, args):
     llm = OpenAIClient.from_args(args)
-
-    text = open(args.fname, encoding='utf8').read()
     total = len(text)
     ms = re.finditer(r'!\[.*?\]\(.+?\)', text)
     links = [
@@ -74,6 +60,23 @@ def mknote_file(args):
         if idx == 0: idx = 1
         lines.insert(idx, link)
     res = '\n\n'.join(lines)
+    return res
+
+def mknote_file(args):
+
+    if not args.fname.endswith('.md'):
+        print('请提供 MD 文件!')
+        return
+    if args.fname.endswith('_note.md'):
+        print('文件已总结')
+        return
+    ofname = args.fname[:-3] + '_note.md'
+    if path.isfile(ofname):
+        print('文件已总结')
+        return
+
+    text = open(args.fname, encoding='utf8').read()
+    res = mknote_text(text, args)
     open(ofname, 'w', encoding='utf8').write(res)
 
 def mknote(args):
