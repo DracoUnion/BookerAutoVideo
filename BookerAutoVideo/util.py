@@ -565,3 +565,30 @@ def render_prompt(pmt: str, **kw) -> str:
 
 ext_code_block = lambda s: re.search(r'```\w*([\s\S]+)```', s).group(1)
 ext_cont_block = lambda s: re.search(r'\[content\]([\s\S]+)\[/content\]', s).group(1)
+
+
+def repl_code_block(md: str) -> Tuple[str, List[str]]:
+    blocks = []
+    def repl_func(g):
+        s = g.group()
+        tk = f'[PRE{len(blocks)}]'
+        blocks.append(s)
+        return tk
+    CODE_BLOCK_RE = r'''
+        # 代码块
+        ```[\s\S]+?```
+        |
+        # 图片
+        !\[.*?\]\(.+?\)
+        |
+        # 公式块
+        \$\$[\s\S]+?\$\$
+    '''
+    md = re.sub(CODE_BLOCK_RE, repl_func, md, flags=re.VERBOSE)
+    return md, blocks
+
+
+def rec_code_block(md: str, blocks: List[str]) -> str:
+    for i, b in enumerate(blocks):
+        md = md.replace(f'[PRE{i}]', b)
+    return md

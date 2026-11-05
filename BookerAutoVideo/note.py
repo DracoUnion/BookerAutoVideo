@@ -45,21 +45,30 @@ def mknote_file_safe(args):
 
 def mknote_text(text, args):
     llm = OpenAIClient.from_args(args)
+    # 提取并移除图片链接
     total = len(text)
-    ms = re.finditer(r'!\[.*?\]\(.+?\)', text)
-    links = [
+    RE_PIC = r'!\[.*?\]\(.+?\)'
+    ms = re.finditer(RE_PIC, text)
+    pics = [
         (m.span()[0] / total, m.group())
         for m in ms
     ]
+    text = re.sub(RE_PIC, '', text)
+    # 调用 LLM 生成笔记
     ques = render_prompt(DFT_PMT, text=text)
-    ans = llm.ask_chatgpt_retry(ques, args.model, args, ext_cont_block)
-    lines = re.split(r'\n\n(?=\S)', ans)
+    res = llm.ask_chatgpt_retry(ques, args.model, args, ext_cont_block)
+    # 提取代码块
+    res, blocks = repl_code_block(res)
+    # 还原图片链接
+    lines = re.split(r'\n\n(?=\S)', res)
     total = len(lines)
-    for frac, link in links[::-1]:
+    for frac, link in pics[::-1]:
         idx = int(frac * total)
         if idx == 0: idx = 1
         lines.insert(idx, link)
     res = '\n\n'.join(lines)
+    # 还原代码块
+    res = rec_code_block(res, blocks)
     return res
 
 def mknote_file(args):
