@@ -169,7 +169,7 @@ def reg_subparser(subparsers):
     parser.add_argument("-l", "--lang", default='zh',  help="language")
     parser.add_argument("-m", "--model-path", default=os.environ.get('PPT_MODEL_PATH', ''), help="PPT model path")
     parser.add_argument("-s", "--batch-size", type=int, default=32, help="batch_size")
-    parser.add_argument("-dt", "--diff-thres", type=float, default=0.1, help="img diff thres")
+    parser.add_argument("-dt", "--diff-thres", type=float, default=0.5, help="img diff thres")
     parser.add_argument("-pt", "--ppt-thres", type=float, default=0.4, help="img ppt thres")
     parser.add_argument("-c", "--color", type=float, default=0.4, help="color entro")
     parser.add_argument("-H", "--hog", type=float, default=0.5, help="hog entro")
