@@ -3,8 +3,8 @@ import os
 import sys
 import math
 import warnings
-from . import __version__
-from . import autovideo, video2txt, keyframe, imgsim, clip, split, remotion, sv2api, comic_drama, note
+from . import __version__, md2note, video2note
+from . import autovideo, keyframe, imgsim, clip, split, remotion, sv2api, comic_drama
 
 warnings.filterwarnings("ignore")
 
@@ -44,7 +44,7 @@ def main():
     subparsers = parser.add_subparsers()
 
     autovideo.reg_subparser(subparsers)
-    video2txt.reg_subparser(subparsers)
+    video2note.reg_subparser(subparsers)
     keyframe.reg_subparser(subparsers)
     imgsim.reg_subparser(subparsers)
     clip.reg_subparser(subparsers)
@@ -52,7 +52,7 @@ def main():
     remotion.reg_subparser(subparsers)
     sv2api.reg_subparser(subparsers)
     comic_drama.reg_subparser(subparsers)
-    note.reg_subparser(subparsers)
+    md2note.reg_subparser(subparsers)
 
 
     args = parser.parse_args()

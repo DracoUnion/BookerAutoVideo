@@ -14,6 +14,7 @@ from .util import *
 from .keyframe import *
 # from paddlespeech.cli.text.infer import TextExecutor 
 from .sencevoice import *
+from md2note import mknote_text
 
 def merge_words(words, maxl=500):
     res = []
@@ -137,6 +138,8 @@ def video2txt_file(args):
             w['text'] = stylish_text(w['text'])
     text = '\n\n'.join([w['text'] for w in words])
     text = f'# {title}\n\n{text}'
+    if not args.no_make_note:
+        text = mknote_text(text, args)
     print(text)
     open(nfname , 'w', encoding='utf8').write(text)
     print(nfname + '.md')
@@ -153,7 +156,7 @@ def video2txt_file(args):
         open(img_fname, 'wb').write(img)
 
 def reg_subparser(subparsers):
-    parser = subparsers.add_parser("totxt", help="convert audio to text")
+    parser = subparsers.add_parser("note", help="convert audio to note")
     parser.add_argument("fname", help="file name")
     parser.add_argument("-t", "--threads", type=int, default=8, help="num of threads")
     parser.add_argument("-I", "--no-image", action='store_true', help="whether to not catch screenshots")
@@ -162,6 +165,7 @@ def reg_subparser(subparsers):
         default=os.environ.get('WHISPER_CPP_MODEL_PATH', ''),
         help="whisper.cpp model path"
     )
+    parser.add_argument("-MT", "--no-make-note", action='store_true',  help="output raw transcript")
     parser.add_argument("-l", "--lang", default='zh',  help="language")
     parser.add_argument("-m", "--model-path", default=os.environ.get('PPT_MODEL_PATH', ''), help="PPT model path")
     parser.add_argument("-s", "--batch-size", type=int, default=32, help="batch_size")
