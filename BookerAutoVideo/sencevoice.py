@@ -28,10 +28,10 @@ def sencevoice(args):
         subp.Popen([
             'ffmpeg', '-i', vid_fname, 
             '-vn', '-acodec', 'libmp3lame', 
-            aud_fname
+            aud_fname,
         ], shell=True, stdin=subp.PIPE).communicate()
         if not path.isfile(aud_fname):
-            raise FileNotFoundError(f'{fname} 转换失败')
+            raise FileNotFoundError(f'{aud_fname} 转换失败')
     else:
         aud_fname = vid_fname
     # 加载VAD模型
