@@ -25,11 +25,13 @@ def sencevoice(args):
      
     if not vid_fname.endswith('.mp3'):
         aud_fname = tempfile.gettempdir() + '/' + uuid.uuid4().hex + '.mp3'
-        subp.Popen([
+        args = [
             'ffmpeg', '-i', vid_fname, 
             '-vn', '-acodec', 'libmp3lame', 
             aud_fname,
-        ], shell=True, stdin=subp.PIPE).communicate()
+        ]
+        print(args)
+        subp.Popen(args, shell=True, stdin=subp.PIPE).communicate()
         if not path.isfile(aud_fname):
             raise FileNotFoundError(f'{aud_fname} 转换失败')
     else:
