@@ -11,7 +11,7 @@ from multiprocessing import Pool
 import subprocess as subp
 import json
 from .util import *
-from .keyframe import *
+from .ext_ppt import *
 # from paddlespeech.cli.text.infer import TextExecutor 
 from .sencevoice import *
 from .md2note import mknote_text
@@ -53,6 +53,7 @@ def video2txt_file_safe(args):
         raise
     except: traceback.print_exc()
 
+'''
 def whisper_cpp(args):
     fname = args.fname
     wav_fname = path.join(tempfile.gettempdir(), uuid.uuid4().hex + '.wav')
@@ -84,6 +85,7 @@ def whisper_cpp(args):
         } 
         for s in res['transcription']
     ]
+'''
 
 def asr(args):
     # 加载缓存
@@ -117,7 +119,7 @@ def video2txt_file(args):
     words = asr(args)
     # 获取关键帧
     if not args.no_image and is_video(fname):
-        frames = extract_keyframe(args)
+        frames = extract_ppt(args)
         words += frames
         words.sort(key=lambda x: x['time'])
     # 排版
@@ -166,11 +168,11 @@ def reg_subparser(subparsers):
         help="whisper.cpp model path"
     )
     parser.add_argument("-MT", "--no-make-note", action='store_true',  help="output raw transcript")
-    parser.add_argument("-l", "--lang", default='zh',  help="language")
-    parser.add_argument("-m", "--model-path", default=os.environ.get('PPT_MODEL_PATH', ''), help="PPT model path")
-    parser.add_argument("-s", "--batch-size", type=int, default=32, help="batch_size")
+    # parser.add_argument("-l", "--lang", default='zh',  help="language")
+    # parser.add_argument("-m", "--model-path", default=os.environ.get('PPT_MODEL_PATH', ''), help="PPT model path")
+    # parser.add_argument("-s", "--batch-size", type=int, default=32, help="batch_size")
     parser.add_argument("-dt", "--diff-thres", type=float, default=0.5, help="img diff thres")
-    parser.add_argument("-pt", "--ppt-thres", type=float, default=0.4, help="img ppt thres")
+    # parser.add_argument("-pt", "--ppt-thres", type=float, default=0.4, help="img ppt thres")
     parser.add_argument("-c", "--color", type=float, default=0.4, help="color entro")
     parser.add_argument("-H", "--hog", type=float, default=0.5, help="hog entro")
     parser.add_argument("--left", type=float, default=0, help="left cut 0~1")

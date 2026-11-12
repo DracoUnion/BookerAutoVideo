@@ -134,6 +134,7 @@ def filter_repeat(frames, args):
         if len(frames) == nframe: break
     return frames
 
+'''
 def filter_by_ppt_model(frames, args):
     model = load_ppt_ext_model(args.model_path).eval()
     imgs = preproc_imgs([f['img'] for f in frames])
@@ -174,7 +175,8 @@ def filter_by_ocr(frames, args):
         ]
         if nframe == len(frames): break
     return frames
-   
+'''
+
 def check_cut_args(args):
     assert (
         args.left >= 0 and
@@ -207,7 +209,7 @@ def tr_calc_met(f):
       'hog': hog_entro(img),
     })
 
-def extract_keyframe(args):
+def extract_ppt(args):
     print(args)
     check_cut_args(args)
     fname = args.fname
@@ -243,10 +245,12 @@ def extract_keyframe(args):
     if frames:
         frames = filter_repeat(frames, args)
     # 第二个过滤：过滤人像和景物
+    '''
     if args.model_path:
         frames = filter_by_ppt_model(frames, args)
         if frames:
             frames = filter_repeat(frames, args)
+    '''
     # 第三个过滤：OCR 之后根据文字过滤语义相似幻灯片
     # frames = filter_by_ocr(frames, args)
     # 优化图像
@@ -265,14 +269,14 @@ def extract_keyframe(args):
         '''
     return frames
 
-def extract_keyframe_file(args):
+def extract_ppt_file(args):
     fname = args.fname
     opti_mode = args.opti_mode
     if not is_video(fname):
         print('请提供视频')
         return
     print(fname)
-    frames = extract_keyframe(args)
+    frames = extract_ppt(args)
     # 保存所有关键帧
     opath = re.sub(r'\.\w+$', '', fname) + '_keyframe'
     if not path.isdir(opath): os.mkdir(opath)
@@ -282,22 +286,22 @@ def extract_keyframe_file(args):
         open(ofname, 'wb').write(f['img'])
 
 def reg_subparser(subparsers):
-    parser = subparsers.add_parser("ext-kf", help="extract keyframes")
+    parser = subparsers.add_parser("ext-ppt", help="extract keyframes")
     parser.add_argument("fname", help="file name")
     parser.add_argument("-o", "--opti-mode", default="quant", help="img opti mode, default 'none'")
     parser.add_argument("-r", "--rate", type=float, default=0.2, help="how many frames to extract in 1s")
     parser.add_argument("-d", "--direction", choices=[DIR_F, DIR_B, DIR_T], default=DIR_B, help="the direction used to calc frame diff")
     parser.add_argument("-dt", "--diff-thres", type=float, default=0.1, help="img diff thres")
     parser.add_argument("-t", "--threads", type=int, default=8, help="#threads")
-    parser.add_argument("-pt", "--ppt-thres", type=float, default=0.4, help="img ppt thres")
-    parser.add_argument("-m", "--model-path", default=os.environ.get('PPT_MODEL_PATH', ''), help="PPT model path")
-    parser.add_argument("-s", "--batch-size", type=int, default=32, help="batch_size")
+    # parser.add_argument("-pt", "--ppt-thres", type=float, default=0.4, help="img ppt thres")
+    # parser.add_argument("-m", "--model-path", default=os.environ.get('PPT_MODEL_PATH', ''), help="PPT model path")
+    # parser.add_argument("-s", "--batch-size", type=int, default=32, help="batch_size")
     parser.add_argument("-c", "--color", type=float, default=0.4, help="color entro")
     parser.add_argument("-H", "--hog", type=float, default=0.5, help="hog entro")
     parser.add_argument("--left", type=float, default=0, help="left cut 0~1")
     parser.add_argument("--right", type=float, default=0, help="right cut 0~1")
     parser.add_argument("--bottom", type=float, default=0, help="bottom cut 0~1")
     parser.add_argument("--top", type=float, default=0, help="top cut 0~1")
-    parser.set_defaults(func=extract_keyframe_file)
+    parser.set_defaults(func=extract_ppt_file)
 
     
