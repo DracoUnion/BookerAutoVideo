@@ -3,8 +3,8 @@ import os
 import sys
 import math
 import warnings
-from . import __version__, md2note, video2note
-from . import autovideo, keyframe, imgsim, clip, split, remotion, sv2api, comic_drama
+from . import __version__, ext_ppt, md2note, video2note
+from . import autovideo, imgsim, clip, split, remotion, sv2api, comic_drama
 
 warnings.filterwarnings("ignore")
 
@@ -45,7 +45,7 @@ def main():
 
     autovideo.reg_subparser(subparsers)
     video2note.reg_subparser(subparsers)
-    keyframe.reg_subparser(subparsers)
+    ext_ppt.reg_subparser(subparsers)
     imgsim.reg_subparser(subparsers)
     clip.reg_subparser(subparsers)
     split.reg_subparser(subparsers)
