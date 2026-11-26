@@ -4,7 +4,7 @@ import sys
 import math
 import warnings
 from . import __version__, ext_ppt, md2note, video2note
-from . import autovideo, imgsim, clip, split, remotion, sv2api, comic_drama
+from . import autovideo, imgsim, clip, split, remotion, sv2api, comic_drama, copy_video
 
 warnings.filterwarnings("ignore")
 
@@ -53,6 +53,7 @@ def main():
     sv2api.reg_subparser(subparsers)
     comic_drama.reg_subparser(subparsers)
     md2note.reg_subparser(subparsers)
+    copy_video.reg_subparser(subparsers)
 
 
     args = parser.parse_args()

@@ -46,6 +46,9 @@ dependencies = [
     "funasr",
     "requests",
     "flask",
+    "imagehash",
+    "Pillow",
+    "seedance-sdk",
 ]
 
 [project.scripts]
