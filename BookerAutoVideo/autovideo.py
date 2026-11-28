@@ -27,7 +27,7 @@ def tti(text, args):
         return img
     img = OpenAIClient.from_args(args).call_tti_retry(
         text=text,
-        model=config['ttiModel'],
+        model_name=config['ttiModel'],
         size=config['ttiSize'],
         retry=config['ttiRetry'],
     )
