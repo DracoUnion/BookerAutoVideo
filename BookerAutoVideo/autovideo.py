@@ -118,7 +118,7 @@ def make_video(frames):
 def tr_tts_tti(frame, args):
     text = frame['subtitle']
     frame['audio'] = tts(text)
-    frame['image'] = tti(args.prefix + text + args.suffix)
+    frame['image'] = tti(args.prefix + text + args.suffix, args)
 
 def tr_asm_audio_video(frame):
     w, h = config['size']
