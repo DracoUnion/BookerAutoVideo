@@ -182,7 +182,7 @@ def reg_subparser(subparsers):
     parser.add_argument("-r", "--retry", type=int, default=1_000_000, help="times of retry")
     parser.add_argument("-t", "--threads", type=int, default=8, help="num of threads")
     parser.add_argument("-p", "--one-pic", help="whether to use one pic for all frames, and it's path")
-    parser.add_argument("-pf", "--prefix", default='', help="tti prompt prefix")
+    parser.add_argument("-pf", "--prefix", default='请根据以下内容生成图片，要求手绘风格，漫画分镜：', help="tti prompt prefix")
     parser.add_argument("-sf", "--suffix", default='', help="tti prompt suffix")
     parser.set_defaults(func=autovideo)
 
