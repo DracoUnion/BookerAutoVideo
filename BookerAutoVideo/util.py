@@ -426,60 +426,6 @@ def extname(fname):
     m = re.search(r'\.(\w+)$', fname.lower())
     return m.group(1) if m else ''
 
-def call_tts_retry(text, model_name='tts-1', voice='nova', retry=10, nothrow=True):
-    for i in range(retry):
-        try:
-            print(f'tts: {json.dumps(text, ensure_ascii=False)}')
-            client = openai.OpenAI(
-                base_url=openai.base_url,
-                api_key=openai.api_key,
-                http_client=httpx.Client(
-                    proxies=openai.proxy,
-                    transport=httpx.HTTPTransport(local_address="0.0.0.0"),
-                )
-            )
-            audio = client.audio.speech.create(
-                model=model_name,
-                voice=voice,
-                input=text,
-                speed=0.9,
-            ).content
-            # print(f'ans: {json.dumps(ans, ensure_ascii=False)}')
-            return audio
-        except Exception as ex:
-            print(f'OpenAI retry {i+1}: {str(ex)}')
-            if i == retry - 1 and not nothrow: raise ex
-
-def call_dalle_retry(text, model_name, size, quality, retry=10, nothrow=True):
-    for i in range(retry):
-        try:
-            print(f'tti: {json.dumps(text, ensure_ascii=False)}')
-            client = openai.OpenAI(
-                base_url=openai.base_url,
-                api_key=openai.api_key,
-                http_client=httpx.Client(
-                    proxies=openai.proxy,
-                    transport=httpx.HTTPTransport(local_address="0.0.0.0"),
-                )
-            )
-            url = client.images.generate(
-                model=model_name, 
-                size='1024x1024',
-                prompt=text,
-                n=1,
-            ).data[0].url
-            # print(f'ans: {json.dumps(ans, ensure_ascii=False)}')
-            return requests.get(url).content
-        except Exception as ex:
-            print(f'OpenAI retry {i+1}: {str(ex)}')
-            if i == retry - 1 and not nothrow: raise ex
-
-def set_openai_props(key=None, proxy=None, host=None):
-    openai.api_key = key
-    openai.proxy = proxy
-    openai.base_url = host
-
-
 RE_SRT = r'''
     ^(\d+)\n
     ^(\d+:\d+:\d+.\d+)\x20+\-+>\x20+(\d+:\d+:\d+.\d+)\n

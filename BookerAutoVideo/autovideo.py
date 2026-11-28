@@ -15,8 +15,9 @@ from .ffmpeg import ffmpeg_cat, ffmpeg_add_srt, ffmpeg_merge_video_audio
 from EpubCrawler.util import request_retry
 import base64
 from concurrent.futures import ThreadPoolExecutor
+from .openai import OpenAIClient
 
-def tti(text):
+def tti(text, args):
     hash_ = hashlib.md5(text.encode('utf8')).hexdigest()
     cache = load_tti(hash_)
     if cache: return cache
@@ -24,10 +25,11 @@ def tti(text):
         img =  open(config['onePic'], 'rb').read()
         save_tti(hash_, img)
         return img
-    img = call_dalle_retry(
-        text, config['ttiModel'], 
-        config['ttiSize'], config['ttiQuality'],
-        config['ttiRetry']
+    img = OpenAIClient.from_args(args).call_tti_retry(
+        text=text,
+        model=config['ttiModel'],
+        size=config['ttiSize'],
+        retry=config['ttiRetry'],
     )
     if img is None: img = open(config['defaultImg'], 'rb').read()
     save_tti(hash_, img)
@@ -135,7 +137,6 @@ def update_config(args):
     config['ttiModel'] = args.model
 
 def autovideo(args):
-    set_openai_props(args.key, args.proxy, args.host)
     update_config(args)
     ext = extname(args.fname)
     if ext not in ['md', 'txt']:
